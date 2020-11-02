@@ -1,0 +1,44 @@
+{
+  "name": "miraiBot",
+  "version": "1.0.0",
+  "description": "A simply Facebook Messenger Bot like Discord.",
+  "main": "index.js",
+  "engines": {
+    "node": "12.18.2"
+  },
+  "scripts": {
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roxtigger2003/mirai.git"
+  },
+  "keywords": [
+    "bot",
+    "facebook",
+    "projectmirai",
+    "messenger",
+    "mirai",
+    "catalizcs",
+    "spermlord"
+  ],
+  "author": "roxtigger2003 & SpermLord",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/roxtigger2003/mirai/issues"
+  },
+  "homepage": "https://github.com/roxtigger2003/mirai#readme",
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "body-parser": "^1.19.0",
+    "chalk": "^4.1.0",
+    "fca-unofficial": "^1.3.10",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-extra": "^9.0.1",
+    "moment-timezone": "^0.5.31",
+    "path": "^0.12.7",
+    "readline": "^1.3.0",
+    "totp-generator": "0.0.8",
+    "ytdl-core": "^4.0.2"
+  }
+}
