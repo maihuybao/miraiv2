@@ -65,7 +65,7 @@ module.exports = function({ api }) {
 					command.run(api, event, args);
 				} catch (error) {
 					logger(error, 2);
-					message.reply("There was an error executing that command.").catch(console.error);
+					api.sendMessage("There was an error executing that command.", event.threadID);
 				}
 				break;
 			/*case "message_unsend":
