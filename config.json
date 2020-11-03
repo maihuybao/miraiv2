@@ -1,4 +1,6 @@
 {
 	"PREFIX": "!",
-	"BOTNAME": ""
+	"BOTNAME": "",
+	"YOUTUBE_API": "AIzaSyBxo7837XxdK0oM8QHNj7IGxEsbw67s0f8",
+	"SOUNDCLOUD_API": ""
 }
