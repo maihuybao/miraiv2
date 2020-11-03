@@ -82,7 +82,10 @@ module.exports = function({ api }) {
 				const expirationTime = timestamps.get(senderID) + cooldownAmount;
 				if (now < expirationTime) {
 					const timeLeft = (expirationTime - now) / 1000;
-					return api.sendMessage(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the ${command.config.name} command.`, event.threadID, event.messageID);
+					return api.sendMessage(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the ${command.config.name} command.`, event.threadID, async (err, info) => {
+						await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
+						api.unsendMessage(info.messageID);
+					}, event.messageID);
 				}
 			}
 			timestamps.set(senderID, now);

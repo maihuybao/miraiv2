@@ -57,15 +57,24 @@ module.exports.run = async (api, event, args) => {
 		try {
 			var songInfo = await scdl.getInfo(args[0], SOUNDCLOUD_API);
 			var timePlay = Math.ceil(songInfo.duration / 1000);
-			api.sendMessage(`Tiêu đề: ${songInfo.title} | ${(timePlay-(timePlay%=60))/60+(9<timePlay?':':':0')+timePlay}]`, event.threadID, event.messageID);
+			api.sendMessage(`Tiêu đề: ${songInfo.title} | [${(timePlay-(timePlay%=60))/60+(9<timePlay?':':':0')+timePlay}]`, event.threadID, event.messageID);
 		} catch (error) {
 			if (error.statusCode == "404") return api.sendMessage("Không tìm thấy bài nhạc của bạn thông qua link trên ;w;", event.threadID, event.messageID);
 			api.sendMessage("thông tin của soundcloud đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);
 		}
 		try {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
+			scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
 		} catch (error) {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.MP3, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
+			scdl.downloadFormat(args[0], scdl.FORMATS.MP3, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
+		}
+	} else {
+		try {
+			const results = await youtube.searchVideos(keywordSearch, 1);
+			songInfo = await ytdl.getInfo(results[0].url);
+			api.sendMessage(`Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds-(songInfo.videoDetails.lengthSeconds%=60))/60+(9<songInfo.videoDetails.lengthSeconds?':':':0')+songInfo.videoDetails.lengthSeconds}]`, event.threadID, event.messageID);
+			ytdl(results[0].url, {filter: 'audioonly', format: 'mp3'}).pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play);
+		} catch (error) {
+			api.sendMessage("thông tin của youtube đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);
 		}
 	}
 	
