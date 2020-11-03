@@ -46,7 +46,7 @@ module.exports.run = async (api, event, args) => {
 	
 	if (urlValid) {
 		try {
-			const songInfo = await ytdl.getInfo(args[0]);
+			var songInfo = await ytdl.getInfo(args[0]);
 			api.sendMessage(`Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds-(songInfo.videoDetails.lengthSeconds%=60))/60+(9<songInfo.videoDetails.lengthSeconds?':':':0')+songInfo.videoDetails.lengthSeconds}]`, event.threadID, event.messageID);
 		} catch (error) {
 			api.sendMessage("thông tin của youtube đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);
@@ -55,16 +55,17 @@ module.exports.run = async (api, event, args) => {
 	}
 	else if (scRegex.test(args[0])) {
 		try {
-			const songInfo = await scdl.getInfo(args[0], SOUNDCLOUD_CLIENT_ID);
-			api.sendMessage(`Tiêu đề: ${songInfo.title} | [${(Math.ceil(trackInfo.duration / 1000)-(Math.ceil(trackInfo.duration / 1000)%=60))/60+(9<Math.ceil(trackInfo.duration / 1000)?':':':0')+Math.ceil(trackInfo.duration / 1000)}]`, event.threadID, event.messageID);
+			var songInfo = await scdl.getInfo(args[0], SOUNDCLOUD_API);
+			var timePlay = Math.ceil(songInfo.duration / 1000);
+			api.sendMessage(`Tiêu đề: ${songInfo.title} | ${(timePlay-(timePlay%=60))/60+(9<timePlay?':':':0')+timePlay}]`, event.threadID, event.messageID);
 		} catch (error) {
 			if (error.statusCode == "404") return api.sendMessage("Không tìm thấy bài nhạc của bạn thông qua link trên ;w;", event.threadID, event.messageID);
 			api.sendMessage("thông tin của soundcloud đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);
 		}
 		try {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, SOUNDCLOUD_CLIENT_ID ? SOUNDCLOUD_CLIENT_ID : undefined).pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play);
+			await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
 		} catch (error) {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.MP3, SOUNDCLOUD_CLIENT_ID ? SOUNDCLOUD_CLIENT_ID : undefined).pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play);
+			await scdl.downloadFormat(args[0], scdl.FORMATS.MP3, SOUNDCLOUD_API ? SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", play));
 		}
 	}
 	
