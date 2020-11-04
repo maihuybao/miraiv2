@@ -19,10 +19,10 @@ module.exports.config = {
 };
 
 //reload module
-function reload() {}
+function reloadModule() {}
 
 //import module
-function import(url) {}
+function importModule(url) {}
 
 module.exports.run = function(api, event, args, client) {
 	if (args[0] == "all") {
