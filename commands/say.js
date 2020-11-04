@@ -1,13 +1,24 @@
 module.exports.config = {
 	name: "say",
-	description: "Điều khiển bot biến văn bản thành giọng đọc",
+	version: "1.0.0",
+	hasPermssion: 0,
+	credits: "CatalizCS",
+	description: "khiến bot trả về file âm thanh của chị google thông qua văn bản",
 	commandCategory: "general",
+	usages: "say [ngôn ngữ] [văn bản]",
+	cooldowns: 5,
 	args: [
 		{
-			key: 'text',
-			prompt: `Phần text bạn muốn bot nói.`,
-			type: 'string',
-			default: 'Mirai-Chan xin chào cả nhà'
+			key: "ngôn ngữ",
+			prompt: "Ngôn ngữ bạn muốn bot trả kết quả về, mặc định để trống là tiếng việt, có 4 ngôn ngữ 'ru, en, ja, vi'",
+			type: 'Text',
+			example: 'en'
+		},
+		{
+			key: "Văn bản",
+			prompt: "Văn bản bạn cần bot trả kết quả về thanh giọng nói, lưu ý độ dài dưới 100 từ!",
+			type: 'Text',
+			example: 'Mirai-Chan xin chào cả nhà'
 		}
 	]
 };

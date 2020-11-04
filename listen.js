@@ -1,4 +1,4 @@
-//=========Const Variable =========//
+//=========Call Variable=========//
 
 const logger = require("./utils/log.js");
 const moment = require("moment-timezone");
@@ -7,13 +7,11 @@ const client = new Object();
 const { readdirSync } = require("fs");
 const { join } = require("path");
 client.commands = new Map();
+//client.replys = new Map();
+//client.reactions = new Map();
 const cooldowns = new Map();
-//client.description = new Map();
-//client.commandCategory = new Map();
-//client.args = new Map();
-//client.usages = new Map();
-//client.cooldowns = new Map();
-//client.devCommands = new Map();
+
+//=========Get all vallue need use in config=========//
 
 let PREFIX, BOTNAME;
 try {
@@ -27,53 +25,42 @@ try {
 
 //========= Do something in here o.o =========//
 
-//========= Get all files command can use =========//
+//========= Get all files command can use=========//
 
 const commandFiles = readdirSync(join(__dirname, "commands")).filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
 	const command = require(join(__dirname, "commands", `${file}`));
-	//if (!command.config || !command.run) logger(`File ${file} rất có thể đã bị lỗi và không thể load được!`, "[ MODULE ]")
-	//else {
 	try {
+		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		client.commands.set(command.config.name, command);
-		//client.description.set(command.config.name, command.config.description);
-		//client.usages.set(command.config.name, command.config.usages);
-		//client.commandCategory.set(command.config.name, command.config.commandCategory);
-		//client.args.set(command.config.name, command.config.args);
 		logger(`${command.config.name} Loaded!`, "[ MODULE ]");
 	} catch (error) {
 		logger(`Không thể load module: ${file} Với lỗi: ${error.message}`, "[ MODULE ]");
 	}
 }
 
-/*const devCommandFile = readdirSync(join(__dirname, "commands/developer")).filter((file) => file.endsWith(".js"));
-for (const devFile of devCommandFile) {
-	const devCommand = require(join(__dirname, "commands/developer", `${devFile}`));
-	if (!devCommand.name || !devCommand.execute) logger(`File ${devfile} rất có thể đã bị lỗi và không thể load được!`, "[ DEVELOPER MODULE ]")
-	else {
-		client.devCommands.set(devCommand.name, devCommand);
-		logger(`${devCommand.name} loaded`, "[ DEVELOP MODULE ]");
-	}
-}
-*/
-
-//========= return module listen =========//
+//========= return module listen=========//
 
 module.exports = function({ api }) {
-	logger("Starting bot sucess!", "[ SYSTEM ]");
-	logger(`${api.getCurrentUserID()}`, "[ UID ]");
-	logger("This bot was made by Catalizcs(roxtigger2003)");
+	logger("Bot started!", "[ SYSTEM ]");
+	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
 		if (error) return logger(error, 2);
 		if (event.type == "message" || event.type == "message_reply") {
 			let { body: contentMessage, senderID, threadID, messageID } = event;
 			const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(PREFIX)})\\s*`);
 			if (!prefixRegex.test(contentMessage)) return;
+			
+			//=========Get command user use=========//
+			
 			const [, matchedPrefix] = contentMessage.match(prefixRegex);
 			const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 			const commandName = args.shift().toLowerCase();
 			const command = client.commands.get(commandName);
 			if (!command) return api.sendMessage("Không tìm thấy lệnh mà bạn vừa nhập!", event.threadID, event.messageID);
+			
+			//=========Check cooldown=========//
+			
 			if (!cooldowns.has(command.config.name)) cooldowns.set(command.config.name, new Map());
 			const now = Date.now();
 			const timestamps = cooldowns.get(command.config.name);
@@ -91,6 +78,8 @@ module.exports = function({ api }) {
 			timestamps.set(senderID, now);
 			setTimeout(() => timestamps.delete(senderID), cooldownAmount);
 			
+			//=========run command=========//
+			
 			try {
 				command.run(api, event, args, client);
 			} catch (error) {
@@ -99,8 +88,6 @@ module.exports = function({ api }) {
 			}
 		}
 		if (event.type == "event") {
-			let threadInfo = await api.getThreadInfo(event.threadID);
-			let threadName = threadInfo.threadName;
 			switch (event.logMessageType) {
 				case "log:subscribe":
 					if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
@@ -108,8 +95,8 @@ module.exports = function({ api }) {
 						api.sendMessage(`Im connected sucess! thiz bot was made by me(CatalizCS)\nThank you for using our products, have fun UwU <3`, event.threadID);
 						let deleteMe = event.logMessageData.addedParticipants.find(i => i.userFbId == api.getCurrentUserID());
 						event.logMessageData.addedParticipants.splice(deleteMe, 1);
-						await new Promise(resolve => setTimeout(resolve, 500));
-					} else {
+					}
+					else {
 					var mentions = [], nameArray = [], memLength = [];
 					for (var i = 0; i < event.logMessageData.addedParticipants.length; i++) {
 						let id = event.logMessageData.addedParticipants[i].userFbId;
@@ -118,6 +105,8 @@ module.exports = function({ api }) {
 						mentions.push({ tag: userName, id });
 						memLength.push(threadInfo.participantIDs.length - i);
 					}
+					let threadInfo = await api.getThreadInfo(event.threadID);
+					let threadName = threadInfo.threadName;
 					memLength.sort((a, b) => a - b);
 					var body = `Welcome aboard ${nameArray.join(', ')}.\nChào mừng ${(memLength.length > 1) ?  'các bạn' : 'bạn'} đã đến với ${threadName}.\n${(memLength.length > 1) ?  'Các bạn' : 'Bạn'} là thành viên thứ ${memLength.join(', ')} của nhóm 🥳`;
 					api.sendMessage({ body, mentions }, event.threadID);
@@ -125,36 +114,6 @@ module.exports = function({ api }) {
 				}
 			}
 		}
-		/*switch (event.type) {
-			case "message":
-			case "message_reply":
-				let { body: contentMessage, senderID, threadID, messageID } = event;
-				const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(PREFIX)})\\s*`);
-				if (!prefixRegex.test(contentMessage)) return;
-				const [, matchedPrefix] = contentMessage.match(prefixRegex);
-				const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
-				const commandName = args.shift().toLowerCase();
-				const command = client.commands.get(commandName); //|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-				if (!command) return api.sendMessage("Không tìm thấy lệnh mà bạn vừa nhập!", event.threadID, event.messageID);
-				try {
-					command.run(api, event, args);
-				} catch (error) {
-					logger(error, 2);
-					api.sendMessage("There was an error executing that command.", event.threadID);
-				}
-				break;
-			/*case "message_unsend":
-				//handleUnsend({ event });
-				break;
-			case "event":
-				handleEvent({ event });
-				break;
-			case "message_reaction":
-				handleReaction({ event });
-				break;
-			default:
-				return;
-				break; 
-		}*/
 	};
 }
+//THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

@@ -1,8 +1,14 @@
 module.exports.config = {
-	name: "uptime",
-	aliases: [],
-	usage: "check uptime",
-	commandCategory: "system"
+	name: "sauce",
+	version: "1.0.0",
+	hasPermssion: 0,
+	credits: "CatalizCS",
+	description: "Kiểm tra thời gian bot đã online",
+	commandCategory: "system",
+	usages: "uptime",
+	cooldowns: 5,
+	args: [{
+	}]
 };
 
 

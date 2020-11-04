@@ -1,5 +1,8 @@
 module.exports.config = {
 	name: "help",
+	version: "1.0.1",
+	hasPermssion: 0,
+	credits: "CatalizCS",
 	description: "Hướng dẫn cho người mới",
 	commandCategory: "system",
 	usages: "help Text",
@@ -7,7 +10,7 @@ module.exports.config = {
 	args: [
 		{
 			key: 'Text',
-			prompt: `Là lệnh bạn cần biết thêm thông tin chi tiết của nó.`,
+			prompt: 'Là lệnh bạn cần biết thêm thông tin chi tiết.',
 			type: 'Văn Bản',
 			example: 'help'
 		}

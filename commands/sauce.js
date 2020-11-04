@@ -1,15 +1,18 @@
 module.exports.config = {
 	name: "sauce",
-	description: "Tìm nguồn của ảnh anime",
+	version: "1.0.0",
+	hasPermssion: 0,
+	credits: "CatalizCS",
+	description: "Tìm kiếm thông tin ảnh thông qua ảnh(chỉ dành cho anime và hentai)",
 	commandCategory: "general",
-	usages: "sauce replyImage",
+	usages: "sauce",
 	cooldowns: 5,
 	args: [
 		{
-			key: 'replyImage',
-			prompt: `Bạn phải reply(Phản hồi) lại một bức ảnh nào đó.`,
+			key: "reply ảnh",
+			prompt: "Bạn cần phải reply(phản hồi) ảnh/gif để có thể tìm thấy sauce",
 			type: 'Reply',
-			example: 'Không có'
+			example: 'Không Có'
 		}
 	]
 };

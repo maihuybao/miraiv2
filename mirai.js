@@ -1,10 +1,11 @@
+
 //=========Call Variable =========//
 
 const login = require("./includes/login");
-const { writeFileSync } = require("fs");
-const { join, resolve } = require("path");
-const appStateFile = resolve(__dirname, './appstate.json');
+const { writeFileSync, existsSync } = require("fs");
+const { resolve } = require("path");
 const logger = require("./utils/log.js");
+const appStateFile = resolve(__dirname, './appstate.json');
 const options = {
 	forceLogin: true,
 	listenEvents: true,
@@ -16,12 +17,12 @@ const options = {
 
 //=========Login =========//
 
-//if (!appStateFile || appStateFile.length == 0) return logger("Hiện tại bạn chưa có appstate để để khởi động bot!", "[ SYSTEM ]");
-
 login({ appState: require(appStateFile) }, (error, api) => {
 	if (error) return logger(error, 2);
 	writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 	api.setOptions(options);
 	api.listenMqtt(require("./listen")({ api }));
 });
-//THIZ BOT WAS MADE BY ME(CATALIZCS) DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
+
+
+//THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

@@ -1,7 +1,10 @@
 {
-	"PREFIX": "!",
+	"EMAIL": "",
+	"PASSWORD": "",
+	"OTP_KEY": "",
 	"BOTNAME": "",
-	"YOUTUBE_API": "AIzaSyBxo7837XxdK0oM8QHNj7IGxEsbw67s0f8",
-	"SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub",
-	"SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41"
+	"PREFIX": "!",
+	"YOUTUBE_API": "",
+	"SOUNDCLOUD_API": "",
+	"SAUCENAO_API": ""
 }
