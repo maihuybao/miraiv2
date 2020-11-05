@@ -6,9 +6,9 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "manager modules",
 	commandCategory: "system",
-	usages: "module [choose] [args]",
+	usages: "module choose args",
 	cooldowns: 5,
-	args: [
+	info: [
 		{
 			key: 'choose',
 			prompt: 'idk man.',

@@ -1,10 +1,10 @@
 {
-	"EMAIL": "",
-	"PASSWORD": "",
+	"EMAIL": "catalizcsone@gmail.com",
+	"PASSWORD": "ChieuQuaNenHu",
 	"OTP_KEY": "",
 	"BOTNAME": "",
-	"PREFIX": "!",
-	"YOUTUBE_API": "",
-	"SOUNDCLOUD_API": "",
-	"SAUCENAO_API": ""
+	"PREFIX": "#",
+	"YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
+	"SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub",
+	"SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41"
 }

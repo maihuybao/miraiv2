@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "sauce",
 	cooldowns: 5,
-	args: [
+	info: [
 		{
 			key: "reply ảnh",
 			prompt: "Bạn cần phải reply(phản hồi) ảnh/gif để có thể tìm thấy sauce",

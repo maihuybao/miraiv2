@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "system",
 	usages: "help Text",
 	cooldowns: 5,
-	args: [
+	info: [
 		{
 			key: 'Text',
 			prompt: 'Là lệnh bạn cần biết thêm thông tin chi tiết.',
@@ -22,22 +22,22 @@ module.exports.run = function(api, event, args, client) {
 	const nameHelp = client.commands.get(args[0]);
 	
 	if (!nameHelp) return api.sendMessage("Lệnh bạn nhập không tồn tại trong hệ thống ;w;", event.threadID, event.messageID);
-	const argsHelp = nameHelp.config.args;
+	const infoHelp = nameHelp.config.info;
 	//console.log(nameHelp);
-	var argsText = "";
-	for (var i = 0; i < argsHelp.length; i++) {
-		argsText +=
-			`\n + key: ${argsHelp[i].key}` + 
-			`\n   • Là: ${argsHelp[i].prompt}` + 
-			`\n   • Định dạng: ${argsHelp[i].type}` + 
-			`\n   • Ví dụ: ${argsHelp[i].example}\n`
+	var infoText = "";
+	for (var i = 0; i < infoHelp.length; i++) {
+		infoText +=
+			`\n + key: ${infoHelp[i].key}` + 
+			`\n   • Là: ${infoHelp[i].prompt}` + 
+			`\n   • Định dạng: ${infoHelp[i].type}` + 
+			`\n   • Ví dụ: ${infoHelp[i].example}\n`
 	}
 	return api.sendMessage(
 	'=== Thông tin lệnh bạn đang tìm ===\n' +
 	'- Tên lệnh: ' + nameHelp.config.name + '\n' +
 	'- Thông tin: ' + nameHelp.config.description + '\n' +
 	'- Cách dùng: ' + nameHelp.config.usages + '\n' +
-	'- Dữ liệu đầu vào: ' + argsText,
+	'- Dữ liệu đầu vào: ' + infoText,
 	event.threadID, event.messageID
 	);
 }

@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "say [ngôn ngữ] [văn bản]",
 	cooldowns: 5,
-	args: [
+	info: [
 		{
 			key: "ngôn ngữ",
 			prompt: "Ngôn ngữ bạn muốn bot trả kết quả về, mặc định để trống là tiếng việt, có 4 ngôn ngữ 'ru, en, ja, vi'",

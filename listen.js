@@ -30,6 +30,8 @@ try {
 const commandFiles = readdirSync(join(__dirname, "commands")).filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
 	const command = require(join(__dirname, "commands", `${file}`));
+	// File already registered, skip!
+	if (client.commands.has(command)) throw new Error('Bị trùng!');
 	try {
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		client.commands.set(command.config.name, command);
@@ -38,6 +40,7 @@ for (const file of commandFiles) {
 		logger(`Không thể load module: ${file} Với lỗi: ${error.message}`, "[ MODULE ]");
 	}
 }
+
 
 //========= return module listen=========//
 
@@ -53,7 +56,7 @@ module.exports = function({ api }) {
 			
 			//=========Get command user use=========//
 			
-			const [, matchedPrefix] = contentMessage.match(prefixRegex);
+			const [matchedPrefix] = contentMessage.match(prefixRegex);
 			const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 			const commandName = args.shift().toLowerCase();
 			const command = client.commands.get(commandName);
@@ -97,6 +100,8 @@ module.exports = function({ api }) {
 						event.logMessageData.addedParticipants.splice(deleteMe, 1);
 					}
 					else {
+					let threadInfo = await api.getThreadInfo(event.threadID);
+					let threadName = threadInfo.threadName;
 					var mentions = [], nameArray = [], memLength = [];
 					for (var i = 0; i < event.logMessageData.addedParticipants.length; i++) {
 						let id = event.logMessageData.addedParticipants[i].userFbId;
@@ -105,8 +110,6 @@ module.exports = function({ api }) {
 						mentions.push({ tag: userName, id });
 						memLength.push(threadInfo.participantIDs.length - i);
 					}
-					let threadInfo = await api.getThreadInfo(event.threadID);
-					let threadName = threadInfo.threadName;
 					memLength.sort((a, b) => a - b);
 					var body = `Welcome aboard ${nameArray.join(', ')}.\nChào mừng ${(memLength.length > 1) ?  'các bạn' : 'bạn'} đã đến với ${threadName}.\n${(memLength.length > 1) ?  'Các bạn' : 'Bạn'} là thành viên thứ ${memLength.join(', ')} của nhóm 🥳`;
 					api.sendMessage({ body, mentions }, event.threadID);
