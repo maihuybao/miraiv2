@@ -44,7 +44,7 @@ for (const file of commandFiles) {
 
 //========= return module listen=========//
 
-module.exports = function({ api }) {
+module.exports = function({ api, __GLOBAL }) {
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
@@ -84,7 +84,7 @@ module.exports = function({ api }) {
 			//=========run command=========//
 			
 			try {
-				command.run(api, event, args, client);
+				command.run(api, event, args, client, __GLOBAL);
 			} catch (error) {
 				logger(error, 2);
 				api.sendMessage("There was an error executing that command. Error: " + error.message, event.threadID);

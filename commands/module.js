@@ -24,7 +24,7 @@ function reloadModule() {}
 //import module
 function importModule(url) {}
 
-module.exports.run = function(api, event, args, client) {
+module.exports.run = function(api, event, args, client, __GLOBAL) {
 	if (args[0] == "all") {
 		let commands = client.commands.values();
 		let infoCommand = "";
