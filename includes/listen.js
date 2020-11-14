@@ -1,12 +1,13 @@
 //=========Call Variable=========//
 
-const logger = require("./utils/log.js");
+const logger = require("../utils/log.js");
 const moment = require("moment-timezone");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const client = new Object();
 const { readdirSync } = require("fs");
 const { join } = require("path");
 client.commands = new Map();
+client.events = new Map();
 //client.replys = new Map();
 //client.reactions = new Map();
 const cooldowns = new Map();
@@ -15,7 +16,7 @@ const cooldowns = new Map();
 
 let PREFIX, BOTNAME;
 try {
-	const config = require("./config.json");
+	const config = require("../config.json");
 	PREFIX = config.PREFIX;
 	BOTNAME = config.BOTNAME
 } catch (error) {
@@ -27,9 +28,9 @@ try {
 
 //========= Get all files command can use=========//
 
-const commandFiles = readdirSync(join(__dirname, "commands")).filter((file) => file.endsWith(".js"));
+const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
-	const command = require(join(__dirname, "commands", `${file}`));
+	const command = require(join(__dirname, "../commands", `${file}`));
 	// File already registered, skip!
 	if (client.commands.has(command)) throw new Error('Bị trùng!');
 	try {
@@ -41,10 +42,23 @@ for (const file of commandFiles) {
 	}
 }
 
+const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
+for (const file of eventFiles) {
+	const event = require(join(__dirname, "../events", `${eventFiles}`));
+	// File already registered, skip!
+	if (client.events.has(event)) throw new Error('Bị trùng!');
+	try {
+		if (!event.config || !event.run) throw new Error(`Sai format!`);
+		client.events.set(event.config.name, event);
+		logger(`${event.config.name} Loaded!`, "[ EVENT MODULE ]");
+	} catch (error) {
+		logger(`Không thể load module: ${file} Với lỗi: ${error.message}`, "[ EVENT MODULE ]");
+	}
+}
 
 //========= return module listen=========//
 
-module.exports = function({ api }) {
+module.exports = function({ api, __GLOBAL }) {
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
@@ -84,37 +98,23 @@ module.exports = function({ api }) {
 			//=========run command=========//
 			
 			try {
-				command.run(api, event, args, client);
+				command.run(api, event, args, client, __GLOBAL);
 			} catch (error) {
-				logger(error, 2);
+				logger(error + " at command: " + command, 2);
 				api.sendMessage("There was an error executing that command. Error: " + error.message, event.threadID);
 			}
 		}
 		if (event.type == "event") {
-			switch (event.logMessageType) {
-				case "log:subscribe":
-					if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-						api.changeNickname(`[ ${PREFIX} ] • ${(!BOTNAME) ? "This bot was made by CatalizCS" : BOTNAME}`, event.threadID, api.getCurrentUserID());
-						api.sendMessage(`Im connected sucess! thiz bot was made by me(CatalizCS)\nThank you for using our products, have fun UwU <3`, event.threadID);
-						let deleteMe = event.logMessageData.addedParticipants.find(i => i.userFbId == api.getCurrentUserID());
-						event.logMessageData.addedParticipants.splice(deleteMe, 1);
+			for (let [key, value] of client.events.entries()) {
+				if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
+					const eventRun = client.events.get(key);
+					try {
+						eventRun.run(api, event, client, __GLOBAL);
+					} catch (error) {
+						logger(error + " at event: " + eventRun , 2);
 					}
-					else {
-					let threadInfo = await api.getThreadInfo(event.threadID);
-					let threadName = threadInfo.threadName;
-					var mentions = [], nameArray = [], memLength = [];
-					for (var i = 0; i < event.logMessageData.addedParticipants.length; i++) {
-						let id = event.logMessageData.addedParticipants[i].userFbId;
-						let userName = event.logMessageData.addedParticipants[i].fullName;
-						nameArray.push(userName);
-						mentions.push({ tag: userName, id });
-						memLength.push(threadInfo.participantIDs.length - i);
-					}
-					memLength.sort((a, b) => a - b);
-					var body = `Welcome aboard ${nameArray.join(', ')}.\nChào mừng ${(memLength.length > 1) ?  'các bạn' : 'bạn'} đã đến với ${threadName}.\n${(memLength.length > 1) ?  'Các bạn' : 'Bạn'} là thành viên thứ ${memLength.join(', ')} của nhóm 🥳`;
-					api.sendMessage({ body, mentions }, event.threadID);
-					break;
-				}
+					return;
+				} else return;
 			}
 		}
 	};

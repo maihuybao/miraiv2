@@ -13,27 +13,18 @@ const option = {
 	forceLogin: true,
 	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 };
-
+//	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 //Hãy điền tài khoản và mật khẩu vào file .env sau khi đã đổi .env.example thành .env
-let obj, otpkey;
+let email, password, otpkey;
 try {
 	const config = require("./config.json");
-	obj = {
-		email: config.EMAIL,
-		password: config.PASSWORD
-	};
-	otpkey = config.OTP_KEY.trim();
+	email = config.EMAIL;
+	password = config.PASSWORD;
+	otpkey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
 } catch (error) {
-	obj = {
-		email: process.env.EMAIL,
-		password: process.env.PASSWORD
-	};
-	otpkey = process.env.OTP_KEY.trim();
 }
 
-console.log(obj)
-
-login(obj, option, (err, api) => {
+login({ email, password }, option, (err, api) => {
 	if (err) {
 		switch (err.error) {
 			case "login-approval":
@@ -52,7 +43,7 @@ login(obj, option, (err, api) => {
 		}
 		return;
 	}
-	var json = JSON.stringify(api.getAppState(), null, "\t");
+	var json = JSON.stringify(api.getAppState());
 	var addNew = fs.createWriteStream(__dirname + "/appstate.json", { flags: "w" });
 	addNew.write(json);
 	console.log("Đã ghi xong appstate!");
