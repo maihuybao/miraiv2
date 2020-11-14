@@ -3,7 +3,6 @@ module.exports.config = {
 	version: "1.0.0",
 	credits: "CatalizCS",
 	hasPermssion: 3,
-	credits: "CatalizCS",
 	description: "manager modules",
 	commandCategory: "system",
 	usages: "module choose args",

@@ -1,10 +1,11 @@
 {
-	"EMAIL": "sumichan266303@gmail.com",
-	"PASSWORD": "SleepImPeaceMirai",
-	"OTPKEY": "",
+	"EMAIL": "catalizcsone@gmail.com",
+	"PASSWORD": "SpermLiz2",
+	"OTPKEY": "GPKK BZXJ NSBW TAOE PONG LW4Z PTQN 6LPD",
 	"BOTNAME": "",
-	"PREFIX": "#",
-	"YOUTUBE_API": "",
-	"SOUNDCLOUD_API": "",
-	"SAUCENAO_API": ""
-}
+	"PREFIX": "//",
+	"YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
+	"SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub",
+	"SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41",
+	"OPEN_WEATHER": "081c82065cfee62cb7988ddf90914bdd"
+} 
