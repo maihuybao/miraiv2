@@ -8,7 +8,8 @@ const { resolve } = require("path");
 const logger = require("./utils/log.js");
 const appStateFile = resolve(__dirname, './appstate.json');
 const __GLOBAL = new Object({
-	systemEvent: new Array()
+	systemEvent: new Array(),
+	settings: new Array()
 });
 const options = {
 	forceLogin: true,
@@ -19,17 +20,18 @@ const options = {
 	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 }
 
-let email, pasword, appState, otpKey;
-try {
-	const config = require("./config.json");
-	email = config.EMAIL;
-	password = config.PASSWORD;
-	otpKey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
-} catch (error) {
-	email = process.env.EMAIL;
-	password = process.env.PASSWORD;
-	otpKey = process.env.OTPKEY.replace(/\s+/g, '').toLowerCase();
-}
+const config = require("./config.json");
+if (!config || config.length == 0) 
+__GLOBAL.settings.email = config.EMAIL;
+__GLOBAL.settings.password = config.PASSWORD;
+__GLOBAL.settings.otpKey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
+__GLOBAL.settings.PREFIX = config.PREFIX;
+__GLOBAL.settings.BOTNAME = config.BOTNAME;
+__GLOBAL.settings.ADMINBOT = config.ADMINBOT.split(' ').map(e => parseInt(e));
+__GLOBAL.settings.SAUCENAO_API = config.SAUCENAO_API;
+__GLOBAL.settings.YOUTUBE_API = config.YOUTUBE_API;
+__GLOBAL.settings.SOUNDCLOUD_API = config.SOUNDCLOUD_API;
+__GLOBAL.settings.OPEN_WEATHER = config.OPEN_WEATHER;
 
 if (!existsSync("./appstate.json")) {
 	writeFileSync('./appstate.json', '[]');

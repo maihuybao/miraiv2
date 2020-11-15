@@ -6,18 +6,9 @@ module.exports.config = {
 	description: "Listen events"
 };
 
-module.exports.run = async function(api, event, client) {
-	let PREFIX, BOTNAME;
-	try {
-		const config = require("../config.json");
-		PREFIX = config.PREFIX;
-		BOTNAME = config.BOTNAME
-	} catch (error) {
-		PREFIX = process.env.PREFIX;
-		BOTNAME = process.env.BOTNAME;
-	}
+module.exports.run = async function({ api, event, client, __GLOBAL }) {
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-		api.changeNickname(`[ ${PREFIX} ] • ${(!BOTNAME) ? "This bot was made by CatalizCS" : BOTNAME}`, event.threadID, api.getCurrentUserID());
+		api.changeNickname(`[ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS" : __GLOBAL.settings.BOTNAME}`, event.threadID, api.getCurrentUserID());
 		api.sendMessage(`Im connected sucess! thiz bot was made by me(CatalizCS)\nThank you for using our products, have fun UwU <3`, event.threadID);
 		let deleteMe = event.logMessageData.addedParticipants.find(i => i.userFbId == api.getCurrentUserID());
 		event.logMessageData.addedParticipants.splice(deleteMe, 1);

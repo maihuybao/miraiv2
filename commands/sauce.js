@@ -17,15 +17,8 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async (api, event, args) => {
-	let SAUCENAO_API;
-	try {
-		const config = require('../config.json');
-		SAUCENAO_API = config.SAUCENAO_API;
-	} catch (error) {
-		SAUCENAO_API = process.env.SAUCENAO_API;
-	}
-	const sagiri = require('sagiri'), search = sagiri(SAUCENAO_API);
+module.exports.run = async ({ api, event, args, __GLOBAL }) => {
+	const sagiri = require('sagiri'), search = sagiri(__GLOBAL.settings.SAUCENAO_API);
 	if (event.type != "message_reply") return api.sendMessage(`Vui lòng bạn reply bức ảnh cần phải tìm!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments.length > 1) return api.sendMessage(`Vui lòng reply chỉ một ảnh!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments[0].type == 'photo') {

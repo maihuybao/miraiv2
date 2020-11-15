@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "module",
 	version: "1.0.0",
 	credits: "CatalizCS",
-	hasPermssion: 3,
+	hasPermssion: 2,
 	description: "manager modules",
 	commandCategory: "system",
 	usages: "module choose args",
@@ -23,7 +23,7 @@ function reloadModule() {}
 //import module
 function importModule(url) {}
 
-module.exports.run = function(api, event, args, client, __GLOBAL) {
+module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	if (args[0] == "all") {
 		let commands = client.commands.values();
 		let infoCommand = "";

@@ -17,7 +17,7 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async (api, event, args) => {
+module.exports.run = async ({ api, event, args }) => {
 	const request = require("request");
 	return request(`http://195.201.173.201:26880/sim/${encodeURIComponent(args.join(" "))}`, (err, response, body) => api.sendMessage(`${body}`, event.threadID, event.messageID));
 }

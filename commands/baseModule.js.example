@@ -29,6 +29,6 @@ module.exports.config = {
 };
 
 
-module.exports.run = function(api, event, args, client) {
+module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }

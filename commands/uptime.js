@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "uptime",
 	version: "1.0.0",
-	hasPermssion: 0,
+	hasPermssion: 1,
 	credits: "CatalizCS",
 	description: "Kiểm tra thời gian bot đã online",
 	commandCategory: "system",
@@ -10,7 +10,7 @@ module.exports.config = {
 };
 
 
-module.exports.run = (api, event) => {
+module.exports.run = ({ api, event }) => {
 	let timeStart = Date.now();
 	var time = process.uptime();
 	var hours = Math.floor(time / (60*60));

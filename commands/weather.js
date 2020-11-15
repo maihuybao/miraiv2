@@ -17,18 +17,12 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async (api, event, args) => {
+module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	const request = require("request");
-	let OPEN_WEATHER;
-	try {
-		const config = require('../config.json');
-		OPEN_WEATHER = config.OPENWEATHER;
-	} catch (error) {
-		OPEN_WEATHER = process.env.OPEN_WEATHER;
-	}
+	const moment = require("moment-timezone");
 	var city = args.join(" ");
 	if (city.length == 0) return api.sendMessage(`Bạn chưa nhập địa điểm, hãy đọc hướng dẫn tại ${prefix}help weather!`,event.threadID, event.messageID);
-	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
+	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + __GLOBAL.settings.OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
 		if (err) throw err;
 		var weatherData = JSON.parse(body);
 		if (weatherData.cod !== 200) return api.sendMessage(`Địa điểm ${city} không tồn tại!`, event.threadID, event.messageID);

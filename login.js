@@ -16,13 +16,12 @@ const option = {
 //	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 //Hãy điền tài khoản và mật khẩu vào file .env sau khi đã đổi .env.example thành .env
 let email, password, otpkey;
-try {
-	const config = require("./config.json");
-	email = config.EMAIL;
-	password = config.PASSWORD;
-	otpkey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
-} catch (error) {
-}
+
+const config = require("./config.json");
+email = config.EMAIL;
+password = config.PASSWORD;
+otpkey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
+
 
 login({ email, password }, option, (err, api) => {
 	if (err) {

@@ -18,7 +18,7 @@ module.exports.config = {
 };
 
 
-module.exports.run = function(api, event, args, client) {
+module.exports.run = function({ api, event, args, client }) {
 	const nameHelp = client.commands.get(args[0]);
 	
 	if (!nameHelp) return api.sendMessage("Lệnh bạn nhập không tồn tại trong hệ thống ;w;", event.threadID, event.messageID);
