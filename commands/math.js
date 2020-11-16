@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "math",
 	version: "0.0.1-beta",
 	hasPermssion: 0,
-	credits: "Mewmew_re-edit",
+	credits: "MewMew",
 	description: "làm toán",
 	commandCategory: "general",
 	usages: "math 1 + 2",

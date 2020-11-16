@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "tag toàn bộ thành viên",
 	commandCategory: "system",
 	usages: "ping Text",
-	cooldowns: 60,
+	cooldowns: 70,
 	info: [
 		{
 			key: 'Text',

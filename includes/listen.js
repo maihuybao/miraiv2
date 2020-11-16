@@ -12,6 +12,7 @@ client.events = new Map();
 //client.reactions = new Map();
 const cooldowns = new Map();
 
+
 //========= Do something in here o.o =========//
 
 //========= Get all files command can use=========//
@@ -46,10 +47,13 @@ for (const file of eventFiles) {
 
 //========= return module listen=========//
 
-module.exports = function({ api, __GLOBAL }) {
+module.exports = function({ api, __GLOBAL, eventCallback }) {
+	const funcs = require("../utils/funcs.js")({ api, __GLOBAL });
+	
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
+		(eventCallback) ? event = evetnCallBack : "";
 		if (error) return logger(error, 2);
 		switch (event.type) {
 			case "message":
@@ -64,7 +68,6 @@ module.exports = function({ api, __GLOBAL }) {
 				const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 				const commandName = args.shift().toLowerCase();
 				const command = client.commands.get(commandName);
-				//if (!command) return api.sendMessage("Không tìm thấy lệnh mà bạn vừa nhập!", event.threadID, event.messageID);
 				if (!command) return api.setMessageReaction(":dislike:", event.messageID);
 				
 				//=========Check cooldown=========//
@@ -86,21 +89,17 @@ module.exports = function({ api, __GLOBAL }) {
 				timestamps.set(senderID, now);
 				setTimeout(() => timestamps.delete(senderID), cooldownAmount);
 				//=========check permssion=========//
-				
-				if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-				/*if (command.config.hasPermssion == 1 ) {
-					api.getThreadInfo(threadID, (err, info) => {
-						if (!info.adminIDs.includes(senderID) && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-					})
-				}
-				Địt mẹ tôi thề tôi ngu vãi lồn, có cái đoạn code bé tí tẹo mất con mẹ nó 3 tiếng đồng hồ dò cách fix vẫn đéo được địt con mẹ nó, mong ai thấy dòng này địt mẹ tôi push code lên rồi ngủ, cc dí buồi vào code nữa
-				*/
+				if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
+				var threadAdmins = await funcs.getThreadInfo(threadID);
+				var adminThread = threadAdmins.adminIDs;
+				let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
+				if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
 				//=========run command=========//
 				
 				try {
 					command.run({ api, event, args, client, __GLOBAL });
 				} catch (error) {
-					logger(error + " at command: " + command, 2);
+					logger(error + " at command: " + command.config.name, 2);
 					api.sendMessage("There was an error executing that command. Error: " + error.message, event.othreadID);
 				}
 				break;
@@ -111,7 +110,7 @@ module.exports = function({ api, __GLOBAL }) {
 						try {
 							eventRun.run({ api, event, client, __GLOBAL });
 						} catch (error) {
-							logger(error + " at event: " + eventRun , 2);
+							logger(error + " at event: " + eventRun.config.name , 2);
 						}
 						return;
 					};

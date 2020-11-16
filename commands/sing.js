@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "Phát nhạc thông qua link youtube, soundcloud hoặc từ khoá tìm kiếm",
 	commandCategory: "media",
 	usages: "sing Text",
-	cooldowns: 5,
+	cooldowns: 10,
 	credits: "CatalizCS",
 	info: [
 		{

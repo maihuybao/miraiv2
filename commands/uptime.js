@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "uptime",
 	version: "1.0.0",
-	hasPermssion: 1,
+	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Kiểm tra thời gian bot đã online",
 	commandCategory: "system",
