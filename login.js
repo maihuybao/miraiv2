@@ -11,17 +11,13 @@ var rl = readline.createInterface({
 const option = {
 	logLevel: "silent",
 	forceLogin: true,
-	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
+	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
 };
-//	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
-//Hãy điền tài khoản và mật khẩu vào file .env sau khi đã đổi .env.example thành .env
-let email, password, otpkey;
 
 const config = require("./config.json");
-email = config.EMAIL;
-password = config.PASSWORD;
-otpkey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
-
+let email = config.EMAIL;
+let password = config.PASSWORD;
+let otpkey = config.OTPKEY.replace(/\s+/g, '').toLowerCase();
 
 login({ email, password }, option, (err, api) => {
 	if (err) {
@@ -43,8 +39,7 @@ login({ email, password }, option, (err, api) => {
 		return;
 	}
 	var json = JSON.stringify(api.getAppState());
-	var addNew = fs.createWriteStream(__dirname + "/appstate.json", { flags: "w" });
-	addNew.write(json);
+	fs.writeFileSync('appstate.json', json);
 	console.log("Đã ghi xong appstate!");
 	//process.exit(1);
 });

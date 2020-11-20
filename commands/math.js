@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "0.0.1-beta",
 	hasPermssion: 0,
 	credits: "MewMew",
-	description: "làm toán",
+	description: "Làm toán",
 	commandCategory: "general",
 	usages: "math 1 + 2",
 	cooldowns: 5,

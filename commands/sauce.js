@@ -3,14 +3,14 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "CatalizCS",
-	description: "Tìm kiếm thông tin ảnh thông qua ảnh(chỉ dành cho anime và hentai)",
+	description: "Tìm kiếm thông tin ảnh thông qua ảnh (chỉ dành cho anime và hentai)",
 	commandCategory: "general",
 	usages: "sauce",
 	cooldowns: 5,
 	info: [
 		{
 			key: "reply ảnh",
-			prompt: "Bạn cần phải reply(phản hồi) ảnh/gif để có thể tìm thấy sauce",
+			prompt: "Bạn cần phải reply (phản hồi) ảnh/gif để có thể tìm sauce",
 			type: 'Reply',
 			example: 'Không Có'
 		}
