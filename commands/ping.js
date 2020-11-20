@@ -20,12 +20,16 @@ module.exports.config = {
 module.exports.run = async function({ api, event, args, client }) {
 	let threadInfo = await api.getThreadInfo(event.threadID);
 	let all = threadInfo.participantIDs;
-	await all.splice(all.indexOf(api.getCurrentUserID()), 1);
-	await all.splice(all.indexOf(event.senderID), 1);
+	all.splice(all.indexOf(api.getCurrentUserID()), 1);
+	all.splice(all.indexOf(event.senderID), 1);
 	var body = args.join(" ") || '♡', mentions = [];
 	for (let i = 0; i < all.length; i++) {
 		if (i == body.length) body += body.charAt(body.length - 1);
-		mentions.push({ tag: body[i], id: all[i], fromIndex: i });
+		mentions.push({
+			tag: body[i],
+			id: all[i],
+			fromIndex: i + 1
+		});
 	}
-	api.sendMessage({ body, mentions }, event.threadID, event.messageID);
+	api.sendMessage({ body: `‎${body}`, mentions }, event.threadID, event.messageID);
 }
