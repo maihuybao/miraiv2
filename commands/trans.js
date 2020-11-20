@@ -33,9 +33,11 @@ module.exports.run = async ({ api, event, args }) => {
 		lang = 'vi';
 	}
 	return request(encodeURI(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${translateThis}`), (err, response, body) => {
-		if (err) return api.sendMessage("Đã có lỗi xảy ra!", event.threadID, event.messageID)
+		if (err) return api.sendMessage("Đã có lỗi xảy ra!", event.threadID, event.messageID);
 		var retrieve = JSON.parse(body);
-		var fromLang = retrieve[0][0][8][0][0][1].split("_")[0];
-		api.sendMessage(`Bản dịch: ${retrieve[0][0][0]}\n - được dịch từ ${fromLang} sang ${lang}`, event.threadID, event.messageID);
+		var text = '';
+		retrieve[0].forEach(item => (item[0]) ? text += item[0] : '');
+		var fromLang = (retrieve[2] === retrieve[8][0][0]) ? retrieve[2] : retrieve[8][0][0]
+		api.sendMessage(`Bản dịch: ${text}\n - được dịch từ ${fromLang} sang ${lang}`, event.threadID, event.messageID);
 	});
 }

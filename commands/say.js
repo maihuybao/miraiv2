@@ -3,13 +3,13 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "CatalizCS",
-	description: "khiến bot trả về file âm thanh của chị google thông qua văn bản",
+	description: "Khiến bot trả về file âm thanh của chị google thông qua văn bản",
 	commandCategory: "general",
-	usages: "say [ngôn ngữ] [văn bản]",
+	usages: "say [Ngôn ngữ] [Văn bản]",
 	cooldowns: 5,
 	info: [
 		{
-			key: "ngôn ngữ",
+			key: "Ngôn ngữ",
 			prompt: "Ngôn ngữ bạn muốn bot trả kết quả về, mặc định để trống là tiếng việt, có 4 ngôn ngữ 'ru, en, ja, vi'",
 			type: 'Text',
 			example: 'en'
@@ -22,7 +22,6 @@ module.exports.config = {
 		}
 	]
 };
-
 
 module.exports.run = function({ api, event, args }) {
 	const request = require("request");

@@ -3,24 +3,24 @@ module.exports.config = {
 	version: "1.0.0",
 	credits: "CatalizCS",
 	hasPermssion: 2,
-	description: "manager modules",
+	description: "Quản lý module",
 	commandCategory: "system",
-	usages: "module choose args",
+	usages: "module [exec] args",
 	cooldowns: 5,
 	info: [
 		{
-			key: 'choose',
-			prompt: 'idk man.',
+			key: 'exec',
+			prompt: 'Lựa chọn lệnh cần thực thi',
 			type: 'Văn Bản',
 			example: 'all'
 		}
 	]
 };
 
-//reload module
+//Reload module
 function reloadModule() {}
 
-//import module
+//Import module
 function importModule(url) {}
 
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
@@ -29,16 +29,17 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 		let infoCommand = "";
 		for (const cmd of commands) {
 			if (cmd.config.name && cmd.config.version && cmd.config.credits) {
-				infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} made by ${cmd.config.credits}`;
+				infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
 			};
 		}
-		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module được load!" + infoCommand, event.threadID, event.messageID);
+		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module đang chạy!" + infoCommand, event.threadID, event.messageID);
 	}
 	else if (args[0] == "reload") {
-		//will do something in here
+		//Will do something in here
 	}
 	else if (args[0] == "import") {
-		//will do something in here
+		//Will do something in here
+		//Will need to reload it after import
 	}
 	else return api.sendMessage("Input bạn nhập không tồn tại trong câu lệnh ;w;", event.threadID, event.messageID);
 }

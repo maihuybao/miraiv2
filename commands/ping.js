@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
 	commandCategory: "system",
-	usages: "ping Text",
+	usages: "ping [Text]",
 	cooldowns: 70,
 	info: [
 		{

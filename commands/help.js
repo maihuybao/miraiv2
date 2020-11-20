@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Hướng dẫn cho người mới",
 	commandCategory: "system",
-	usages: "help Text",
+	usages: "help [Text]",
 	cooldowns: 5,
 	info: [
 		{
@@ -17,27 +17,28 @@ module.exports.config = {
 	]
 };
 
-
 module.exports.run = function({ api, event, args, client }) {
 	const nameHelp = client.commands.get(args[0]);
 	
 	if (!nameHelp) return api.sendMessage("Lệnh bạn nhập không tồn tại trong hệ thống ;w;", event.threadID, event.messageID);
 	const infoHelp = nameHelp.config.info;
-	//console.log(nameHelp);
 	var infoText = "";
-	for (var i = 0; i < infoHelp.length; i++) {
-		infoText +=
-			`\n + key: ${infoHelp[i].key}` + 
-			`\n   • Là: ${infoHelp[i].prompt}` + 
-			`\n   • Định dạng: ${infoHelp[i].type}` + 
-			`\n   • Ví dụ: ${infoHelp[i].example}\n`
+	if (!infoHelp || infoHelp.length == 0) infoText = 'Không có';
+	else {
+		for (var i = 0; i < infoHelp.length; i++) {
+			infoText +=
+				`\n+ key: ${infoHelp[i].key}` + 
+				`\n  • Là: ${infoHelp[i].prompt}` + 
+				`\n  • Định dạng: ${infoHelp[i].type}` + 
+				`\n  • Ví dụ: ${infoHelp[i].example}\n`
+		}
 	}
 	return api.sendMessage(
-	'=== Thông tin lệnh bạn đang tìm ===\n' +
-	'- Tên lệnh: ' + nameHelp.config.name + '\n' +
-	'- Thông tin: ' + nameHelp.config.description + '\n' +
-	'- Cách dùng: ' + nameHelp.config.usages + '\n' +
-	'- Dữ liệu đầu vào: ' + infoText,
-	event.threadID, event.messageID
+		'=== Thông tin lệnh bạn đang tìm ===\n' +
+		'- Tên lệnh: ' + nameHelp.config.name + '\n' +
+		'- Thông tin: ' + nameHelp.config.description + '\n' +
+		'- Cách dùng: ' + nameHelp.config.usages + '\n' +
+		'- Dữ liệu đầu vào: ' + infoText,
+		event.threadID, event.messageID
 	);
 }
