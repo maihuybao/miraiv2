@@ -28,11 +28,10 @@ for (const file of commandFiles) {
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		if (command.config.dependencies) {
 			try {
-				for(let i of command.config.dependencies) require(i);
-				//accessSync("../node_modules/" + i);
+				for (let i of command.config.dependencies) require(i);
 			}
 			catch (e) {
-				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ MODULE ]");
+				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ INST MODULE ]");
 				execSync('npm install -s ' + command.config.dependencies.join(" "));
 				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ INST MODULE ]");
 				needReload += 1;
@@ -48,8 +47,8 @@ for (const file of commandFiles) {
 
 if (needReload) {
 	logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ INST MODULE ]");
-	if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit();
-	else return exec("pm2 restart 0");
+	if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit(1);
+	else return execSync("pm2 reload 0");
 }
 
 //========= Get all event files =========//

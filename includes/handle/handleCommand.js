@@ -17,8 +17,8 @@ module.exports = function({ api, __GLOBAL, client }) {
 		const commandName = args.shift().toLowerCase();
 		const command = client.commands.get(commandName);
 		if (!command) {
-			if (contentMessage.length > 1) return api.setMessageReaction("\u274c", event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
-			else return;
+			if (/[\p{L}-]+/ug.test(commandName) && commandName.search(/[\p{L}-]+/ug) == 0) return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
+			else return; // Does this fix anything? Yes it does, so please do not delete this line.
 		}
 	
 		//=========Check cooldown=========//
@@ -27,8 +27,8 @@ module.exports = function({ api, __GLOBAL, client }) {
 		const now = Date.now();
 		const timestamps = client.cooldowns.get(command.config.name);
 		const cooldownAmount = (command.config.cooldowns || 1) * 1000;
-		if (timestamps.has(senderID)) {
-			const expirationTime = timestamps.get(senderID) + cooldownAmount;
+		if (timestamps.has(threadID)) {
+			const expirationTime = timestamps.get(threadID) + cooldownAmount;
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
 				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, event.threadID, async (err, info) => {
@@ -37,8 +37,8 @@ module.exports = function({ api, __GLOBAL, client }) {
 				}, event.messageID);
 			}
 		}
-		timestamps.set(senderID, now);
-		setTimeout(() => timestamps.delete(senderID), cooldownAmount);
+		timestamps.set(threadID, now);
+		setTimeout(() => timestamps.delete(threadID), cooldownAmount);
 	
 		//========= Check permssion =========//
 	

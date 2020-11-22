@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "ping",
 	version: "0.0.1",
-	hasPermssion: 2,
+	hasPermssion: 1,
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
 	commandCategory: "system",
