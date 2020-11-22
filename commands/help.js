@@ -28,7 +28,7 @@ module.exports.run = function({ api, event, args, client }) {
 		for (var i = 0; i < infoHelp.length; i++) {
 			infoText +=
 				`\n+ key: ${infoHelp[i].key}` + 
-				`\n  • Là: ${infoHelp[i].prompt}` + 
+				`\n  • Thông tin: ${infoHelp[i].prompt}` + 
 				`\n  • Định dạng: ${infoHelp[i].type}` + 
 				`\n  • Ví dụ: ${infoHelp[i].example}\n`
 		}

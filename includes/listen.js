@@ -4,17 +4,22 @@ const logger = require("../utils/log.js");
 const moment = require("moment-timezone");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const client = new Object();
-const { readdirSync } = require("fs");
+const { readdirSync, accessSync, existsSync, readFileSync } = require("fs-extra");
 const { join } = require("path");
+const { resolve } = require("path");
+const { execSync, exec } = require('child_process');
+const node_modules = '../node_modules/';
 client.commands = new Map();
 client.events = new Map();
+client.cooldowns = new Map();
 //client.replys = new Map();
 //client.reactions = new Map();
-const cooldowns = new Map();
 
 //========= Do something in here o.o =========//
 
 //========= Get all files command can use=========//
+
+let needReload = "";
 
 const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 for (const file of commandFiles) {
@@ -22,12 +27,31 @@ for (const file of commandFiles) {
 	try {
 		if (client.commands.has(command)) throw new Error('Bị trùng!');
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
+		if (command.config.dependencies) {
+			try {
+				for(let i of command.config.dependencies) {
+					require(i);
+				}
+				//accessSync("../node_modules/" + i);
+			} catch (e) {
+				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ MODULE ]");
+				execSync('npm install -s ' + command.config.dependencies.join(" "));
+				logger(` Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ MODULE ]");
+				needReload += 1;
+			}
+		}
 		client.commands.set(command.config.name, command);
 		logger(`Loaded ${command.config.name}!`, "[ CMD MODULE ]");
 	}
 	catch (error) {
 		logger(`Không thể load module ${file} với lỗi: ${error.message}`, "[ MODULE ]");
 	}
+}
+
+if (needReload) {
+	logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ MODULE ]");
+	if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit();
+	else return exec("pm2 restart 0");
 }
 
 const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
@@ -48,80 +72,22 @@ for (const file of eventFiles) {
 
 module.exports = function({ api, __GLOBAL, eventCallback }) {
 	const funcs = require("../utils/funcs.js")({ api, __GLOBAL });
-
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
-		(eventCallback) ? event = eventCallback : "";
 		if (error) return logger(error, 2);
+		
+		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client });
+		//const handleSetValue = require("./handle/handleSetValue")({ api, __GLOBAL, __client });
+		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
+		
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
-				let { body: contentMessage, senderID, threadID, messageID } = event;
-				senderID = parseInt(senderID);
-				const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(__GLOBAL.settings.PREFIX)})\\s*`);
-				if (!prefixRegex.test(contentMessage)) return;
-
-				//=========Get command user use=========//
-
-				const [matchedPrefix] = contentMessage.match(prefixRegex);
-				const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
-				const commandName = args.shift().toLowerCase();
-				const command = client.commands.get(commandName);
-				if (!command) {
-					if (contentMessage.length > 1) return api.setMessageReaction("\u274c", event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
-					else return;
-				}
-
-				//=========Check cooldown=========//
-
-				if (!cooldowns.has(command.config.name)) cooldowns.set(command.config.name, new Map());
-				const now = Date.now();
-				const timestamps = cooldowns.get(command.config.name);
-				const cooldownAmount = (command.config.cooldowns || 1) * 1000;
-				if (timestamps.has(senderID)) {
-					const expirationTime = timestamps.get(senderID) + cooldownAmount;
-					if (now < expirationTime) {
-						const timeLeft = (expirationTime - now) / 1000;
-						return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, event.threadID, async (err, info) => {
-							await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-							api.unsendMessage(info.messageID);
-						}, event.messageID);
-					}
-				}
-				timestamps.set(senderID, now);
-				setTimeout(() => timestamps.delete(senderID), cooldownAmount);
-
-				//========= Check permssion =========//
-
-				if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn phải là người quản lý bot để có thể sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-				let getAdminsList = (await funcs.getThreadInfo(threadID)).adminIDs;
-				let threadAdmins = getAdminsList.map(item => parseInt(item.id));
-				if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !threadAdmins.includes(senderID)) return api.sendMessage(`❌ Bạn phải là quản trị viên của nhóm để có thể sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-
-				//========= Run command =========//
-
-				try {
-					command.run({ api, event, args, client, __GLOBAL });
-				}
-				catch (error) {
-					logger(error + " tại lệnh: " + command.config.name, 2);
-					api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, event.othreadID);
-				}
+				handleCommand({ event })
 				break;
 			case "event":
-				for (let [key, value] of client.events.entries()) {
-					if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
-						const eventRun = client.events.get(key);
-						try {
-							eventRun.run({ api, event, client, __GLOBAL });
-						}
-						catch (error) {
-							logger(error + " tại lệnh: " + eventRun.config.name , 2);
-						}
-						return;
-					};
-				}
+				handleEvent({ event })
 				break;
 			default:
 				break;

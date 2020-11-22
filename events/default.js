@@ -15,6 +15,8 @@ module.exports.run = async function({ api, event, client, __GLOBAL }) {
 			api.sendMessage(`Connected successfully! This bot was made by CatalizCS and SpermLord\nThank you for using our products, have fun UwU <3`, event.threadID);
 		}
 		else {
+			let threadInfo = await api.getThreadInfo(event.threadID);
+			let threadName = threadInfo.threadName;
 			let userName = event.logMessageData.addedParticipants[i].fullName;
 			nameArray.push(userName);
 			mentions.push({ tag: userName, id });

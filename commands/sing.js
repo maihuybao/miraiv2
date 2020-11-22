@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "media",
 	usages: "sing [Text]",
 	cooldowns: 10,
-	credits: "CatalizCS",
+	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader"],
 	info: [
 		{
 			key: 'Text',
@@ -22,7 +22,7 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	const ytdl = require("ytdl-core");
 	const YouTubeAPI = require("simple-youtube-api");
 	const scdl = require("soundcloud-downloader");
-	const { createReadStream, createWriteStream, unlinkSync } = require("fs");
+	const { createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
 	
 	const youtube = new YouTubeAPI(__GLOBAL.settings.YOUTUBE_API);
 	
@@ -62,7 +62,7 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	}
 	else {
 		try {
-			const results = await youtube.searchVideo(keywordSearch, 1);
+			let results = await youtube.searchVideos(keywordSearch, 1);
 			let songInfo = await ytdl.getInfo(results[0].url);
 			let body = `Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
 			ytdl(results[0].url, { filter: format => format.itag == '140' }).pipe(createWriteStream(__dirname + "/cache/music.m4a")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.m4a" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.m4a"), event.messageID));

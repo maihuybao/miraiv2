@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "ping",
 	version: "0.0.1",
-	hasPermssion: 0,
+	hasPermssion: 2,
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
 	commandCategory: "system",
@@ -17,7 +17,7 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async function({ api, event, args, client }) {
+module.exports.run = async function({ api, event, args }) {
 	let threadInfo = await api.getThreadInfo(event.threadID);
 	let all = threadInfo.participantIDs;
 	all.splice(all.indexOf(api.getCurrentUserID()), 1);

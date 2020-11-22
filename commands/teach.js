@@ -7,6 +7,7 @@
 	commandCategory: "general",
 	usages: "teach [In] => [Out]",
 	cooldowns: 5,
+	dependencies: ["axios"],
 	info: [
 		{
 			key: 'In',

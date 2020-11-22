@@ -32,6 +32,7 @@ __GLOBAL.settings.SAUCENAO_API = config.SAUCENAO_API;
 __GLOBAL.settings.YOUTUBE_API = config.YOUTUBE_API;
 __GLOBAL.settings.SOUNDCLOUD_API = config.SOUNDCLOUD_API;
 __GLOBAL.settings.OPEN_WEATHER = config.OPEN_WEATHER;
+__GLOBAL.settings.WOLFRAM = config.WOLFRAM
 
 if (!existsSync("./appstate.json")) {
 	writeFileSync('./appstate.json', '[]');
@@ -41,7 +42,8 @@ if (!existsSync("./appstate.json")) {
 //=========Login =========//
 
 login({ appState: require(appStateFile) }, (error, api) => {
-	if (error) return logger(error, 2);
+	console.log(error);
+	//if (error) return logger(error, 2);
 	writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 	api.setOptions(options);
 	api.listenMqtt(require("./includes/listen")({ api, __GLOBAL }));

@@ -7,6 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "sauce",
 	cooldowns: 5,
+	dependencies: ["sagiri"],
 	info: [
 		{
 			key: "reply ảnh",

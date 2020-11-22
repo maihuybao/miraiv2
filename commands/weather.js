@@ -7,6 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "weather [Địa điểm]",
 	cooldowns: 5,
+	dependencies: ["moment-timezone", "request"],
 	info: [
 		{
 			key: "Địa điểm",
