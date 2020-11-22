@@ -17,8 +17,7 @@ client.cooldowns = new Map();
 
 //========= Do something in here o.o =========//
 
-//========= Get all files command can use=========//
-
+//========= Get all command files =========//
 let needReload = "";
 
 const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
@@ -29,14 +28,13 @@ for (const file of commandFiles) {
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		if (command.config.dependencies) {
 			try {
-				for(let i of command.config.dependencies) {
-					require(i);
-				}
+				for(let i of command.config.dependencies) require(i);
 				//accessSync("../node_modules/" + i);
-			} catch (e) {
+			}
+			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ MODULE ]");
 				execSync('npm install -s ' + command.config.dependencies.join(" "));
-				logger(` Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ MODULE ]");
+				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ INST MODULE ]");
 				needReload += 1;
 			}
 		}
@@ -44,16 +42,17 @@ for (const file of commandFiles) {
 		logger(`Loaded ${command.config.name}!`, "[ CMD MODULE ]");
 	}
 	catch (error) {
-		logger(`Không thể load module ${file} với lỗi: ${error.message}`, "[ MODULE ]");
+		logger(`Không thể load module ${file} với lỗi: ${error.message}`, "[ CMD MODULE ]");
 	}
 }
 
 if (needReload) {
-	logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ MODULE ]");
+	logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ INST MODULE ]");
 	if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit();
 	else return exec("pm2 restart 0");
 }
 
+//========= Get all event files =========//
 const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
 for (const file of eventFiles) {
 	const event = require(join(__dirname, "../events", `${file}`));
@@ -68,19 +67,18 @@ for (const file of eventFiles) {
 	}
 }
 
-//========= return module listen=========//
-
-module.exports = function({ api, __GLOBAL, eventCallback }) {
+//========= Handle Events =========//
+module.exports = function({ api, __GLOBAL }) {
 	const funcs = require("../utils/funcs.js")({ api, __GLOBAL });
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
-		if (error) return logger(error, 2);
-		
+		if (error) return logger(JSON.stringify(error), 2);
+
 		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client });
 		//const handleSetValue = require("./handle/handleSetValue")({ api, __GLOBAL, __client });
 		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
-		
+
 		switch (event.type) {
 			case "message":
 			case "message_reply": 

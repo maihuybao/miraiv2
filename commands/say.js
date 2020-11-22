@@ -5,18 +5,18 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Khiến bot trả về file âm thanh của chị google thông qua văn bản",
 	commandCategory: "general",
-	usages: "say [Ngôn ngữ] [Văn bản]",
+	usages: "say [Lang] [Text]",
 	cooldowns: 5,
 	dependencies: ["request", "fs"],
 	info: [
 		{
-			key: "Ngôn ngữ",
-			prompt: "Ngôn ngữ bạn muốn bot trả kết quả về, mặc định để trống là tiếng việt, có 4 ngôn ngữ 'ru, en, ja, vi'",
+			key: "Lang",
+			prompt: "Ngôn ngữ bạn muốn bot trả kết quả về, mặc định để trống là Tiếng Việt, có 4 ngôn ngữ 'ru, en, ja, vi'",
 			type: 'Text',
 			example: 'en'
 		},
 		{
-			key: "Văn bản",
+			key: "Text",
 			prompt: "Văn bản bạn cần bot trả kết quả về thanh giọng nói, lưu ý độ dài dưới 100 từ!",
 			type: 'Text',
 			example: 'Mirai-Chan xin chào cả nhà'

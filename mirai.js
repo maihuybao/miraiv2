@@ -42,8 +42,7 @@ if (!existsSync("./appstate.json")) {
 //=========Login =========//
 
 login({ appState: require(appStateFile) }, (error, api) => {
-	console.log(error);
-	//if (error) return logger(error, 2);
+	if (error) return logger(error, 2);
 	writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 	api.setOptions(options);
 	api.listenMqtt(require("./includes/listen")({ api, __GLOBAL }));
