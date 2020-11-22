@@ -11,12 +11,12 @@ module.exports.config = {
 
 module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	if (event.type != "message_reply") return api.sendMessage("Phản hồi tin nhắn cần chạy lại", event.threadID, event.messageID);
-	let eventCallback = {
-		type: "message",
+	let setEvent = {
+		type: 'message',
 		senderID: event.senderID,
+		body: event.messageReply.body,
 		threadID: event.threadID,
-		messageID: event.messageReply.messageID,
-		body: event.messageReply.body
+		messageID: event.messageID,
 	}
-	return require("../includes/listen")({ eventCallback });
+	return require("../includes/listen")({ api, __GLOBAL })(undefined, setEvent);
 }

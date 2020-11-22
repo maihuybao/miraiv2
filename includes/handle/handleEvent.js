@@ -7,7 +7,8 @@ module.exports = function({ api, __GLOBAL, client }) {
 				const eventRun = client.events.get(key);
 				try {
 					eventRun.run({ api, event, client, __GLOBAL });
-				} catch (error) {
+				}
+				catch (error) {
 					logger(error + " at event: " + eventRun.config.name , 2);
 				}
 				return;

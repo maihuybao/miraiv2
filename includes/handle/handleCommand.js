@@ -55,7 +55,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
-			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, event.othreadID);
+			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, event.threadID);
 		}
 	}
 }

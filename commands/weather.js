@@ -5,13 +5,13 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Xem thông tin thời tiết tại khu vực",
 	commandCategory: "general",
-	usages: "weather [Địa điểm]",
+	usages: "weather [Location]",
 	cooldowns: 5,
 	dependencies: ["moment-timezone", "request"],
 	info: [
 		{
-			key: "Địa điểm",
-			prompt: "Là thành phố, khu vực",
+			key: "Location",
+			prompt: "Địa điểm, thành phố, khu vực",
 			type: 'Văn bản',
 			example: 'Hà Nội'
 		}
