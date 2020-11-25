@@ -1,24 +1,30 @@
 //=========Call Variable=========//
 
+let needReload;
 const logger = require("../utils/log.js");
 const moment = require("moment-timezone");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const client = new Object();
 const { readdirSync, accessSync, existsSync, readFileSync } = require("fs-extra");
 const { join } = require("path");
 const { resolve } = require("path");
 const { execSync, exec } = require('child_process');
 const node_modules = '../node_modules/';
-client.commands = new Map();
-client.events = new Map();
-client.cooldowns = new Map();
-//client.replys = new Map();
-//client.reactions = new Map();
+
+const client = new Object({
+	commands: new Map(),
+	events: new Map(),
+	cooldowns: new Map(),
+	commandArray: new Array(),
+	handleReply: new Array()
+});
+
+const __GLOBAL = new Object({
+	settings: new Array()
+})
 
 //========= Do something in here o.o =========//
 
 //========= Get all command files =========//
-let needReload = "";
 
 const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 for (const file of commandFiles) {
@@ -52,6 +58,7 @@ if (needReload) {
 }
 
 //========= Get all event files =========//
+
 const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
 for (const file of eventFiles) {
 	const event = require(join(__dirname, "../events", `${file}`));
@@ -66,22 +73,47 @@ for (const file of eventFiles) {
 	}
 }
 
+try {
+	for (let i of client.commands.values()) {
+		client.commandArray.push(i.config.name);
+	}
+}
+catch (error) {
+	logger("Đã xảy ra lỗi trong quá trình đẩy lệnh!", 2); //tôi còn đéo biết tôi đang làm gì nữa
+}
+
+//========= set variable =========//
+
+const config = require("../config.json");
+if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
+
+try{
+	for (let [name, value] of Object.entries(config)) {
+		__GLOBAL.settings[name] = value;
+	}
+	logger("Config Loaded!");
+}
+catch (error) {
+	return logger("Không thể load config!", 2);
+}
+
 //========= Handle Events =========//
-module.exports = function({ api, __GLOBAL }) {
-	const funcs = require("../utils/funcs.js")({ api, __GLOBAL });
+module.exports = function({ api }) {
+	const funcs = require("../utils/funcs.js")({ api });
 	logger("Bot started!", "[ SYSTEM ]");
 	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 
 		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client });
-		//const handleSetValue = require("./handle/handleSetValue")({ api, __GLOBAL, __client });
+		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client });
 		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
 
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
 				handleCommand({ event })
+				handleReply({ event })
 				break;
 			case "event":
 				handleEvent({ event })

@@ -1,6 +1,7 @@
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
+const stringSimilarity = require('string-similarity');
 
 module.exports = function({ api, __GLOBAL, client }) {
 	return async function({ event }) {
