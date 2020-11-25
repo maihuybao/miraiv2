@@ -19,14 +19,7 @@ module.exports.config = {
 
 module.exports.run = function({ api, event, args, client }) {
 	const nameHelp = client.commands.get(args[0]);
-	if (!nameHelp) {
-		var helpGroup = [];
-		var helpMsg = "";
-		coieforEach()
-		/*for (let [key, value] of client.commands.entries()) {
-			
-		}*/
-	}
+	if (!nameHelp) return api.sendMessage("🤔 hình như lệnh bạn tìm không tồn tại!", event.threadID, event.messageID);
 	const infoHelp = nameHelp.config.info;
 	var infoText = "";
 	if (!infoHelp || infoHelp.length == 0) infoText = 'Không có';
