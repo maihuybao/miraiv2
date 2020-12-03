@@ -7,7 +7,6 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "say [Lang] [Text]",
 	cooldowns: 5,
-	dependencies: ["request", "fs"],
 	info: [
 		{
 			key: "Lang",

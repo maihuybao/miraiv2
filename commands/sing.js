@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "media",
 	usages: "sing [Text]",
 	cooldowns: 10,
-	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader"],
+	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader","fs-extra"],
 	info: [
 		{
 			key: 'Text',
@@ -18,7 +18,13 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async ({ api, event, args, __GLOBAL }) => {
+module.exports.handleReply = async function({ api, event, client, __GLOBAL, handleReply }) {
+	const ytdl = require("ytdl-core");
+	const { createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
+	ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`, { filter: format => format.itag == '140' }).pipe(createWriteStream(__dirname + "/cache/music.m4a")).on("close", () => api.sendMessage({ attachment: createReadStream(__dirname + "/cache/music.m4a" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.m4a"), event.messageID));
+}
+
+module.exports.run = async function({ api, event, args, __GLOBAL }) {
 	const ytdl = require("ytdl-core");
 	const YouTubeAPI = require("simple-youtube-api");
 	const scdl = require("soundcloud-downloader");
@@ -36,7 +42,7 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	if (urlValid) {
 		try {
 			var songInfo = await ytdl.getInfo(args[0]);
-			let body = `Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
+			let body = `Tiêu .đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
 		}
 		catch (error) {
 			api.sendMessage("Thông tin của YouTube đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);
@@ -62,10 +68,19 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	}
 	else {
 		try {
-			let results = await youtube.searchVideos(keywordSearch, 1);
-			let songInfo = await ytdl.getInfo(results[0].url);
+			var link = [], num = 0, msg = "";
+			var results = await youtube.searchVideos(keywordSearch, 5);
+			for (let i of results) {
+				if (typeof results.Video[i].id != 'undefined') {
+					link.push(results.Video.id);
+					var songInfo = await ytdl.getInfo(results[i].Video.id);
+					msg += `${num += 1}. ${decodeURIComponent(songInfo.videoDetails.title)} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]\n\n`;
+				}
+			}
+			api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n\n${msg}\n\n Hãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: "sing", messageID: info.messageID, author: event.senderID, link }), event.messageID);
+			/*let songInfo = await ytdl.getInfo(results[0].url);
 			let body = `Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
-			ytdl(results[0].url, { filter: format => format.itag == '140' }).pipe(createWriteStream(__dirname + "/cache/music.m4a")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.m4a" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.m4a"), event.messageID));
+			ytdl(results[0].url, { filter: format => format.itag == '140' }).pipe(createWriteStream(__dirname + "/cache/music.m4a")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.m4a" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.m4a"), event.messageID));*/
 		}
 		catch (error) {
 			api.sendMessage("Thông tin của YouTube đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);

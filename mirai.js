@@ -1,9 +1,8 @@
 
 //=========Call Variable =========//
 
-require('npmlog').info = () => {};
 const login = require("./includes/login");
-const { writeFileSync, readFileSync, existsSync } = require("fs");
+const { writeFileSync, readFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
 const logger = require("./utils/log.js");
 const appStateFile = resolve(__dirname, './appstate.json');
@@ -24,7 +23,7 @@ const options = {
 
 login({ appState: require(appStateFile) }, (error, api) => {
 	console.log(error);
-	//if (error) return logger(error.error, 2);
+	//if (error) return logger(error, 2);
 	writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 	api.setOptions(options);
 	api.listenMqtt(require("./includes/listen")({ api }));

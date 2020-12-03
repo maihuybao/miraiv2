@@ -23,7 +23,6 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	if (event.type != "message_reply") return api.sendMessage(`Vui lòng bạn reply bức ảnh cần phải tìm!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments.length > 1) return api.sendMessage(`Vui lòng reply chỉ một ảnh!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments[0].type == 'photo') {
-		if (SAUCENAO_API == '' || typeof SAUCENAO_API == 'undefined') return api.sendMessage(`Chưa có api của saucenao!`, event.threadID, event.messageID);
 		return search(event.messageReply.attachments[0].url).then(response => {
 			let data = response[0];
 			let results = {

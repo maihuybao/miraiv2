@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "weather [Location]",
 	cooldowns: 5,
-	dependencies: ["moment-timezone", "request"],
+	dependencies: ["moment-timezone","request"],
 	info: [
 		{
 			key: "Location",

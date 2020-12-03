@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [
 		{
-			name: 'SpermLiz Client', 
+			name: 'SpermLiz Client ', 
 			script: './mirai.js',
 			autorestart: true,
 			exec_mode: 'cluster',

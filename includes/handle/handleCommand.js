@@ -1,13 +1,13 @@
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
-const stringSimilarity = require('string-similarity');
 
 module.exports = function({ api, __GLOBAL, client }) {
 	return async function({ event }) {
 		const funcs = require("../../utils/funcs.js")({ api, __GLOBAL });
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
+		if (client.userBanned.includes(senderID) || client.threadBanned.includes(threadID)) return;
 		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(__GLOBAL.settings.PREFIX)})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 	
@@ -52,6 +52,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 		//========= Run command =========//
 	
 		try {
+			if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args} | Group: ${threadID}`, "[ DEV MODE ]")
 			command.run({ api, event, args, client, __GLOBAL });
 		}
 		catch (error) {

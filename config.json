@@ -1,4 +1,5 @@
 {
+	"DEVELOP_MODE": "on",
 	"EMAIL": "",
 	"PASSWORD": "",
 	"OTPKEY": "",

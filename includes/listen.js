@@ -9,20 +9,40 @@ const { join } = require("path");
 const { resolve } = require("path");
 const { execSync, exec } = require('child_process');
 const node_modules = '../node_modules/';
+const semver = require('semver');
+const axios = require("axios");
 
 const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
-	commandArray: new Array(),
-	handleReply: new Array()
+	handleReply: new Array(),
+	handleReaction: new Array(),
+	userBanned: new Map(),
+	threadBanned: new Map()
 });
 
 const __GLOBAL = new Object({
+	groupSettings: new Map(),
 	settings: new Array()
 })
 
 //========= Do something in here o.o =========//
+
+//========= Check update for you :3 =========//
+
+axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
+	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
+	var local = JSON.parse(fs.readFileSync('../package.json')).version;
+	if (semver.lt(local, res.data.version)) {
+		logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
+		fs.writeFileSync('../.needUpdate', '');
+	}
+	else {
+		if (fs.existsSync('../.needUpdate')) fs.removeSync('../.needUpdate');
+		modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
+	}
+}).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
 
@@ -37,24 +57,29 @@ for (const file of commandFiles) {
 				for (let i of command.config.dependencies) require(i);
 			}
 			catch (e) {
-				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ INST MODULE ]");
+				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
 				execSync('npm install -s ' + command.config.dependencies.join(" "));
-				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ INST MODULE ]");
+				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
 				needReload += 1;
 			}
 		}
 		client.commands.set(command.config.name, command);
-		logger(`Loaded ${command.config.name}!`, "[ CMD MODULE ]");
+		logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
 	}
 	catch (error) {
-		logger(`Không thể load module ${file} với lỗi: ${error.message}`, "[ CMD MODULE ]");
+		logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 	}
 }
 
-if (needReload) {
-	logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ INST MODULE ]");
-	if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit(1);
-	else return execSync("pm2 reload 0");
+if (needReload >= 1) {
+	try {
+		logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ LOADER ]");
+		if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit(1);
+		else return exec("pm2 reload 0");
+	}
+	catch (e) {
+		return logger("Đã xảy ra lỗi khi đang thực hiện restart cho bạn, buộc bạn phải restart bằng tay!", "[ LOADER ]");
+	}
 }
 
 //========= Get all event files =========//
@@ -66,23 +91,14 @@ for (const file of eventFiles) {
 		if (client.events.has(event)) throw new Error('Bị trùng!');
 		if (!event.config || !event.run) throw new Error(`Sai format!`);
 		client.events.set(event.config.name, event);
-		logger(`Loaded ${event.config.name}!`, "[ EVENT MODULE ]");
+		logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
 	}
 	catch (error) {
-		logger(`Không thể load module ${file} với lỗi: ${error.message}`, "[ EVENT MODULE ]");
+		logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 	}
 }
 
-try {
-	for (let i of client.commands.values()) {
-		client.commandArray.push(i.config.name);
-	}
-}
-catch (error) {
-	logger("Đã xảy ra lỗi trong quá trình đẩy lệnh!", 2); //tôi còn đéo biết tôi đang làm gì nữa
-}
-
-//========= set variable =========//
+//========= Set variable =========//
 
 const config = require("../config.json");
 if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
@@ -91,22 +107,27 @@ try{
 	for (let [name, value] of Object.entries(config)) {
 		__GLOBAL.settings[name] = value;
 	}
-	logger("Config Loaded!");
+	logger("Config Loaded!", "[ LOADER ]");
 }
 catch (error) {
-	return logger("Không thể load config!", 2);
+	return logger("Không thể load config!", "[ LOADER ]");
 }
+//========= Set userBanned from database =========//
+
+
 
 //========= Handle Events =========//
+
 module.exports = function({ api }) {
 	const funcs = require("../utils/funcs.js")({ api });
-	logger("Bot started!", "[ SYSTEM ]");
-	logger("This bot was made by Catalizcs(roxtigger2003) and SpermLord");
+	logger("Bot started!", "[ LISTEN ]");
+	logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 
 		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client });
 		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client });
+		const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client });
 		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
 
 		switch (event.type) {
@@ -118,6 +139,8 @@ module.exports = function({ api }) {
 			case "event":
 				handleEvent({ event })
 				break;
+			case "message_reaction":
+				handleReaction({ event })
 			default:
 				break;
 		}

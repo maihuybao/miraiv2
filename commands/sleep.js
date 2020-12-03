@@ -7,6 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "sleep [Time]",
 	cooldowns: 5,
+	dependencies: ["moment-timezone"],
 	info: [
 		{
 			key: 'Time',
