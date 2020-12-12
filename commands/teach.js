@@ -25,7 +25,7 @@
 };
 
 module.exports.run = async function({ api, event, args }) {
-	let res = await require("axios")("http://95.217.72.187:26900/sim/v2", {
+	let res = await require("axios")("http://api.simsimi.tk/sim/v2", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: { teach: args.join(" ") }

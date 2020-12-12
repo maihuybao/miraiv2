@@ -27,13 +27,12 @@ module.exports = function({ api, __GLOBAL, client }) {
 		//if (command.config.use.hasOwnProperty("database") && )
 
 		//========= Check permssion =========//
-	
+
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
 		var threadAdmins = await funcs.getThreadInfo(threadID);
 		var adminThread = threadAdmins.adminIDs;
 		let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-
 
 		//=========Check cooldown=========//
 

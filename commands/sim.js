@@ -19,5 +19,5 @@ module.exports.config = {
 };
 
 module.exports.run = async ({ api, event, args }) => {
-	return require("request")(`http://95.217.72.187:26900/sim/${encodeURIComponent(args.join(" "))}`, (err, response, body) => api.sendMessage(JSON.parse(body).out, event.threadID, event.messageID));
+	return require("request")(`http://api.simsimi.tk/sim/${encodeURIComponent(args.join(" "))}`, (err, response, body) => api.sendMessage(JSON.parse(body).out, event.threadID, event.messageID));
 }
