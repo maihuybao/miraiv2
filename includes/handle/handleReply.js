@@ -1,7 +1,7 @@
 module.exports = function({ api, __GLOBAL, client }) {
 	return async function({ event }) {
 		const { handleReply } = client;
-		if (handleReply != 0) {
+		if (handleReply.length !== 0) {
 			if (!event.messageReply) return;
 			const indexOfHandle = handleReply.findIndex(e => e.messageID == event.messageReply.messageID && e.author == event.senderID);
 			if (indexOfHandle < 0) return;

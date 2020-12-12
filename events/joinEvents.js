@@ -8,8 +8,8 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, client, __GLOBAL }) {
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-		api.changeNickname(`[ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, event.threadID, api.getCurrentUserID());
 		api.sendMessage(`Connected successfully! This bot was made by CatalizCS and SpermLord\nThank you for using our products, have fun UwU <3`, event.threadID);
+		api.changeNickname(`[ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, event.threadID, api.getCurrentUserID());
 	}
 	else {
 		let threadInfo = await api.getThreadInfo(event.threadID);

@@ -20,8 +20,8 @@ module.exports.config = {
 module.exports.run = async ({ api, event, args }) => {
 	api.sendMessage(
 		'REQUEST FOR YOU' +
-		'ID: ' + event.threadID + 
-		'REQUEST: ' + args.join(" "),
+		'\n\nID: ' + event.threadID + 
+		'\nREQUEST: ' + args.join(" "),
 		100027477920916, () => api.sendMessage("Ý kiến, ý tưởng của bạn đã được gửi đến author thành công!", event.threadID)
 	)
 }

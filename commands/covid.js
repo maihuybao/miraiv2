@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: "covid",
-	version: "1.0.0",
+	version: "1.0.2",
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Lấy thông tin về tình hình dịch bệnh COVID-19",

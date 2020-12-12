@@ -1,0 +1,64 @@
+module.exports.config = {
+	name: "balance",
+	version: "0.0.1",
+	hasPermssion: 1,
+	credits: "CatalizCS",
+	description: "Kiểm tra số tiền của bản thân hoặc người được tag",
+	commandCategory: "Economy",
+	usages: "balance [Tag]",
+	cooldowns: 20,
+	info: [
+		{
+			key: 'Tag',
+			prompt: 'Để trống hoặc tag một người nào đó',
+			type: 'Văn Bản',
+			example: '@Mirai-chan'
+		}
+	]
+};
+
+const currency = require('./../models/currency');
+
+async function getMoney({ userID, threadID }) {
+	let moneyUser = (await currency.findOne({ userID, threadID })).money;
+	if (!moneyUser) {
+		user = new currency({
+			userID,
+			threadID,
+			money: 0
+		});
+		await moneyUser.save();
+	}
+	return user.money;
+}
+
+async function setMoney({ userID, threadID }, amount) {
+	try {
+		let moneyUser = (await currency.findOne({ userID, threadID })).money;
+		if (!moneyUser) {
+			moneyUser = new currency({
+				userID,
+				threadID,
+				money: 0
+			});
+			moneyUser = amount;
+			await moneyUser.save();
+			return true;
+		}
+	}
+	catch (e) {
+		return false;
+	}
+	
+}
+
+module.exports.run = async function({ api, event, args }) {
+	if (!args[0]) {
+		const money = await getMoney({ userID: event.senderID, threadID: event.threadID });
+		return api.sendMessage("Số tiền bạn hiện đang có: " + money, event.threadID);
+	}
+	else if (args[0] == "setmoney") {
+		if (args[1] == "me") await setMoney({ userID: event.senderID, threadID: event.threadID }, parseInt(args[2]));
+		return api.sendMessage("Bạn đã tự set số tiền của bản thân thành: " + args[2], event.threadID);
+	}
+}

@@ -11,19 +11,24 @@ const { execSync, exec } = require('child_process');
 const node_modules = '../node_modules/';
 const semver = require('semver');
 const axios = require("axios");
+/*const threadInfo = require('./../models/threadInfo');
+const userInfo = require('./../models/userInfo');
+const mongoose = require('mongoose');
+*/
 
 const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
-	handleReply: new Array(),
-	handleReaction: new Array(),
+	handleReply: new Map(),
+	handleReaction: new Map(),
 	userBanned: new Map(),
-	threadBanned: new Map()
+	threadBanned: new Map(),
+	threadSetting: new Map(),
+	hasConnectedToDB: new Boolean()
 });
 
 const __GLOBAL = new Object({
-	groupSettings: new Map(),
 	settings: new Array()
 })
 
@@ -59,8 +64,8 @@ for (const file of commandFiles) {
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
 				execSync('npm install -s ' + command.config.dependencies.join(" "));
+				delete require.cache[require.resolve(`../commands/${file}`)];
 				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
-				needReload += 1;
 			}
 		}
 		client.commands.set(command.config.name, command);
@@ -103,7 +108,7 @@ for (const file of eventFiles) {
 const config = require("../config.json");
 if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
 
-try{
+try {
 	for (let [name, value] of Object.entries(config)) {
 		__GLOBAL.settings[name] = value;
 	}
@@ -114,14 +119,58 @@ catch (error) {
 }
 //========= Set userBanned from database =========//
 
-
+/*try {
+	mongoose.set('useFindAndModify', false);
+	if (!__GLOBAL.settings.MONGODB_URL) throw new Error("Địa chỉ kết nối tới database không được để trống");
+	
+	mongoose.connect(__GLOBAL.settings.MONGODB_URL, {
+		useUnifiedTopology: true,
+		useNewUrlParser: true,
+		autoIndex: false,
+		poolSize: 5,
+		connectTimeoutMS: 10000,
+		family: 4
+	});
+	mongoose.connection.on("connected", () => {
+		logger("Kết nối thành công tới database!", "[ DATABASE ]");
+		client.hasConnectedToDB.set(true);
+		
+	});
+	mongoose.connection.on("err", err => {
+		logger(`Đã xảy ra sự cố khi kết nối tới database: \n ${err.stack}`, "[ DATABASE ]");
+		client.hasConnectedToDB.set(false);
+	});
+	if (client.hasConnectedToDB.has(true)) {
+		(async () => {
+			try {
+				logger("Khởi tạo các biến môi trường!", "[ DATABASE ]");
+				const threadBanned = await threadInfo.find({ banned: true });
+				const userBanned = await userInfo.find({ banned: true });
+				const threadSettings = await threadInfo.find({ enableCustom: true });
+				threadBanned.forEach((result) => client.threadBanned.set(result.threadID, (result.time2unban) ? result.time2unban : ''));
+				userBanned.forEach((result) => client.userBanned.set(result.userID, (result.time2unban) ? result.time2unban : ''));
+				threadSettings.forEach((result) => client.threadSetting.set(result.threadID, (result.otherInfo) ? result.otherInfo : ''));
+				logger("khởi tạo các biến môi trường thành công!", "[ DATABASE ]");
+			}
+			catch (e) {
+				logger("Không thể khởi tạo các biến môi trường, Lỗi: " + e, "[ DATABASE ]");
+			}
+		})();
+	}
+}
+catch (error) {
+	logger(`Không thể kết nối tới database, lỗi: ${error}!`, "[ DATABASE ]");
+}
+*/
 
 //========= Handle Events =========//
 
+logger("Bot started!", "[ LISTEN ]");
+logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
+
+
 module.exports = function({ api }) {
-	const funcs = require("../utils/funcs.js")({ api });
-	logger("Bot started!", "[ LISTEN ]");
-	logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
+	
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 

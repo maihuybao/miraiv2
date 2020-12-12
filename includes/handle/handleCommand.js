@@ -7,12 +7,12 @@ module.exports = function({ api, __GLOBAL, client }) {
 		const funcs = require("../../utils/funcs.js")({ api, __GLOBAL });
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
-		if (client.userBanned.includes(senderID) || client.threadBanned.includes(threadID)) return;
+		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
 		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(__GLOBAL.settings.PREFIX)})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
-	
+
 		//=========Get command user use=========//
-	
+
 		const [matchedPrefix] = contentMessage.match(prefixRegex);
 		const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 		const commandName = args.shift().toLowerCase();
@@ -21,9 +21,22 @@ module.exports = function({ api, __GLOBAL, client }) {
 			if (/[\p{L}-]+/ug.test(commandName) && commandName.search(/[\p{L}-]+/ug) == 0) return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 			else return; // Does this fix anything? Yes it does, so please do not delete this line.
 		}
+
+		//=========Check command using database=========//
+
+		//if (command.config.use.hasOwnProperty("database") && )
+
+		//========= Check permssion =========//
 	
+		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
+		var threadAdmins = await funcs.getThreadInfo(threadID);
+		var adminThread = threadAdmins.adminIDs;
+		let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
+		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
+
+
 		//=========Check cooldown=========//
-	
+
 		if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
 		const now = Date.now();
 		const timestamps = client.cooldowns.get(command.config.name);
@@ -40,14 +53,6 @@ module.exports = function({ api, __GLOBAL, client }) {
 		}
 		timestamps.set(threadID, now);
 		setTimeout(() => timestamps.delete(threadID), cooldownAmount);
-	
-		//========= Check permssion =========//
-	
-		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-		var threadAdmins = await funcs.getThreadInfo(threadID);
-		var adminThread = threadAdmins.adminIDs;
-		let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
-		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
 
 		//========= Run command =========//
 	

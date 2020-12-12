@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "leaveEvents",
 	eventType: ["log:unsubscribe"],
 	version: "1.0.0",
-	credits: "CatalizCS",
+	credits: "SpermLord",
 	description: "Listen events"
 };
 

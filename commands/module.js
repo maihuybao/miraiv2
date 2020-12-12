@@ -25,6 +25,7 @@ async function enableModule({nameOfModule, event, api, client}) {
 	const { execSync } = require('child_process');
 	const node_modules = '../node_modules/';
 	try{ client.commands.delete(nameOfModule) } catch(e) { return api.sendMessage(`Không thể reload module của bạn, lỗi: ${e}`, event.threadID) };
+	delete require.cache[require.resolve(`./${nameOfModule}.js`)];
 	const command = require(join(__dirname, `${nameOfModule}`));
 	try {
 		if (client.commands.has(command)) throw new Error('Bị trùng!');
@@ -47,7 +48,7 @@ async function enableModule({nameOfModule, event, api, client}) {
 	}
 }
 
-function disableModule({nameOfModule, event, api, client}) {
+function disableModule({nameOfModule, event, api, client, args}) {
 	try{
 		client.commands.delete(nameOfModule);
 		return api.sendMessage(`Disabled command ${nameOfModule}!`, event.threadID);
@@ -79,13 +80,8 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 		}
 		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module đang chạy!" + infoCommand, event.threadID, event.messageID);
 	}
-	else if (args[0] == "enable") {
-		//Will do something in here
-		enableModule({nameOfModule: args[1], event, api, client});
-	}
-	else if (args[0] == "disable") {
-		disableModule({nameOfModule: args[1], event, api, client});
-	}
+	else if (args[0] == "enable") enableModule({nameOfModule: args[1], event, api, client});
+	else if (args[0] == "disable") disableModule({nameOfModule: args[1], event, api, client, args});
 	else if (args[0] == "import") {
 		//Will do something in here
 		//Will need to reload it after import

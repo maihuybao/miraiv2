@@ -1,11 +1,11 @@
 module.exports.config = {
-	name: "checkpending",
-	version: "1.0.0",
+	name: "pending",
+	version: "pending",
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý tin nhắn chờ của bot",
 	commandCategory: "system",
-	usages: "checkpending",
+	usages: "pending",
 	cooldowns: 5
 };
 

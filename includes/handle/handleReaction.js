@@ -1,7 +1,7 @@
 module.exports = function({ api, __GLOBAL, client }) {
 	return async function({ event }) {
 		const { handleReaction } = client;
-		if (handleReaction != 0) {
+		if (handleReaction.length !== 0) {
 			const indexOfHandle = handleReaction.findIndex(e => e.messageID == event.messageID && e.author == event.userID);
 			if (indexOfHandle < 0) return;
 			const indexOfMessage = handleReaction[indexOfHandle];

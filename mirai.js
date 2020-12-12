@@ -1,4 +1,3 @@
-
 //=========Call Variable =========//
 
 const login = require("./includes/login");
@@ -6,27 +5,53 @@ const { writeFileSync, readFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
 const logger = require("./utils/log.js");
 const appStateFile = resolve(__dirname, './appstate.json');
-const __GLOBAL = new Object({
-	systemEvent: new Array(),
-	settings: new Array()
-});
-const options = {
-	forceLogin: true,
-	listenEvents: true,
-	logLevel: "error",
-	updatePresence: false,
-	selfListen: false,
-	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
-}
+//const { Sequelize, sequelize, Op } = require("./includes/database");
 
 //=========Login =========//
 
-login({ appState: require(appStateFile) }, (error, api) => {
-	console.log(error);
-	//if (error) return logger(error, 2);
-	writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
-	api.setOptions(options);
-	api.listenMqtt(require("./includes/listen")({ api }));
-});
+try {
+ require(appStateFile);
+}
+catch (e) {
+	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
+}
+
+function onBot() {
+	login({ appState: require(appStateFile) }, (error, api) => {
+		console.log(error);
+		if (error) return logger(JSON.stringify(error), 2);
+		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
+		api.setOptions({
+			forceLogin: true,
+			listenEvents: true,
+			logLevel: "error",
+			updatePresence: false,
+			selfListen: false,
+			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
+		});
+		api.listenMqtt(require("./includes/listen")({ api }));
+	});
+}
+onBot();
+
+if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') setTimeout(() => {
+	logger("Restarting now...", "[ REFRESH ]");
+	process.exit(0);
+}, 600000);
+
+/*setInterval(() => {
+	delete require.cache[require.resolve(`./mirai.js`)];
+	logger("Restarting bot...", "[ REFRESH ]");
+	return onBot();
+}, 60000);
+
+sequelize.authenticate().then(
+	() => logger("Kết nối thành công tới database", "[ DATABASE ]"),
+	() => logger("Kết nối thất bại tới database", "[ DATABASE ]")
+).then(() => {
+	let models = require("./includes/database/models")({ Sequelize, sequelize });
+	onBot({ Op, models });
+}).catch(e => logger(`${e.stack}`, "[ DATABASE ]"));
+*/
 
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
