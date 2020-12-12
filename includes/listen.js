@@ -2,7 +2,6 @@
 
 let needReload;
 const logger = require("../utils/log.js");
-const moment = require("moment-timezone");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const { readdirSync, accessSync, existsSync, readFileSync } = require("fs-extra");
 const { join } = require("path");
@@ -11,10 +10,6 @@ const { execSync, exec } = require('child_process');
 const node_modules = '../node_modules/';
 const semver = require('semver');
 const axios = require("axios");
-/*const threadInfo = require('./../models/threadInfo');
-const userInfo = require('./../models/userInfo');
-const mongoose = require('mongoose');
-*/
 
 const client = new Object({
 	commands: new Map(),
@@ -72,18 +67,7 @@ for (const file of commandFiles) {
 		logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
 	}
 	catch (error) {
-		logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
-	}
-}
-
-if (needReload >= 1) {
-	try {
-		logger("Tiến hành restart bot để có thể áp dụng các gói bổ trợ mới!", "[ LOADER ]");
-		if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') return process.exit(1);
-		else return exec("pm2 reload 0");
-	}
-	catch (e) {
-		return logger("Đã xảy ra lỗi khi đang thực hiện restart cho bạn, buộc bạn phải restart bằng tay!", "[ LOADER ]");
+		return logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 	}
 }
 
@@ -99,7 +83,7 @@ for (const file of eventFiles) {
 		logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
 	}
 	catch (error) {
-		logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
+		return logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 	}
 }
 
@@ -119,49 +103,7 @@ catch (error) {
 }
 //========= Set userBanned from database =========//
 
-/*try {
-	mongoose.set('useFindAndModify', false);
-	if (!__GLOBAL.settings.MONGODB_URL) throw new Error("Địa chỉ kết nối tới database không được để trống");
-	
-	mongoose.connect(__GLOBAL.settings.MONGODB_URL, {
-		useUnifiedTopology: true,
-		useNewUrlParser: true,
-		autoIndex: false,
-		poolSize: 5,
-		connectTimeoutMS: 10000,
-		family: 4
-	});
-	mongoose.connection.on("connected", () => {
-		logger("Kết nối thành công tới database!", "[ DATABASE ]");
-		client.hasConnectedToDB.set(true);
-		
-	});
-	mongoose.connection.on("err", err => {
-		logger(`Đã xảy ra sự cố khi kết nối tới database: \n ${err.stack}`, "[ DATABASE ]");
-		client.hasConnectedToDB.set(false);
-	});
-	if (client.hasConnectedToDB.has(true)) {
-		(async () => {
-			try {
-				logger("Khởi tạo các biến môi trường!", "[ DATABASE ]");
-				const threadBanned = await threadInfo.find({ banned: true });
-				const userBanned = await userInfo.find({ banned: true });
-				const threadSettings = await threadInfo.find({ enableCustom: true });
-				threadBanned.forEach((result) => client.threadBanned.set(result.threadID, (result.time2unban) ? result.time2unban : ''));
-				userBanned.forEach((result) => client.userBanned.set(result.userID, (result.time2unban) ? result.time2unban : ''));
-				threadSettings.forEach((result) => client.threadSetting.set(result.threadID, (result.otherInfo) ? result.otherInfo : ''));
-				logger("khởi tạo các biến môi trường thành công!", "[ DATABASE ]");
-			}
-			catch (e) {
-				logger("Không thể khởi tạo các biến môi trường, Lỗi: " + e, "[ DATABASE ]");
-			}
-		})();
-	}
-}
-catch (error) {
-	logger(`Không thể kết nối tới database, lỗi: ${error}!`, "[ DATABASE ]");
-}
-*/
+
 
 //========= Handle Events =========//
 
@@ -170,7 +112,6 @@ logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, ple
 
 
 module.exports = function({ api }) {
-	
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 
