@@ -1,9 +1,9 @@
 module.exports.config = {
-	name: "sleep",
+	name: "wake",
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "SpermLord",
-	description: "Tính thời gian để ngủ hoàn hảo để thức dậy vào giờ bạn nhập",
+	description: "Tính thời gian đi ngủ hoàn hảo cho bạn",
 	commandCategory: "general",
 	usages: "wake [Time]",
 	cooldowns: 5,
@@ -11,7 +11,7 @@ module.exports.config = {
 	info: [
 		{
 			key: 'Time',
-			prompt: 'Giờ để thức dậy',
+			prompt: 'Thời gian bạn ngủ',
 			type: 'Giờ',
 			example: '07:00'
 		}
