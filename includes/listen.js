@@ -118,14 +118,14 @@ module.exports = function({ api }) {
 		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client });
 		const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client });
 		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
-		const handleEventLoop = require("./handle/handleEventLoop")({ api, __GLOBAL, client });
+		const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client });
 
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
 				handleCommand({ event })
 				handleReply({ event })
-				handleEventLoop({ event })
+				handleCommandEvent({ event })
 				break;
 			case "event":
 				handleEvent({ event })

@@ -23,6 +23,10 @@ module.exports.handleReply = function({ api, event, args, client, __GLOBAL }) {
 	})
 }
 
+module.exports.event = function({ api, event, client, __GLOBAL }) {
+	if (event.body.indexOf("bitch") !== -1) return api.sendMessage("yea you are bitch!", event.threadID, event.messageID);
+}
+
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	return api.sendMessage("try reply thiz!", event.threadID, (error, info) => {
 		client.handleReply.push({

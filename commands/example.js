@@ -29,6 +29,18 @@ module.exports.config = {
 	]
 };
 
+module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {
+	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
+module.exports.handleReply = function({ api, event, args, client, __GLOBAL }) {
+	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
+module.exports.event = function({ api, event, client, __GLOBAL }) {
+	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }

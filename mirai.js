@@ -5,7 +5,6 @@ const { writeFileSync, readFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
 const logger = require("./utils/log.js");
 const appStateFile = resolve(__dirname, './appstate.json');
-//const { Sequelize, sequelize, Op } = require("./includes/database");
 
 //=========Login =========//
 
@@ -37,20 +36,5 @@ if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') setTimeout(() =
 	logger("Restarting now...", "[ REFRESH ]");
 	process.exit(0);
 }, 600000);
-
-/*setInterval(() => {
-	delete require.cache[require.resolve(`./mirai.js`)];
-	logger("Restarting bot...", "[ REFRESH ]");
-	return onBot();
-}, 60000);
-
-sequelize.authenticate().then(
-	() => logger("Kết nối thành công tới database", "[ DATABASE ]"),
-	() => logger("Kết nối thất bại tới database", "[ DATABASE ]")
-).then(() => {
-	let models = require("./includes/database/models")({ Sequelize, sequelize });
-	onBot({ Op, models });
-}).catch(e => logger(`${e.stack}`, "[ DATABASE ]"));
-*/
 
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
