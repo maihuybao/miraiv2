@@ -15,8 +15,8 @@ const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
-	handleReply: new Map(),
-	handleReaction: new Map(),
+	handleReply: new Array(),
+	handleReaction: new Array(),
 	userBanned: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
@@ -110,7 +110,6 @@ catch (error) {
 logger("Bot started!", "[ LISTEN ]");
 logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
 
-
 module.exports = function({ api }) {
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
@@ -119,12 +118,14 @@ module.exports = function({ api }) {
 		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client });
 		const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client });
 		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
+		const handleEventLoop = require("./handle/handleEventLoop")({ api, __GLOBAL, client });
 
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
 				handleCommand({ event })
 				handleReply({ event })
+				handleEventLoop({ event })
 				break;
 			case "event":
 				handleEvent({ event })

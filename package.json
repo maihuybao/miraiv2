@@ -1,6 +1,6 @@
 {
 	"name": "miraiBot",
-	"version": "1.0.16",
+	"version": "1.0.16-1",
 	"description": "A simply Facebook Messenger Bot like Discord.",
 	"main": "index.js",
 	"engines": {
