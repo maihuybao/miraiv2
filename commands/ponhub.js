@@ -22,7 +22,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
   var linkAvatar = (await api.getUserInfo(senderID))[senderID].thumbSrc;
   if (!text) return api.sendMessage("Nhập nội dung comment trên pỏnhub", threadID, messageID);
   let getAvatar = (await axios.get(linkAvatar, { responseType: 'arraybuffer' })).data;
-  let getPorn = (await axios.get(`https://cdn.glitch.com/4e346520-5d83-4882-92e7-c39391985a52%2Fc3d5bfc2-5b1a-459c-bd4e-987aae39c8b5.image.png?v=1607408941097`, { responseType: 'arraybuffer' })).data;
+  let getPorn = (await axios.get(`https://imgur.com/e74KizU`, { responseType: 'arraybuffer' })).data;
   fs.writeFileSync(avatar, Buffer.from(getAvatar, 'utf-8'));
   fs.writeFileSync(pathImg, Buffer.from(getPorn, 'utf-8'));
   let image = await loadImage(avatar);
