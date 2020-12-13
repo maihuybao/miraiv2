@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: "math",
-	version: "0.0.1-beta",
+	version: "1.0.1",
 	hasPermssion: 0,
 	credits: "MewMew",
 	description: "Làm toán",
