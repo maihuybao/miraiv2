@@ -5,7 +5,7 @@ module.exports.config = {
     credits: "MewMew",
     description: "Commnet trên pỏnhub ( ͡° ͜ʖ ͡°)",
     commandCategory: "group",
-    usages: "phub [cmt bạn muốn]",
+    usages: "phub [text]",
     cooldowns: 10,
     dependencies: ["canvas", "axios", "fs-extra"]
 };
