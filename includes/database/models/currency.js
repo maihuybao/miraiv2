@@ -9,16 +9,10 @@ module.exports = function({ sequelize, Sequelize }) {
 			type: Sequelize.BIGINT,
 			unique: true
 		},
-		otherInfo: {
-			type: Sequelize.JSON
-		},
-		banned: {
-			type: Sequelize.JSON,
-			default: {
-				type: 0,
-				reason: null,
-				time2unban: 0
-			}
-		},
+		userID: {
+			type: Sequelize.BIGINT,
+			unique: true
+		}
+		m
 		
 	}
