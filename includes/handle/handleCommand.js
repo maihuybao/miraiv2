@@ -9,7 +9,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 		senderID = parseInt(senderID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
 		let threadSetting = client.threadSetting.get(event.threadID);
-		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex(threadSetting.PREFIX)})\\s*`);
+		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX)})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 
 		//=========Get command user use=========//
