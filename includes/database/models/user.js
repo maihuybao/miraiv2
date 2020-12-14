@@ -1,5 +1,5 @@
 module.exports = function({ sequelize, Sequelize }) {
-	let currency = sequelize.define('user', {
+	let user = sequelize.define('user', {
 		num: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -26,4 +26,5 @@ module.exports = function({ sequelize, Sequelize }) {
 			defaultValue: '{}'
 		}
 	})
+	return user;
 }

@@ -11,7 +11,7 @@ module.exports = function({ sequelize, Sequelize }) {
 		},
 		settings : {
 			type: Sequelize.JSON
-		}
+		},
 		banned: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false
