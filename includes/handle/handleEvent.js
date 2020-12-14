@@ -1,6 +1,6 @@
 const logger = require("../../utils/log.js");
 
-module.exports = function({ api, __GLOBAL, client }) {
+module.exports = function({ api, __GLOBAL, client, models }) {
 	return async function({ event }) {
 		if (client.userBanned.has(event.senderID) || client.threadBanned.has(event.threadID)) return;
 		for (let [key, value] of client.events.entries()) {
@@ -8,7 +8,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 				const eventRun = client.events.get(key);
 				try {
 					if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Event Executed: ${eventRun.config.name} | Type Event: ${event.logMessageType} | Group: ${event.threadID}`, "[ DEV MODE ]")
-					eventRun.run({ api, event, client, __GLOBAL });
+					eventRun.run({ api, event, client, __GLOBAL, models });
 				}
 				catch (error) {
 					logger(error + " at event: " + eventRun.config.name , 2);

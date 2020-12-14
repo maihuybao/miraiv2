@@ -2,7 +2,7 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
 
-module.exports = function({ api, __GLOBAL, client }) {
+module.exports = function({ api, __GLOBAL, client, models }) {
 	return async function({ event }) {
 		const funcs = require("../../utils/funcs.js")({ api, __GLOBAL });
 		let { body: contentMessage, senderID, threadID, messageID } = event;
@@ -58,7 +58,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 	
 		try {
 			if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args} | Group: ${threadID}`, "[ DEV MODE ]")
-			command.run({ api, event, args, client, __GLOBAL });
+			command.run({ api, event, args, client, __GLOBAL, models });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);

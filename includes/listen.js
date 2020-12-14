@@ -142,15 +142,15 @@ module.exports = function({ api, models }) {
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
-				require("./handle/handleCommand")({ api, __GLOBAL, client })({ event })
-				require("./handle/handleReply")({ api, __GLOBAL, client })({ event })
-				require("./handle/handleCommandEvent")({ api, __GLOBAL, client })({ event })
+				require("./handle/handleCommand")({ api, __GLOBAL, client, models })({ event })
+				require("./handle/handleReply")({ api, __GLOBAL, client, models })({ event })
+				require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models })({ event })
 				break;
 			case "event":
-				require("./handle/handleEvent")({ api, __GLOBAL, client })({ event })
+				require("./handle/handleEvent")({ api, __GLOBAL, client, models })({ event })
 				break;
 			case "message_reaction":
-				require("./handle/handleReaction")({ api, __GLOBAL, client })({ event })
+				require("./handle/handleReaction")({ api, __GLOBAL, client, models })({ event })
 			default:
 				break;
 		}

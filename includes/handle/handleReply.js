@@ -1,4 +1,4 @@
-module.exports = function({ api, __GLOBAL, client }) {
+module.exports = function({ api, __GLOBAL, client, models }) {
 	return async function({ event }) {
 		const { handleReply } = client;
 		if (handleReply.length !== 0) {
@@ -9,7 +9,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 			const handleNeedExec = client.commands.get(indexOfMessage.name);
 			if (!handleNeedExec) return api.sendMessage("Thiếu dữ kiện để thực thi phản hồi lại câu trả lời của bạn!", event.threadID, event.messageID);
 			try {
-				handleNeedExec.handleReply({ api, __GLOBAL, client, event, handleReply: indexOfMessage });
+				handleNeedExec.handleReply({ api, __GLOBAL, client, event, handleReply: indexOfMessage, models });
 			}
 			catch (e) {
 				return api.sendMessage("Đã có lỗi xảy ra khi đang thực thi trả lời câu hỏi của bạn!", event.threadID, event.messageID);
