@@ -32,11 +32,12 @@ function onBot({ models }) {
 		api.listenMqtt(require("./includes/listen")({ api, models }));
 	});
 }
-
+/* i will delete thiz if bot running smooth xD
 if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') setTimeout(() => {
 	logger("Restarting now...", "[ REFRESH ]");
 	process.exit(0);
 }, 600000);
+*/
 
 sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),
