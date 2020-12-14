@@ -3,10 +3,10 @@
 let needReload;
 const logger = require("../utils/log.js");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const { readdirSync, accessSync, existsSync, readFileSync } = require("fs-extra");
+const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
 const { join } = require("path");
 const { resolve } = require("path");
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const node_modules = '../node_modules/';
 const semver = require('semver');
 const axios = require("axios");
@@ -79,6 +79,17 @@ for (const file of eventFiles) {
 	try {
 		if (client.events.has(event)) throw new Error('Bị trùng!');
 		if (!event.config || !event.run) throw new Error(`Sai format!`);
+		if (event.config.dependencies) {
+			try {
+				for (let i of event.config.dependencies) require(i);
+			}
+			catch (e) {
+				logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
+				execSync('npm install -s ' + event.config.dependencies.join(" "));
+				delete require.cache[require.resolve(`../event/${file}`)];
+				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`, "[ LOADER ]");
+			}
+		}
 		client.events.set(event.config.name, event);
 		logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
 	}
@@ -110,28 +121,36 @@ catch (error) {
 logger("Bot started!", "[ LISTEN ]");
 logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
 
-module.exports = function({ api }) {
+module.exports = function({ api, models }) {
+
+	(async () => {
+		const thread = models.use("thread");
+		const user = models.use("user");
+		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
+		const threadBanned = (await thread.findAll({ where: { banned: true } })).map(e => e.get({ plain: true }));
+		const userBanned = (await user.findAll({ where: { banned: true } })).map(e => e.get({ plain: true }));
+		const threadSetting = (await thread.findAll({  })).map(e => e.get({ plain: true }));
+		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
+		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
+		threadSetting.forEach(info => client.threadSetting.set(info.threadID, (info.settings) ? info.settings : { "PREFIX": __GLOBAL.settings.PREFIX }));
+		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
+	})();
+
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
-
-		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client });
-		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client });
-		const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client });
-		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client });
-		const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client });
 
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
-				handleCommand({ event })
-				handleReply({ event })
-				handleCommandEvent({ event })
+				require("./handle/handleCommand")({ api, __GLOBAL, client })({ event })
+				require("./handle/handleReply")({ api, __GLOBAL, client })({ event })
+				require("./handle/handleCommandEvent")({ api, __GLOBAL, client })({ event })
 				break;
 			case "event":
-				handleEvent({ event })
+				require("./handle/handleEvent")({ api, __GLOBAL, client })({ event })
 				break;
 			case "message_reaction":
-				handleReaction({ event })
+				require("./handle/handleReaction")({ api, __GLOBAL, client })({ event })
 			default:
 				break;
 		}

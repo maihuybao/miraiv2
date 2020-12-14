@@ -107,7 +107,7 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 				infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
 			};
 		}
-		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module đang chạy!" + infoCommand, event.threadID, event.messageID);
+		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module có thể sử dụng!" + infoCommand, event.threadID, event.messageID);
 	}
 	else if (args[0] == "enable") enableModule({nameOfModule: args[1], event, api, client});
 	else if (args[0] == "disable") disableModule({nameOfModule: args[1], event, api, client, args});

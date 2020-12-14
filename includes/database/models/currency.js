@@ -12,7 +12,14 @@ module.exports = function({ sequelize, Sequelize }) {
 		userID: {
 			type: Sequelize.BIGINT,
 			unique: true
+		},
+		money: {
+			type: Sequelize.BIGINT,
+			defaultValue: 0
+		},
+		otherInfo: {
+			type: Sequelize.JSON
 		}
-		m
-		
-	}
+	});
+	return currency;
+}
