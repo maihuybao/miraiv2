@@ -119,6 +119,7 @@ catch (error) {
 //========= Handle Events =========//
 
 logger("Bot started!", "[ LISTEN ]");
+logger(`${api.getCurrentUserID()}`, "[ UID ]");
 logger("This source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!");
 
 module.exports = function({ api, models }) {

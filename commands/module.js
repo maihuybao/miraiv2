@@ -7,7 +7,6 @@ module.exports.config = {
 	commandCategory: "system",
 	usages: "module [exec] args",
 	cooldowns: 5,
-	dependencies: ["request","fs-extra","unzip"],
 	info: [
 		{
 			key: 'exec',
