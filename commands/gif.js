@@ -10,18 +10,6 @@ module.exports.config = {
 	dependencies: ["request","fs-extra"]
 };
 
-module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {
-	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
-}
-
-module.exports.handleReply = function({ api, event, args, client, __GLOBAL }) {
-	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
-}
-
-module.exports.event = function({ api, event, client, __GLOBAL }) {
-	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
-}
-
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
         var content = args.join(" ");
         var fs = require("fs-extra");
