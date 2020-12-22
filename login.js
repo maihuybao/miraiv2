@@ -41,5 +41,5 @@ login({ email, password }, option, (err, api) => {
 	var json = JSON.stringify(api.getAppState());
 	fs.writeFileSync('appstate.json', json);
 	console.log("Đã ghi xong appstate!");
-	//process.exit(1);
+	process.exit(0);
 });

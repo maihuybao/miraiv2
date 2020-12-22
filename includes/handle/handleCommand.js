@@ -11,6 +11,7 @@ module.exports = function({ api, __GLOBAL, client, models }) {
 		let threadSetting = client.threadSetting.get(event.threadID);
 		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX)})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
+		let timeStart = Date.now();
 
 		//=========Get command user use=========//
 
@@ -55,14 +56,13 @@ module.exports = function({ api, __GLOBAL, client, models }) {
 		setTimeout(() => timestamps.delete(threadID), cooldownAmount);
 
 		//========= Run command =========//
-	
 		try {
-			if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args} | Group: ${threadID}`, "[ DEV MODE ]")
 			command.run({ api, event, args, client, __GLOBAL, models });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, event.threadID);
 		}
+		if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]")
 	}
 }

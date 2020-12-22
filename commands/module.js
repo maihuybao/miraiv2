@@ -35,7 +35,8 @@ async function enableModule({ nameOfModule, event, api, client, __GLOBAL }) {
 			}
 			catch (e) {
 				api.sendMessage(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, event.threadID);
-				execSync('npm install -s ' + command.config.dependencies.join(" "));
+				if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
+				else execSync('npm install -s ' + command.config.dependencies.join(" "));
 				api.sendMessage(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, event.threadID);
 			}
 		}
@@ -57,7 +58,7 @@ function disableModule({ nameOfModule, event, api, client, args }) {
 	}
 }
 
-//Import module
+/*//Import module
 async function fetchModule({ url, event, api, client, __GLOBAL }) {
 	const { readdirSync, createReadStream, createWriteStream, unlinkSync, rename } = require("fs-extra");
 	const request = require("request");
@@ -80,7 +81,7 @@ async function fetchModule({ url, event, api, client, __GLOBAL }) {
 		unlinkSync(__dirname + `/cache/tempModule.${url.substring(url.lastIndexOf(".") + 1)}`);
 		return api.sendMessage("Module của bạn đã được cài đặt thành công!", event.threadID);
 	});
-}
+}*/
 
 //reload config
 function reloadConfig({ event, api, client, __GLOBAL }) {
@@ -111,6 +112,6 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	else if (args[0] == "enable") enableModule({nameOfModule: args[1], event, api, client});
 	else if (args[0] == "disable") disableModule({nameOfModule: args[1], event, api, client, args});
 	else if (args[0] == "reloadconfig") reloadConfig({ event, api, client, __GLOBAL });
-	else if (args[0] == "import") fetchModule({ url: args[1], event, api, client, __GLOBAL });
+	//else if (args[0] == "import") fetchModule({ url: args[1], event, api, client, __GLOBAL });
 	else return api.sendMessage("Input bạn nhập không tồn tại trong câu lệnh ;w;", event.threadID, event.messageID);
 }

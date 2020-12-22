@@ -29,7 +29,7 @@ module.exports = {
 			timestamps: true
 		},
 		sync: {
-			force: process.env.NODE_ENV == 'build'
+			force: true
 		},
 	}),
 	Sequelize,

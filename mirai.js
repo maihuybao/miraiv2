@@ -4,14 +4,13 @@ const login = require("./includes/login");
 const { writeFileSync, readFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
 const logger = require("./utils/log.js");
-const appStateFile = resolve(__dirname, './appstate.json');
-const { Sequelize, sequelize, Op } = require("./includes/database");
-require('npmlog').pause();
+const { Sequelize, sequelize } = require("./includes/database");
+let appStateFile;
 
 //=========Login =========//
 
 try {
- require(appStateFile);
+appStateFile = resolve(__dirname, './appstate.json');
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
@@ -21,6 +20,7 @@ function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (error, api) => {
 		console.log(error);
 		if (error) return logger(JSON.stringify(error), 2);
+		let listen = require("./includes/listen")({ api, models });
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		api.setOptions({
 			forceLogin: true,
@@ -29,15 +29,19 @@ function onBot({ models }) {
 			updatePresence: false,
 			selfListen: false
 		});
-		api.listenMqtt(require("./includes/listen")({ api, models }));
+		api.listenMqtt(listen);
+
+		//kill listen
+		setInterval(() => api.listenMqtt(listen).stopListening(), 600000);    
+    
+		//start listen
+		setInterval(() => {
+			delete require.cache[require.resolve('./includes/listen')];
+			api.listenMqtt(listen);
+		}, 602000);
+
 	});
 }
-/* i will delete thiz if bot running smooth xD
-if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') setTimeout(() => {
-	logger("Restarting now...", "[ REFRESH ]");
-	process.exit(0);
-}, 600000);
-*/
 
 sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),

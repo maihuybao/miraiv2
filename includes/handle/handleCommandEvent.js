@@ -3,7 +3,7 @@ const logger = require("../../utils/log.js");
 module.exports = function({ api, __GLOBAL, client, models }) {
 	return async function({ event }) {
 		if (client.userBanned.has(event.senderID) || client.threadBanned.has(event.threadID)) return;
-		let commands = client.commands.values();
+		let commands = client.commandEvent.values();
 		for (const command of commands) {
 			if (command.event) {
 				try {

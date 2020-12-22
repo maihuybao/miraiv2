@@ -9,10 +9,9 @@ module.exports.config = {
 	cooldowns: 5
 };
 
-module.exports.handleReaction = function({ api, event, args, client, __GLOBAL, handleReaction }) {
-	let setEvent = {
-		type: 'event',
-		logMessageType: 'log:subscribe',
+module.exports.handleReaction = function({ api, event, client, __GLOBAL, handleReaction }) {
+	let events = client.events.get("joinEvents");
+	let json = {
 		logMessageData: {
 			addedParticipants: [
 				{
@@ -22,9 +21,8 @@ module.exports.handleReaction = function({ api, event, args, client, __GLOBAL, h
 		},
 		threadID: handleReaction.pending
 	}
-	api.sendMessage('Box của bạn đã được duyệt!', handleReaction.pending);
-	api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
-	return require("../includes/listen")({ api, __GLOBAL })(undefined, setEvent);
+	await events.run({ event: json, client, __GLOBAL, api });
+	return api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
 }
 
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {

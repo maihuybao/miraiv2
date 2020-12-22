@@ -10,6 +10,6 @@ module.exports.config = {
 	dependencies: ["request"]
 };
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event, args }) {
 	require("request")(`https://kakko.pandorabots.com/pandora/talk-xml?input=${encodeURIComponent(args.join(" "))}&botid=9fa364f2fe345a10&custid=${event.senderID}`, (err, response, body) => api.sendMessage((/<that>(.*?)<\/that>/.exec(body)[1]), event.threadID, event.messageID));
 }
