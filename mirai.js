@@ -31,15 +31,15 @@ function onBot({ models }) {
 		});
 		api.listenMqtt(listen);
 
-		//kill listen
-		setInterval(() => api.listenMqtt(listen).stopListening(), 600000);    
-    
-		//start listen
 		setInterval(() => {
-			delete require.cache[require.resolve('./includes/listen')];
-			api.listenMqtt(listen);
-		}, 602000);
-
+			//Kill Listen
+			api.listenMqtt(listen).stopListening();
+			setTimeout(() => {
+				//clean clean require and listen again
+				delete require.cache[require.resolve('./includes/listen')];
+				api.listenMqtt(listen);
+			}, 2000)
+		}, 600000);
 	});
 }
 

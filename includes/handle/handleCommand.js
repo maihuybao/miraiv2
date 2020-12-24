@@ -18,7 +18,7 @@ module.exports = function({ api, __GLOBAL, client, models }) {
 		const [matchedPrefix] = contentMessage.match(prefixRegex);
 		const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 		const commandName = args.shift().toLowerCase();
-		const command = client.commands.get(commandName);
+		let command = client.commands.get(commandName);
 		if (!command) {
 			if (/[\p{L}-]+/ug.test(commandName) && commandName.search(/[\p{L}-]+/ug) == 0) return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 			else return; // Does this fix anything? Yes it does, so please do not delete this line.

@@ -10,16 +10,15 @@ module.exports.config = {
 	dependencies: ["vm2","path"]
 };
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args, client, __GLOBAL, models }) {
 	const { VM } = require("vm2");
-	var out = "";
+	var out = (a) => api.sendMessage(a, event.threadID);
 	const vm = new VM({
 		eval: false,
 		wasm: false,
 		timeout: 100,
 		console: 'inherit',
-		sandbox: { out, api, event, args, client, __GLOBAL },
+		sandbox: { out, api, event, args, client, __GLOBAL, models },
 	});
-	const returnValue = vm.run(args.join(" "), vm.js);
-	return api.sendMessage(out, event.threadID, event.messageID);
+	vm.run(args.join(" "), vm.js);
 }

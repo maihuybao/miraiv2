@@ -19,9 +19,7 @@ const client = new Object({
 	handleReaction: new Array(),
 	userBanned: new Map(),
 	threadBanned: new Map(),
-	threadSetting: new Map(),
-	commandEvent: new Map()
-	
+	threadSetting: new Map()
 });
 
 const __GLOBAL = new Object({
@@ -33,6 +31,17 @@ const __GLOBAL = new Object({
 //========= Handle Events =========//
 
 module.exports = function({ api, models }) {
+
+	const User = require("./controllers/user")({ api, __GLOBAL, client });
+	const Thread = require("./controllers/thread")({ api, __GLOBAL, client });
+	const Currency = require("./controllers/currency")({ api, __GLOBAL, client });
+
+	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models });
+	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models });
+	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models });
+	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models });
+	const changeName = require("./handle/changeName")({ api, __GLOBAL, client });
 
 //========= Check update for you :3 =========//
 
@@ -69,7 +78,6 @@ module.exports = function({ api, models }) {
 					logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
 				}
 			}
-			if (command.event) client.commandEvent.set(command.config.name, command.event);
 			client.commands.set(command.config.name, command);
 			logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
 		}
@@ -129,16 +137,12 @@ module.exports = function({ api, models }) {
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
 	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
 
-	
-	const thread = models.use("thread");
-	const user = models.use("user");
-	var threadBanned, userBanned, threadSetting;
-	
 	(async () => {
 		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		threadBanned = (await thread.findAll({ where: { banned: true } })).map(e => e.get({ plain: true }));
-		userBanned = (await user.findAll({ where: { banned: true } })).map(e => e.get({ plain: true }));
-		threadSetting = (await thread.findAll({ attributes: ["threadID","settings"] })).map(e => e.get({ plain: true }));
+		var threadBanned, userBanned, threadSetting;
+		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		threadSetting = (await Thread.getAll(['threadID', 'settings'])).map(e => e.get({ plain: true }));
 		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
 		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
 		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
@@ -148,18 +152,13 @@ module.exports = function({ api, models }) {
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 
-		const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models });
-		const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models });
-		const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models });
-		const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models });
-		const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models });
-
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
 				handleCommand({ event });
 				handleReply({ event });
 				handleCommandEvent({ event });
+				changeName({ event });
 				break;
 			case "event":
 				handleEvent({ event });

@@ -9,7 +9,7 @@ module.exports = function({ sequelize, Sequelize }) {
 			type: Sequelize.BIGINT,
 			unique: true
 		},
-		settings : {
+		settings: {
 			type: Sequelize.JSON
 		},
 		banned: {
