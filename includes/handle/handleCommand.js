@@ -2,7 +2,7 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
 
-module.exports = function({ api, __GLOBAL, client, models }) {
+module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency }) {
 	return async function({ event }) {
 		const funcs = require("../../utils/funcs.js")({ api, __GLOBAL });
 		let { body: contentMessage, senderID, threadID, messageID } = event;
@@ -31,7 +31,7 @@ module.exports = function({ api, __GLOBAL, client, models }) {
 		//========= Check permssion =========//
 
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
-		var threadAdmins = await funcs.getThreadInfo(threadID);
+		var threadAdmins = await Thread.getInfo(threadID);
 		var adminThread = threadAdmins.adminIDs;
 		let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
@@ -57,7 +57,7 @@ module.exports = function({ api, __GLOBAL, client, models }) {
 
 		//========= Run command =========//
 		try {
-			command.run({ api, event, args, client, __GLOBAL, models });
+			command.run({ api, __GLOBAL, client, models, User, Thread, Currency });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);

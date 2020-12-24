@@ -1,6 +1,6 @@
 const logger = require("../../utils/log.js");
 
-module.exports = function({ api, __GLOBAL, client, models }) {
+module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency }) {
 	return async function({ event }) {
 		if (client.userBanned.has(event.senderID) || client.threadBanned.has(event.threadID)) return;
 		let commands = client.commands.values();

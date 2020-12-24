@@ -36,11 +36,11 @@ module.exports = function({ api, models }) {
 	const Thread = require("./controllers/thread")({ api, __GLOBAL, client });
 	const Currency = require("./controllers/currency")({ api, __GLOBAL, client });
 
-	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models });
-	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models });
-	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models });
-	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models });
-	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models });
+	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
+	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, User, Thread, Currency });
+	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, User, Thread, Currency });
+	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const changeName = require("./handle/changeName")({ api, __GLOBAL, client });
 
 //========= Check update for you :3 =========//
