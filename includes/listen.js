@@ -4,8 +4,7 @@ let needReload;
 const logger = require("../utils/log.js");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
-const { join } = require("path");
-const { resolve } = require("path");
+const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const node_modules = '../node_modules/';
 const semver = require('semver');
@@ -32,9 +31,9 @@ const __GLOBAL = new Object({
 
 module.exports = function({ api, models }) {
 
-	const User = require("./controllers/user")({ api, __GLOBAL, client });
-	const Thread = require("./controllers/thread")({ api, __GLOBAL, client });
-	const Currency = require("./controllers/currency")({ api, __GLOBAL, client });
+	const User = require("./controllers/user")({ api, __GLOBAL, client, models });
+	const Thread = require("./controllers/thread")({ api, __GLOBAL, client, models });
+	const Currency = require("./controllers/currency")({ api, __GLOBAL, client, models });
 
 	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
@@ -64,8 +63,8 @@ module.exports = function({ api, models }) {
 	for (const file of commandFiles) {
 		const command = require(join(__dirname, "../commands", `${file}`));
 		try {
-			if (client.commands.has(command)) throw new Error('Bị trùng!');
 			if (!command.config || !command.run) throw new Error(`Sai format!`);
+			if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 			if (command.config.dependencies) {
 				try {
 					for (let i of command.config.dependencies) require(i);
@@ -92,8 +91,8 @@ module.exports = function({ api, models }) {
 	for (const file of eventFiles) {
 		const event = require(join(__dirname, "../events", `${file}`));
 		try {
-			if (client.events.has(event)) throw new Error('Bị trùng!');
 			if (!event.config || !event.run) throw new Error(`Sai format!`);
+			if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
 			if (event.config.dependencies) {
 				try {
 					for (let i of event.config.dependencies) require(i);

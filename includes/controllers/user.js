@@ -1,4 +1,4 @@
-const logger = require("../modules/log.js");
+const logger = require("../../utils/log.js");
 module.exports = function ({ models, api, __GLOBAL }) {
 	const User = models.use('user');
 

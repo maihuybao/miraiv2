@@ -17,7 +17,7 @@ module.exports = {
 			name: 'query',
 			max: 10
 		},
-		logging: process.env.NODE_ENV == 'development' ? console.log : false,
+		logging: false,
 		transactionType: 'IMMEDIATE',
 		define: {
 			underscored: false,

@@ -24,17 +24,13 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 			else return; // Does this fix anything? Yes it does, so please do not delete this line.
 		}
 
-		//=========Check command using database=========//
-
-		//if (command.config.use.hasOwnProperty("database") && )
-
 		//========= Check permssion =========//
 
-		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
+		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 		var threadAdmins = await Thread.getInfo(threadID);
 		var adminThread = threadAdmins.adminIDs;
-		let find = threadAdmins.adminIDs.find(el => el.id == event.senderID);
-		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, event.threadID, event.messageID);
+		let find = threadAdmins.adminIDs.find(el => el.id == senderID);
+		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 
 		//=========Check cooldown=========//
 
@@ -46,10 +42,10 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 			const expirationTime = timestamps.get(threadID) + cooldownAmount;
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
-				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, event.threadID, async (err, info) => {
+				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, threadID, async (err, info) => {
 					await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-					api.unsendMessage(info.messageID);
-				}, event.messageID);
+					api.unsendMessage(messageID);
+				}, messageID);
 			}
 		}
 		timestamps.set(threadID, now);
@@ -61,8 +57,14 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
-			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, event.threadID);
+			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
-		if (__GLOBAL.settings.DEVELOP_MODE == "on") logger(`Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]")
+		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
+			var time = Date.now();
+			var hours = Math.floor(time / (60 * 60));
+			var minutes = Math.floor((time % (60 * 60)) / 60);
+			var seconds = Math.floor(time % 60);
+			logger(`[ ${hours}:${minutes}:${seconds} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+		}
 	}
 }
