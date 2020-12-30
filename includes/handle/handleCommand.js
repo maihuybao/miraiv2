@@ -17,11 +17,21 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 
 		const [matchedPrefix] = contentMessage.match(prefixRegex);
 		const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
-		const commandName = args.shift().toLowerCase();
+		let commandName = args.shift().toLowerCase();
 		let command = client.commands.get(commandName);
 		if (!command) {
-			if (/[\p{L}-]+/ug.test(commandName) && commandName.search(/[\p{L}-]+/ug) == 0) return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
-			else return; // Does this fix anything? Yes it does, so please do not delete this line.
+			//if (/[\p{L}-]+/ug.test(commandName) && commandName.search(/[\p{L}-]+/ug) == 0) return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
+			//else return; // Does this fix anything? Yes it does, so please do not delete this line.
+			const stringSimilarity = require('string-similarity');
+			var allCommandName = [];
+			var commandValues = client.commands.values();
+			var checker;
+			for (const cmd of commandValues) {
+				allCommandName.push(cmd.config.name);
+			}
+			checker = stringSimilarity.findBestMatch(commandName, allCommandName);
+			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
+			else return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 		}
 
 		//========= Check permssion =========//
@@ -38,33 +48,30 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		const now = Date.now();
 		const timestamps = client.cooldowns.get(command.config.name);
 		const cooldownAmount = (command.config.cooldowns || 1) * 1000;
-		if (timestamps.has(threadID)) {
-			const expirationTime = timestamps.get(threadID) + cooldownAmount;
+		if (timestamps.has(senderID)) {
+			const expirationTime = timestamps.get(senderID) + cooldownAmount;
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
 				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, threadID, async (err, info) => {
 					await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-					api.unsendMessage(messageID);
+					api.unsendMessage(info.messageID);
 				}, messageID);
 			}
 		}
-		timestamps.set(threadID, now);
-		setTimeout(() => timestamps.delete(threadID), cooldownAmount);
+		timestamps.set(senderID, now);
+		setTimeout(() => timestamps.delete(senderID), cooldownAmount);
 
 		//========= Run command =========//
 		try {
-			command.run({ api, __GLOBAL, client, models, User, Thread, Currency });
+			command.run({ api, __GLOBAL, client, event, args, models, User, Thread, Currency });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
 		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
-			var time = Date.now();
-			var hours = Math.floor(time / (60 * 60));
-			var minutes = Math.floor((time % (60 * 60)) / 60);
-			var seconds = Math.floor(time % 60);
-			logger(`[ ${hours}:${minutes}:${seconds} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+			var time = new Date();
+			logger(`[ ${time.toLocaleString()} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }

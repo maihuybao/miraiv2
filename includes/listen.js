@@ -1,6 +1,5 @@
 //=========Call Variable=========//
 
-let needReload;
 const logger = require("../utils/log.js");
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
@@ -31,16 +30,17 @@ const __GLOBAL = new Object({
 
 module.exports = function({ api, models }) {
 
-	const User = require("./controllers/user")({ api, __GLOBAL, client, models });
-	const Thread = require("./controllers/thread")({ api, __GLOBAL, client, models });
-	const Currency = require("./controllers/currency")({ api, __GLOBAL, client, models });
+	const User = require("./controllers/user")({ models, api }),
+			Thread = require("./controllers/thread")({ models, api }),
+			Currency = require("./controllers/currency")({ models });
 
 	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
-	const changeName = require("./handle/changeName")({ api, __GLOBAL, client });
+	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, Thread, User, Currency, models });
 
 //========= Check update for you :3 =========//
 
@@ -56,9 +56,9 @@ module.exports = function({ api, models }) {
 			modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
 		}
 	}).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
-	
+
 	//========= Get all command files =========//
-	
+
 	const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 	for (const file of commandFiles) {
 		const command = require(join(__dirname, "../commands", `${file}`));
@@ -81,12 +81,12 @@ module.exports = function({ api, models }) {
 			logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
 		}
 		catch (error) {
-			return logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
+			logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 		}
 	}
-	
+
 	//========= Get all event files =========//
-	
+
 	const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
 	for (const file of eventFiles) {
 		const event = require(join(__dirname, "../events", `${file}`));
@@ -109,12 +109,12 @@ module.exports = function({ api, models }) {
 			logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
 		}
 		catch (error) {
-			return logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
+			logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
 		}
 	}
-	
+
 	//========= Set variable to __GLOBAL =========//
-	
+
 	const config = require("../config.json");
 	if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
 	
@@ -127,7 +127,6 @@ module.exports = function({ api, models }) {
 	catch (error) {
 		return logger("Không thể load config!", "[ LOADER ]");
 	}
-
 
 //========= Set variable from database =========//
 
@@ -154,16 +153,17 @@ module.exports = function({ api, models }) {
 		switch (event.type) {
 			case "message":
 			case "message_reply": 
-				handleCommand({ event });
-				handleReply({ event });
-				handleCommandEvent({ event });
-				changeName({ event });
+				handleCommand({ event })
+				handleReply({ event })
+				handleCommandEvent({ event })
+				handleChangeName({ event })
+				handleCreateDatabase({ event })
 				break;
 			case "event":
-				handleEvent({ event });
+				handleEvent({ event })
 				break;
 			case "message_reaction":
-				handleReaction({ event });
+				handleReaction({ event })
 				break;
 			default:
 				break;

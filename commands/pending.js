@@ -9,7 +9,7 @@ module.exports.config = {
 	cooldowns: 5
 };
 
-module.exports.handleReaction = function({ api, event, client, __GLOBAL, handleReaction }) {
+module.exports.handleReaction = async function({ api, event, client, __GLOBAL, handleReaction }) {
 	let events = client.events.get("joinEvents");
 	let json = {
 		logMessageData: {
@@ -29,13 +29,13 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	api.getThreadList(100, null, ["PENDING", "OTHER"], (err, list) => {
 		api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, event.messageID);
 		list.forEach((infoPending) => {
-			if (!info.isGroup || info.isSubscribed == false) return;
+			if (!infoPending.isGroup || infoPending.isSubscribed == false) return api.deleteThread(infoPending.threadID);
 			api.sendMessage(
 			'Tên nhóm: ' + infoPending.name +
 			'\nID: ' + infoPending.threadID
 			, event.threadID, (error, info) => {
 				client.handleReaction.push({
-					name: "checkpending",
+					name: "pending",
 					messageID: info.messageID,
 					author: event.senderID,
 					pending: infoPending.threadID

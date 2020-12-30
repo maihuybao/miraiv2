@@ -33,6 +33,7 @@
 		"body-parser": "",
 		"chalk": "",
 		"child_process": "",
+		"figlet": "",
 		"fca-unofficial": "",
 		"fs-extra": "",
 		"ms": "",
@@ -44,6 +45,6 @@
 		"sequelize": "",
 		"npmlog": "",
 		"sqlite3": "",
-		"unzip": ""
+		"string-similarity": ""
 	}
 }

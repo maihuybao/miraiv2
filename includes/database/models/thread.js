@@ -25,8 +25,7 @@ module.exports = function({ sequelize, Sequelize }) {
 			defaultValue: null
 		},
 		otherInfo: {
-			type: Sequelize.JSON,
-			defaultValue: '{}'
+			type: Sequelize.JSON
 		}
 	});
 	return thread;

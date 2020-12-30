@@ -16,6 +16,9 @@ catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
 }
 
+require("npmlog").info = () => {};
+require("npmlog").pause();
+
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (error, api) => {
 		console.log(error);
@@ -31,15 +34,14 @@ function onBot({ models }) {
 		});
 		api.listenMqtt(listen);
 
+		//kill listen
 		setInterval(() => {
-			//Kill Listen
-			api.listenMqtt(listen).stopListening();
+			api.listenMqtt(listen, (err) => logger("Error Restart Listen", "[ SYSTEM ]")).stopListening();
+			//start listen
 			setTimeout(() => {
-				//clean clean require and listen again
-				delete require.cache[require.resolve('./includes/listen')];
-				api.listenMqtt(listen);
-			}, 2000)
-		}, 600000);
+				api.listenMqtt(listen, (err) => logger("Error Start Listen", "[ SYSTEM ]"));
+			}, 5000);
+		}, 300000);
 	});
 }
 

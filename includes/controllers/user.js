@@ -1,5 +1,6 @@
 const logger = require("../../utils/log.js");
-module.exports = function ({ models, api, __GLOBAL }) {
+
+module.exports = function ({ models, api }) {
 	const User = models.use('user');
 
 	async function getInfo(id) {
@@ -22,8 +23,10 @@ module.exports = function ({ models, api, __GLOBAL }) {
 		}
 	}
 
-	async function getData(userID, value) {
-		return (await User.findOne({ where: { userID } })).get({ plain: true })[value];
+	async function getData(userID) {
+		const data = (await User.findOne({ where: { userID } }));
+		if (data) return data.get({ plain: true });
+		else return null;
 	}
 
 	async function setData(userID, options = {}) {
@@ -41,14 +44,14 @@ module.exports = function ({ models, api, __GLOBAL }) {
 		return (await User.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData({ userID, defaults }) {
+	async function createData({userID, defaults}) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
-			(await thread.findOrCreate({ where: { userID }, defaults }))
+			(await User.findOrCreate({ where: { userID }, defaults }))
 			return true;
 		}
 		catch (e) {
-			logger(err, 2);
+			logger(e, 2);
 			return false;
 		}
 	}

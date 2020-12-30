@@ -17,12 +17,14 @@ module.exports.config = {
 	]
 };
 
-module.exports.handleReaction = async function({ api, event, args, client, __GLOBAL, models, handleReaction }) {
-	const thread = models.use("thread");
-	if (!await thread.findOne({ where: { threadID: event.threadID } })) (await thread.findOrCreate({ where: { threadID: event.threadID }, defaults: { settings: { "PREFIX": handleReaction.PREFIX } } }));
-	else (await thread.findOne({ where: { threadID: event.threadID } })).update({ settings: { "PREFIX": handleReaction.PREFIX } });
-	client.threadSetting.set(event.threadID, {"PREFIX": handleReaction.PREFIX});
-	return api.sendMessage("Đã đổi prefix của nhóm thành: " + handleReaction.PREFIX, event.threadID, event.messageID);
+module.exports.handleReaction = async function({ api, event, args, client, __GLOBAL, Thread, handleReaction }) {
+	let { threadID, messageID } = event;
+	let settings, data;
+	data = (await Thread.getData(threadID)).settings;
+	data["PREFIX"] = handleReaction.PREFIX;
+	await Thread.setData({ threadID, options: { settings: data } });
+	await client.threadSetting.set(threadID, data);
+	return api.sendMessage(`Đã chuyển đổi prefix của nhóm thành: ${handleReaction.PREFIX}`, threadID, messageID);
 }
 
 module.exports.run = async ({ api, event, args, client }) => {

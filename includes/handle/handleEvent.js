@@ -10,11 +10,8 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 				try {
 					eventRun.run({ api, __GLOBAL, client, models, User, Thread, Currency });
 					if (__GLOBAL.settings.DEVELOP_MODE == "on") {
-						var time = Date.now();
-						var hours = Math.floor(time / (60 * 60));
-						var minutes = Math.floor((time % (60 * 60)) / 60);
-						var seconds = Math.floor(time % 60);
-						logger(`[ ${hours}:${minutes}:${seconds} ]Event Executed: ${eventRun.config.name} |  Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+						var time = new Date();
+						logger(`[ ${time.toLocaleString()} ]Event Executed: ${eventRun.config.name} |  Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}
 				}
 				catch (error) {

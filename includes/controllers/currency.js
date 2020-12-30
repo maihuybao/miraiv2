@@ -1,5 +1,6 @@
 const logger = require("../../utils/log.js");
-module.exports = function ({ models, api, __GLOBAL }) {
+
+module.exports = function ({ models }) {
 	const Currency = models.use('currency');
 
 	async function getAll(...data) {
@@ -18,8 +19,10 @@ module.exports = function ({ models, api, __GLOBAL }) {
 		}
 	}
 
-	async function getData({ threadID, userID, value }) {
-		return (await Currency.findOne({ where: { threadID, userID } })).get({ plain: true })[value];
+	async function getData({ threadID, userID }) {
+		const data = (await Currency.findOne({ where: { threadID, userID } }));
+		if (data) return data.get({ plain: true });
+		else return null;
 	}
 
 	async function setData(threadID, userID, options = {}) {
@@ -44,7 +47,7 @@ module.exports = function ({ models, api, __GLOBAL }) {
 			return true;
 		}
 		catch (e) {
-			logger(err, 2);
+			logger(e, 2);
 			return false;
 		}
 	}

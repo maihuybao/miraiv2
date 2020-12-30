@@ -11,19 +11,17 @@ module.exports.config = {
 };
 
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
-       var mention = Object.keys(event.mentions);
-		return api.getThreadInfo(event.threadID, (err, info) => {
-				if (err) return api.sendMessage("Đã có lỗi xảy ra!",event.threadID);
-				if (!info.adminIDs.some(item => item.id == api.getCurrentUserID())) return api.sendMessage('Cần quyền quản trị viên nhóm\nVui lòng thêm và thử lại!', event.threadID, event.messageID);
-      if(!mention[0]) return api.sendMessage("Bạn phải tag người cần kick",event.threadID)
-      if (info.adminIDs.some(item => item.id == event.senderID)) {
-        for (let o in mention) {
-          setTimeout(() => {
-            api.removeUserFromGroup(mention[o],event.threadID) 
-          },3000)
-        }
-      }
-   else return api.sendMessage('Bạn không phải là admin của nhóm!', event.threadID, event.messageID)
-			})
-     
+	var mention = Object.keys(event.mentions);
+	return api.getThreadInfo(event.threadID, (err, info) => {
+		if (err) return api.sendMessage("Đã có lỗi xảy ra!",event.threadID);
+		if (!info.adminIDs.some(item => item.id == api.getCurrentUserID())) return api.sendMessage('Cần quyền quản trị viên nhóm\nVui lòng thêm và thử lại!', event.threadID, event.messageID);
+		if(!mention[0]) return api.sendMessage("Bạn phải tag người cần kick",event.threadID);
+		if (info.adminIDs.some(item => item.id == event.senderID)) {
+			for (let o in mention) {
+				setTimeout(() => {
+					api.removeUserFromGroup(mention[o],event.threadID) 
+				},3000)
+			}
+		}
+	})     
 }
