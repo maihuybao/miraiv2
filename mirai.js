@@ -24,6 +24,7 @@ function onBot({ models }) {
 		console.log(error);
 		if (error) return logger(JSON.stringify(error), 2);
 		let listen = require("./includes/listen")({ api, models });
+		let onListen = () => api.listenMqtt(listen);
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		api.setOptions({
 			forceLogin: true,
@@ -32,15 +33,15 @@ function onBot({ models }) {
 			updatePresence: false,
 			selfListen: false
 		});
-		api.listenMqtt(listen);
+		onListen();
 
 		//kill listen
 		setInterval(() => {
-			api.listenMqtt(listen, (err) => logger("Error Restart Listen", "[ SYSTEM ]")).stopListening();
+			onListen().stopListening();
 			//start listen
 			setTimeout(() => {
-				api.listenMqtt(listen, (err) => logger("Error Start Listen", "[ SYSTEM ]"));
-			}, 5000);
+				onListen()
+			}, 2000);
 		}, 300000);
 	});
 }

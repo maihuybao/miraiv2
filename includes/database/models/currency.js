@@ -5,10 +5,6 @@ module.exports = function({ sequelize, Sequelize }) {
 			primaryKey: true,
 			autoIncrement: true
 		},
-		threadID: {
-			type: Sequelize.BIGINT,
-			unique: true
-		},
 		userID: {
 			type: Sequelize.BIGINT,
 			unique: true

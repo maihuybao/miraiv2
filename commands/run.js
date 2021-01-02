@@ -18,7 +18,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Thread
 		wasm: false,
 		timeout: 100,
 		console: 'inherit',
-		sandbox: { out, api, event, args, client, __GLOBAL, Thread, User, Currency, models },
+		sandbox: { process, out, api, event, args, client, __GLOBAL, Thread, User, Currency, models },
 	});
 	vm.run(args.join(" "), vm.js);
 }

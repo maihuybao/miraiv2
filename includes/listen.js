@@ -1,7 +1,6 @@
 //=========Call Variable=========//
 
 const logger = require("../utils/log.js");
-const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
@@ -34,8 +33,9 @@ module.exports = function({ api, models }) {
 			Thread = require("./controllers/thread")({ models, api }),
 			Currency = require("./controllers/currency")({ models });
 
-	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency });
-	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
+	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
+	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
 	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
@@ -130,7 +130,6 @@ module.exports = function({ api, models }) {
 
 //========= Set variable from database =========//
 
-	console.clear();
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
 	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
@@ -150,23 +149,31 @@ module.exports = function({ api, models }) {
 	return async (error, event) => {
 		if (error) return logger(JSON.stringify(error), 2);
 
-		switch (event.type) {
-			case "message":
-			case "message_reply": 
-				handleCommand({ event })
-				handleReply({ event })
-				handleCommandEvent({ event })
-				handleChangeName({ event })
-				handleCreateDatabase({ event })
-				break;
-			case "event":
-				handleEvent({ event })
-				break;
-			case "message_reaction":
-				handleReaction({ event })
-				break;
-			default:
-				break;
+		function sendEvent({ event }) {
+			switch (event.type) {
+				case "message":
+				case "message_reply": 
+					handleCommand({ event })
+					handleReply({ event })
+					handleCommandEvent({ event })
+					handleChangeName({ event })
+					handleCreateDatabase({ event })
+					break;
+				case "event":
+					handleEvent({ event })
+					break;
+				case "message_reaction":
+					handleReaction({ event })
+					break;
+				default:
+					break;
+			}
+		}
+		try {
+			sendEvent({ event })
+		}
+		catch (e) {
+			sendEvent({ event })
 		}
 	};
 }

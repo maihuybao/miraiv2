@@ -19,15 +19,15 @@ module.exports = function ({ models }) {
 		}
 	}
 
-	async function getData({ threadID, userID }) {
-		const data = (await Currency.findOne({ where: { threadID, userID } }));
+	async function getData(userID) {
+		const data = (await Currency.findOne({ where: { userID }}));
 		if (data) return data.get({ plain: true });
 		else return null;
 	}
 
-	async function setData(threadID, userID, options = {}) {
+	async function setData(userID, options = {}) {
 		try {
-			(await Currency.findOne({ where: { threadID, userID } })).update(options);
+			(await Currency.findOne({ where: { userID } })).update(options);
 			return true;
 		}
 		catch (e) {
@@ -36,14 +36,14 @@ module.exports = function ({ models }) {
 		}
 	}
 
-	async function delData(threadID, userID) {
-		return (await Currency.findOne({ where: { threadID, userID } })).destroy();
+	async function delData(userID) {
+		return (await Currency.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData({ threadID, userID, defaults }) {
+	async function createData({ userID, defaults }) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
-			(await Currency.findOrCreate({ where: { threadID, userID }, defaults }))
+			(await Currency.findOrCreate({ where: { userID }, defaults }))
 			return true;
 		}
 		catch (e) {

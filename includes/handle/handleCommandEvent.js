@@ -7,7 +7,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		for (const command of commands) {
 			if (command.event) {
 				try {
-					command.event({ api, event, client, __GLOBAL, models });
+					command.event({ api, event, client, __GLOBAL, models, utils });
 				}
 				catch (error) {
 					logger(error + " at event command: " + command.config.name , 2);

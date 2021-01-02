@@ -2,9 +2,8 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
 
-module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency }) {
+module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency, utils }) {
 	return async function({ event }) {
-		const funcs = require("../../utils/funcs.js")({ api, __GLOBAL });
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
@@ -63,7 +62,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 
 		//========= Run command =========//
 		try {
-			command.run({ api, __GLOBAL, client, event, args, models, User, Thread, Currency });
+			command.run({ api, __GLOBAL, client, event, args, models, User, Thread, Currency, utils });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
