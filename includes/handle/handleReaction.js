@@ -2,7 +2,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 	return async function({ event }) {
 		const { handleReaction } = client;
 		if (handleReaction.length !== 0) {
-			const indexOfHandle = handleReaction.findIndex(e => e.messageID == event.messageID && e.author == event.userID);
+			const indexOfHandle = handleReaction.findIndex(e => e.messageID == event.messageID);
 			if (indexOfHandle < 0) return;
 			const indexOfMessage = handleReaction[indexOfHandle];
 			const handleNeedExec = client.commands.get(indexOfMessage.name);

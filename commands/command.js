@@ -1,11 +1,11 @@
 module.exports.config = {
-	name: "module",
+	name: "command",
 	version: "1.0.0",
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module",
 	commandCategory: "system",
-	usages: "module [exec] args",
+	usages: "command [exec] args",
 	cooldowns: 5,
 	info: [
 		{
@@ -18,7 +18,7 @@ module.exports.config = {
 };
 
 //Reload module
-async function enableModule({ nameOfModule, event, api, client, __GLOBAL }) {
+async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 	const logger = require("../utils/log.js")
 	const { join, resolve } = require("path");
 	const { execSync } = require('child_process');
@@ -48,7 +48,7 @@ async function enableModule({ nameOfModule, event, api, client, __GLOBAL }) {
 	}
 }
 
-function disableModule({ nameOfModule, event, api, client, args }) {
+function unloadModule({ nameOfModule, event, api, client, args }) {
 	try{
 		client.commands.delete(nameOfModule);
 		return api.sendMessage(`Disabled command ${nameOfModule}!`, event.threadID);
@@ -58,39 +58,12 @@ function disableModule({ nameOfModule, event, api, client, args }) {
 	}
 }
 
-/*//Import module
-async function fetchModule({ url, event, api, client, __GLOBAL }) {
-	const { readdirSync, createReadStream, createWriteStream, unlinkSync, rename } = require("fs-extra");
-	const request = require("request");
-	const unzip = require("unzip");
-	const { join } = require("path");
-	const regex = /^https?:\/\/(?:[a-z\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:zip)$/;
-	if (!regex.test(url)) return api.sendMessage("Url module của bạn không phải ở dạng .zip!", event.threadID, event.messageID);
-	return require(url).pipe(createWriteStream(__dirname + `/cache/tempModule.${url.substring(url.lastIndexOf(".") + 1)}`)).on("close", () => {
-		createReadStream(__dirname + `/cache/tempModule.${url.substring(url.lastIndexOf(".") + 1)}`).pipe(unzip.Extract({ path: 'path' }));
-		const files = readdirSync(join(__dirname, "cache/tempModule")).filter((file) => file.endsWith(".js") && !file.includes('example'));
-		for (const file of files) {
-			const currentPath = join(__dirname, "cache/tempModule", `${file}.js`);
-			const destinationPath = join(__dirname, `${file}.js`);
-			rename(currentPath, destinationPath, function (err) {
-				if (err) return api.sendMessage("cant move your module!", event.threadID);
-				enableModule({nameOfModule: file, event, api, client});
-			})
-		}
-		unlinkSync(__dirname + "/cache/tempModule");
-		unlinkSync(__dirname + `/cache/tempModule.${url.substring(url.lastIndexOf(".") + 1)}`);
-		return api.sendMessage("Module của bạn đã được cài đặt thành công!", event.threadID);
-	});
-}*/
-
 //reload config
-function reloadConfig({ event, api, client, __GLOBAL }) {
+function reloadConfig({ event, api, client, __GLOBAL, utils }) {
 	delete require.cache[require.resolve(`../config.js`)];
 	const config = require("../config.json");
 	try {
-		for (let [name, value] of Object.entries(config)) {
-			__GLOBAL.settings[name] = value;
-		}
+		for (let [name, value] of Object.entries(config)) __GLOBAL.settings[name] = value;
 		return api.sendMessage("Config Reloaded!", event.threadID, event.messageID);
 	}
 	catch (error) {
@@ -109,9 +82,8 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 		}
 		return api.sendMessage("Hiện tại đang có " + client.commands.size + " module có thể sử dụng!" + infoCommand, event.threadID, event.messageID);
 	}
-	else if (args[0] == "enable") enableModule({nameOfModule: args[1], event, api, client});
-	else if (args[0] == "disable") disableModule({nameOfModule: args[1], event, api, client, args});
+	else if (args[0] == "load") loadModule({nameOfModule: args[1], event, api, client});
+	else if (args[0] == "unload") unloadModule({nameOfModule: args[1], event, api, client, args});
 	else if (args[0] == "reloadconfig") reloadConfig({ event, api, client, __GLOBAL });
-	//else if (args[0] == "import") fetchModule({ url: args[1], event, api, client, __GLOBAL });
-	else return api.sendMessage("Input bạn nhập không tồn tại trong câu lệnh ;w;", event.threadID, event.messageID);
+	else return utils.throwError("command", event.threadID, event.messageID);
 }

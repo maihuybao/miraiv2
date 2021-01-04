@@ -104,13 +104,19 @@ let commands = {
 }
 
 if (fs.existsSync(__dirname + "/.autorun")) {
-	(async () => {
+	async function Loop() {
 		var content = fs.readFileSync(__dirname + "/.autorun");
 		console.log(`Hiện tại bạn đang đặt tự chạy mặc định là: ${commands[content].de}, bắt đầu thực thi sau 500ms`);
 		console.log(`Để có thể ngưng tự động chạy, bạn chỉ cần xoá file ${chalk.bold.red(".autorun")} để tắt chức năng này`);
 		await new Promise(resolve => setTimeout(resolve, 500));
 		await commands[content].run();
-	})();
+	}
+	try {
+		Loop();
+	}
+	catch (e) {
+		Loop();
+	}
 }
 else {
 	console.clear();

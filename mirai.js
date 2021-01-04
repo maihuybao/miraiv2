@@ -35,7 +35,7 @@ function onBot({ models }) {
 		});
 		onListen();
 
-		//kill listen
+		/*//kill listen
 		setInterval(() => {
 			onListen().stopListening();
 			//start listen
@@ -43,6 +43,7 @@ function onBot({ models }) {
 				onListen()
 			}, 2000);
 		}, 300000);
+		*/
 	});
 }
 

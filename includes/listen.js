@@ -160,6 +160,7 @@ module.exports = function({ api, models }) {
 					handleCreateDatabase({ event })
 					break;
 				case "event":
+				case "message_unsend":
 					handleEvent({ event })
 					break;
 				case "message_reaction":
