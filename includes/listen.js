@@ -21,11 +21,32 @@ const client = new Object({
 
 const __GLOBAL = new Object({
 	settings: new Array()
-});
+})
 
 //========= Do something in here o.o =========//
 
 //========= Handle Events =========//
+
+function sendEvent({ event }) {
+	switch (event.type) {
+		case "message":
+		case "message_reply": 
+			handleCommand({ event })
+			handleReply({ event })
+			handleCommandEvent({ event })
+			handleChangeName({ event })
+			handleCreateDatabase({ event })
+			break;
+		case "event":
+			handleEvent({ event })
+			break;
+		case "message_reaction":
+			handleReaction({ event })
+			break;
+		default:
+			break;
+	}
+}
 
 module.exports = function({ api, models }) {
 
@@ -61,7 +82,7 @@ module.exports = function({ api, models }) {
 
 	const commandFiles = readdirSync(join(__dirname, "../modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 	for (const file of commandFiles) {
-		let command = require(join(__dirname, "../modules/commands", `${file}`));
+		const command = require(join(__dirname, "../modules/commands", `${file}`));
 		try {
 			if (!command.config || !command.run) throw new Error(`Sai format!`);
 			if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
@@ -89,7 +110,7 @@ module.exports = function({ api, models }) {
 
 	const eventFiles = readdirSync(join(__dirname, "../modules/events")).filter((file) => file.endsWith(".js"));
 	for (const file of eventFiles) {
-		let event = require(join(__dirname, "../modules/events", `${file}`));
+		const event = require(join(__dirname, "../modules/events", `${file}`));
 		try {
 			if (!event.config || !event.run) throw new Error(`Sai format!`);
 			if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
@@ -134,9 +155,9 @@ module.exports = function({ api, models }) {
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
 	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
 
-	var threadBanned, userBanned, threadSetting;
 	(async () => {
 		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
+		var threadBanned, userBanned, threadSetting;
 		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		threadSetting = (await Thread.getAll(['threadID', 'settings'])).map(e => e.get({ plain: true }));
@@ -147,7 +168,8 @@ module.exports = function({ api, models }) {
 	})();
 
 	return async (error, event) => {
-		if (error) logger(JSON.stringify(error), 2);
+		if (error) return logger(JSON.stringify(error), 2);
+
 		try {
 			sendEvent({ event })
 		}
