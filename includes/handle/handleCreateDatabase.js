@@ -17,7 +17,7 @@ module.exports = function({ __GLOBAL, User, Thread, Currency, models }) {
 			await User.createData({ userID: senderID, defaults: { otherInfo } });
 			logger(`New User: ${senderID}`, "[ DATABASE ]")
 		}
-		if ((await Currency.getData({userID: senderID})) == null) {
+		if ((await Currency.getData(userID = senderID)) == null) {
 			await Currency.createData({ userID: senderID, defaults: { otherInfo } });
 			logger(`New Currency: ${senderID}`, "[ DATABASE ]")
 		}

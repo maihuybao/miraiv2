@@ -56,7 +56,7 @@ module.exports.event = async ({ event, api, client }) => {
 	}
 	if (body.indexOf("ready") !== -1) {
 		if (values.chiabai != 1) return;
-		player = values.player.find(item => item.id == senderID);
+		let player = values.player.find(item => item.id == senderID);
 		if (player.ready == true) return;
 		values.ready += 1;
 		player.ready = true;
@@ -110,7 +110,7 @@ module.exports.run = async ({ api, event, args, client }) => {
 	}
 	else if (args[0] == "leave") {
 		if (!values) return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
-		if (!values.player.some(item => item.id == event.senderID)) return api.sendMessage("Bạn chưa tham gia vào bàn bài cào trong nhóm này!", threadID, messageID);
+		if (!values.player.some(item => item.id == event.senderID)) return api.sendMessage("Bạn chưa tham gia vào bàn bài cào trong nhóm này!", event.threadID, event.messageID);
 		if (values.author == event.senderID) {
 			client.baicao.delete(event.threadID);
 			api.sendMessage("Author đã rời khỏi bàn, đồng nghĩa với việc bàn sẽ bị giải tán!", event.threadID, event.messageID);
@@ -131,7 +131,7 @@ module.exports.run = async ({ api, event, args, client }) => {
 	}
 	else if (args[0] == "test" && values.author == event.senderID) {
 		if (!values) return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
-		if (!values.player.some(item => item.id == event.senderID)) return api.sendMessage("Bạn chưa tham gia vào bàn bài cào trong nhóm này!", threadID, messageID);
+		if (!values.player.some(item => item.id == event.senderID)) return api.sendMessage("Bạn chưa tham gia vào bàn bài cào trong nhóm này!", event.threadID, event.messageID);
 		if (values.player.length <= 1) return api.sendMessage("Hiện tại bàn của bạn không có người chơi nào tham gia, bạn có thể mời người đấy tham gia bằng cách yêu cầu người chơi khác nhập baicao join", event.threadID, event.messageID);
 		values.player.forEach(info => {
 			api.sendMessage("Bạn có thấy tin nhắn này?", info.id);

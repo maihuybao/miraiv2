@@ -6,7 +6,12 @@ module.exports = function({ api, __GLOBAL, client }) {
 
 	function throwError(command, threadID, messageID) {
 		let threadSetting = client.threadSetting.get(threadID);
-		let prefix = threadSetting.PREFIX || __GLOBAL.settings.PREFIX;;
+		let prefix = "";
+		if (threadSetting) {
+			if (typeof threadSetting.PREFIX === "undefined") prefix = __GLOBAL.settings.PREFIX
+			else prefix = threadSetting.PREFIX;
+		}
+		else prefix = __GLOBAL.settings.PREFIX;
 		return api.sendMessage(`[!] » Lệnh bạn đang sử dụng không tồn tại, vui lòng sử dụng ${prefix}help ${command} để biết thêm chi tiết cách sử dụng!`, threadID, messageID);
 	}
 

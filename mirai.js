@@ -1,10 +1,10 @@
 //=========Call Variable =========//
 
-const login = require("./includes/login");
 const { writeFileSync, readFileSync, existsSync } = require("fs-extra");
 const { resolve } = require("path");
 const logger = require("./utils/log.js");
 const { Sequelize, sequelize } = require("./includes/database");
+const login = require("fca-unofficial");
 let appStateFile;
 
 //=========Login =========//
@@ -20,11 +20,12 @@ require("npmlog").info = () => {};
 require("npmlog").pause();
 
 function onBot({ models }) {
-	login({ appState: require(appStateFile) }, (error, api) => {
-		console.log(error);
-		if (error) return logger(JSON.stringify(error), 2);
+	login({ appState: require(appStateFile) }, (err, api) => {
+		if (err) return require("./error")({ error: err });
+
 		let listen = require("./includes/listen")({ api, models });
 		let onListen = () => api.listenMqtt(listen);
+
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		api.setOptions({
 			forceLogin: true,
@@ -33,17 +34,14 @@ function onBot({ models }) {
 			updatePresence: false,
 			selfListen: false
 		});
-		onListen();
 
-		/*//kill listen
-		setInterval(() => {
+		onListen();
+		setTimeout(() => {
 			onListen().stopListening();
-			//start listen
 			setTimeout(() => {
 				onListen()
 			}, 2000);
 		}, 300000);
-		*/
 	});
 }
 

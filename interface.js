@@ -108,6 +108,8 @@ if (fs.existsSync(__dirname + "/.autorun")) {
 		var content = fs.readFileSync(__dirname + "/.autorun");
 		console.log(`Hiện tại bạn đang đặt tự chạy mặc định là: ${commands[content].de}, bắt đầu thực thi sau 500ms`);
 		console.log(`Để có thể ngưng tự động chạy, bạn chỉ cần xoá file ${chalk.bold.red(".autorun")} để tắt chức năng này`);
+		await execSync('npm update --force', {stdio: 'inherit'});
+		console.log(`Đã cập nhật toàn bộ package lên phiên bản cao nhất!`);
 		await new Promise(resolve => setTimeout(resolve, 500));
 		await commands[content].run();
 	}

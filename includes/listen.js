@@ -21,7 +21,7 @@ const client = new Object({
 
 const __GLOBAL = new Object({
 	settings: new Array()
-})
+});
 
 //========= Do something in here o.o =========//
 
@@ -59,9 +59,9 @@ module.exports = function({ api, models }) {
 
 	//========= Get all command files =========//
 
-	const commandFiles = readdirSync(join(__dirname, "../commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
+	const commandFiles = readdirSync(join(__dirname, "../modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 	for (const file of commandFiles) {
-		const command = require(join(__dirname, "../commands", `${file}`));
+		let command = require(join(__dirname, "../modules/commands", `${file}`));
 		try {
 			if (!command.config || !command.run) throw new Error(`Sai format!`);
 			if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
@@ -73,7 +73,7 @@ module.exports = function({ api, models }) {
 					logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
 					if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
 					else execSync('npm install -s ' + command.config.dependencies.join(" "));
-					delete require.cache[require.resolve(`../commands/${file}`)];
+					delete require.cache[require.resolve(`../modules/commands/${file}`)];
 					logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
 				}
 			}
@@ -87,9 +87,9 @@ module.exports = function({ api, models }) {
 
 	//========= Get all event files =========//
 
-	const eventFiles = readdirSync(join(__dirname, "../events")).filter((file) => file.endsWith(".js"));
+	const eventFiles = readdirSync(join(__dirname, "../modules/events")).filter((file) => file.endsWith(".js"));
 	for (const file of eventFiles) {
-		const event = require(join(__dirname, "../events", `${file}`));
+		let event = require(join(__dirname, "../modules/events", `${file}`));
 		try {
 			if (!event.config || !event.run) throw new Error(`Sai format!`);
 			if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
@@ -101,7 +101,7 @@ module.exports = function({ api, models }) {
 					logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
 					if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
 					else execSync('npm install -s ' + command.config.dependencies.join(" "));
-					delete require.cache[require.resolve(`../event/${file}`)];
+					delete require.cache[require.resolve(`../modules/events/${file}`)];
 					logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`, "[ LOADER ]");
 				}
 			}
@@ -134,9 +134,9 @@ module.exports = function({ api, models }) {
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
 	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
 
+	var threadBanned, userBanned, threadSetting;
 	(async () => {
 		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		var threadBanned, userBanned, threadSetting;
 		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		threadSetting = (await Thread.getAll(['threadID', 'settings'])).map(e => e.get({ plain: true }));
@@ -147,29 +147,7 @@ module.exports = function({ api, models }) {
 	})();
 
 	return async (error, event) => {
-		if (error) return logger(JSON.stringify(error), 2);
-
-		function sendEvent({ event }) {
-			switch (event.type) {
-				case "message":
-				case "message_reply": 
-					handleCommand({ event })
-					handleReply({ event })
-					handleCommandEvent({ event })
-					handleChangeName({ event })
-					handleCreateDatabase({ event })
-					break;
-				case "event":
-				case "message_unsend":
-					handleEvent({ event })
-					break;
-				case "message_reaction":
-					handleReaction({ event })
-					break;
-				default:
-					break;
-			}
-		}
+		if (error) logger(JSON.stringify(error), 2);
 		try {
 			sendEvent({ event })
 		}

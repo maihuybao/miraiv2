@@ -10,9 +10,7 @@ module.exports.config = {
 	dependencies: ["fs-extra"]
 }
 const fs = require("fs-extra");
-if (!fs.existsSync(__dirname + "/cache/shortcut.json")) {
-  fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
-}
+if (!fs.existsSync(__dirname + "/cache/shortcut.json")) fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
 
 module.exports.event = function({ api, event, client, __GLOBAL }) {
 	if (event.body.length !== -1) {
