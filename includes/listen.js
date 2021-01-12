@@ -3,8 +3,8 @@ const logger = require("../utils/log.js");
 module.exports = function({ api, client, __GLOBAL, models }) {
 
 	const User = require("./controllers/user")({ models, api }),
-			Thread = require("./controllers/thread")({ models, api }),
-			Currency = require("./controllers/currency")({ models });
+				Thread = require("./controllers/thread")({ models, api }),
+				Currency = require("./controllers/currency")({ models });
 
 	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
 	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });

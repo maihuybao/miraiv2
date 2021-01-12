@@ -9,6 +9,9 @@ module.exports = function({ sequelize, Sequelize }) {
 			type: Sequelize.BIGINT,
 			unique: true
 		},
+		name: {
+			type: Sequelize.STRING,
+		},
 		settings: {
 			type: Sequelize.JSON
 		},

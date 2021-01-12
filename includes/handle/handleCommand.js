@@ -5,13 +5,13 @@ const stringSimilarity = require('string-similarity');
 
 module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency, utils }) {
 	return async function({ event }) {
+		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
 		var threadSetting = client.threadSetting.get(event.threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
-		var timeStart = Date.now();
 
 		//=========Get command user use=========//
 
@@ -64,7 +64,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		}
 		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
 			var time = new Date();
-			logger(`[ ${time.toLocaleString()} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+			logger(`[ ${time.toLocaleString()} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }

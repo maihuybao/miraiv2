@@ -64,5 +64,4 @@ module.exports = function ({ models, api }) {
 		delData,
 		createData
 	}
-
 }

@@ -1,9 +1,8 @@
 //=========Call Variable =========//
 
-const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
+const { readdirSync, readFileSync, writeFileSync } = require("fs-extra");
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
-const node_modules = '../node_modules/';
 const semver = require('semver');
 const axios = require("axios");
 const logger = require("./utils/log.js");
@@ -29,26 +28,19 @@ const __GLOBAL = new Object({
 //=========Login =========//
 
 try {
-appStateFile = resolve(__dirname, './appstate.json');
+	appStateFile = resolve(__dirname, './appstate.json');
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
 }
 
-require("npmlog").info = () => {};
-require("npmlog").pause();
+require("npmlog").emitLog = () => {};
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(fs.readFileSync('./package.json')).version;
-	if (semver.lt(local, res.data.version)) {
-		logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
-		fs.writeFileSync('./.needUpdate', '');
-	}
-	else {
-		if (fs.existsSync('./.needUpdate')) fs.removeSync('./.needUpdate');
-		modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
-	}
+	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
+	else modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
