@@ -5,8 +5,7 @@ const fs = require("fs-extra");
 const os = require("os");
 const { execSync } = require('child_process');
 
-require("npmlog").info = () => {};
-require("npmlog").pause();
+require("npmlog").emitLog = () => {};
 
 let rl = readline.createInterface({
 	input: process.stdin,
@@ -151,7 +150,8 @@ else {
 			await commands[input].run();
 			rl.prompt();
 			return;
-		} else {
+		}
+		else {
 			console.log(chalk.bold.red("Tuỳ chọn của bạn không tồn tại"));
 			rl.prompt();
 			return;

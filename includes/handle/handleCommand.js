@@ -5,25 +5,25 @@ const stringSimilarity = require('string-similarity');
 
 module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency, utils }) {
 	return async function({ event }) {
+		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
-		let threadSetting = client.threadSetting.get(event.threadID) || {};
-		let prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
+		var threadSetting = client.threadSetting.get(event.threadID) || {};
+		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
-		let timeStart = Date.now();
 
 		//=========Get command user use=========//
 
-		const [matchedPrefix] = contentMessage.match(prefixRegex);
-		const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
-		let commandName = args.shift().toLowerCase();
-		let command = client.commands.get(commandName);
+		var [matchedPrefix] = contentMessage.match(prefixRegex);
+		var args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
+		var commandName = args.shift().toLowerCase();
+		var command = client.commands.get(commandName);
 		if (!command) {
-			let allCommandName = [];
-			let commandValues = client.commands.values();
+			var allCommandName = [];
+			var commandValues = client.commands.values();
 			for (let cmd of commandValues) allCommandName.push(cmd.config.name);
-			let checker = stringSimilarity.findBestMatch(commandName, allCommandName);
+			var checker = stringSimilarity.findBestMatch(commandName, allCommandName);
 			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
 			else return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 		}
@@ -63,8 +63,8 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
 		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
-			let time = new Date();
-			logger(`[ ${time.toLocaleString()} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+			var time = new Date();
+			logger(`[ ${time.toLocaleString()} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }
