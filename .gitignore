@@ -9,3 +9,4 @@ package-lock.json
 *.png
 node_modules/
 logs/
+*.sqlite
