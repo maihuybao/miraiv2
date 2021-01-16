@@ -1,6 +1,6 @@
 const logger = require("../../utils/log.js");
 
-module.exports = function({ __GLOBAL, User, Thread, Currency }) {
+module.exports = function({ __GLOBAL, api, User, Thread, Currency }) {
 	return async function({ event }) {
 		if (__GLOBAL.settings.autoCreateDB == false) return;
 		let { senderID, threadID } = event;

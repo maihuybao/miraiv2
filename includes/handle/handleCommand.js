@@ -8,8 +8,9 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
-		var threadSetting = client.threadSetting.get(event.threadID) || {};
+		var threadSetting = client.threadSetting.get(threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 

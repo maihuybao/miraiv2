@@ -23,7 +23,7 @@ module.exports.handleReaction = async function({ api, event, args, client, __GLO
 	data = (await Thread.getData(threadID)).settings;
 	data["PREFIX"] = handleReaction.PREFIX;
 	await Thread.setData({ threadID, options: { settings: data } });
-	await client.threadSetting.set(threadID, data);
+	await client.threadSetting.set(parseInt(threadID), data);
 	return api.sendMessage(`Đã chuyển đổi prefix của nhóm thành: ${handleReaction.PREFIX}`, threadID, messageID);
 }
 

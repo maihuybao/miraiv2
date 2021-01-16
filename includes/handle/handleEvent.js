@@ -3,7 +3,10 @@ const logger = require("../../utils/log.js");
 module.exports = function({ api, __GLOBAL, client }) {
 	return async function({ event }) {
 		let timeStart = Date.now();
-		if (client.userBanned.has(event.senderID) || client.threadBanned.has(event.threadID)) return;
+		let { senderID, threadID } = event;
+		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
+		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
 		for (let [key, value] of client.events.entries()) {
 			if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
 				const eventRun = client.events.get(key);

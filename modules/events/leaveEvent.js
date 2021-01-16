@@ -6,8 +6,14 @@ module.exports.config = {
 	description: "Listen events"
 };
 
-module.exports.run = async function({ api, event, client, __GLOBAL }) {
-	if (event.author == event.logMessageData.leftParticipantFbId) api.sendMessage(`${event.logMessageBody.split(' đã rời khỏi nhóm.')[0]} có vẻ chán nản nên đã rời khỏi nhóm 🥺`, event.threadID);
-	else api.sendMessage(`${/đã xóa (.*?) khỏi nhóm/.exec(event.logMessageBody)[1]} vừa bị đá khỏi nhóm 🤔`, event.threadID);
+module.exports.run = async function({ api, event, client, __GLOBAL, User }) {
+	let name;
+	try {
+		name = User.getData(event.logMessageData.leftParticipantFbId).name;	
+	}
+	catch {
+		name = (await api.getUserInfo(event.logMessageData.leftParticipantFbId))[event.logMessageData.leftParticipantFbId].name;
+	}
+	if (event.author == event.logMessageData.leftParticipantFbId) api.sendMessage(`${name} có vẻ chán nản nên đã rời khỏi nhóm 🥺`, event.threadID);
+	else api.sendMessage(`${name} vừa bị đá khỏi nhóm 🤔`, event.threadID);
 }
-//Need rewrite

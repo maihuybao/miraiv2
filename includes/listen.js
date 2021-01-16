@@ -1,7 +1,6 @@
 const logger = require("../utils/log.js");
 
 module.exports = function({ api, client, __GLOBAL, models }) {
-
 	const User = require("./controllers/user")({ models, api }),
 				Thread = require("./controllers/thread")({ models, api }),
 				Currency = require("./controllers/currency")({ models });
@@ -13,7 +12,7 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, Thread, User, Currency, models });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Thread, User, Currency, models });
 
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
@@ -24,7 +23,7 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 		var threadBanned, userBanned, threadSetting;
 		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		threadSetting = (await Thread.getAll(['threadID', 'settings'])).map(e => e.get({ plain: true }));
+		threadSetting = await Thread.getAll();
 		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
 		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
 		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));

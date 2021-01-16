@@ -29,7 +29,7 @@ module.exports = {
 			timestamps: true
 		},
 		sync: {
-			force: true
+			force: false
 		},
 	}),
 	Sequelize,

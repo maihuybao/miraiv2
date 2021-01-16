@@ -48,7 +48,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 	if (urlValid) {
 		try {
 			var songInfo = await ytdl.getInfo(args[0]);
-			let body = `Tiêu .đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
+			let body = `Tiêu đề: ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]`;
 		}
 		catch (error) {
 			api.sendMessage("Thông tin của YouTube đã xảy ra sự cố, lỗi: " + error.message, event.threadID, event.messageID);

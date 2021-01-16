@@ -53,7 +53,7 @@ for (let file of commandFiles) {
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 		if (command.config.dependencies) {
 			try {
-				for (let i of command.config.dependencies) require(i);
+				for (let i of command.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
@@ -81,7 +81,7 @@ for (let file of eventFiles) {
 		if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
 		if (event.config.dependencies) {
 			try {
-				for (let i of event.config.dependencies) require(i);
+				for (let i of event.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
