@@ -10,6 +10,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 				try {
 					eventRun.run({ api, event, __GLOBAL, client, models, User, Thread, Currency });
 					if (__GLOBAL.settings.DEVELOP_MODE == "on") {
+						let time = new Date();
 						logger(`[ ${time.toLocaleString()} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}
 				}

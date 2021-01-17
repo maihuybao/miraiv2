@@ -8,8 +8,9 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
-		var threadSetting = client.threadSetting.get(event.threadID) || {};
+		var threadSetting = client.threadSetting.get(threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 
@@ -45,10 +46,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 			let expirationTime = timestamps.get(senderID) + cooldownAmount;
 			if (now < expirationTime) {
 				let timeLeft = (expirationTime - now) / 1000;
-				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, threadID, async (err, info) => {
-					await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-					api.unsendMessage(info.messageID);
-				}, messageID);
+				return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 			}
 		}
 		timestamps.set(senderID, now);
@@ -61,6 +59,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
+			logger(error, 2);
 		}
 		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
 			var time = new Date();

@@ -21,11 +21,12 @@ module.exports.run = function({ api, event, args, client }) {
 	const nameHelp = client.commands.get(args[0]);
 	if (!nameHelp || !args[0]) {
 		let commands = client.commands.values();
-		var helpGroup = [];
-		var helpMsg = "";
-		commands.forEach(help => (!helpGroup.some(item => item.config.group == help.config.group)) ? helpGroup.push({ group: help.config.group, cmds: [help.config.name] }) : helpGroup.find(item => item.config.group == help.config.group).cmds.push(help.config.name));
+		//console.log(commands)
+		let helpGroup = [];
+		let helpMsg = "";
+		for(let command of commands) (!helpGroup.some(item => item.group == command.config.commandCategory)) ? helpGroup.push({ group: command.config.commandCategory, cmds: [command.config.name] }) : helpGroup.find(item => item.group == command.config.commandCategory).cmds.push(command.config.name);
 		helpGroup.forEach(help => helpMsg += `===== ${help.group.charAt(0).toUpperCase() + help.group.slice(1)} =====\n${help.cmds.join(', ')}\n\n`);
-		return api.sendMessage(`Hiện tại đang có ${client.commands.size} lệnh có thể sử dụng trên bot này \n\n` + helpMsg, threadID, messageID);
+		return api.sendMessage(`Hiện tại đang có ${client.commands.size} lệnh có thể sử dụng trên bot này \n\n` + helpMsg, event.threadID, event.messageID);
 	} 
 	//return api.sendMessage("🤔 hình như lệnh bạn tìm không tồn tại!", event.threadID, event.messageID);
 	const infoHelp = nameHelp.config.info;

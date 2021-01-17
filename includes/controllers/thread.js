@@ -26,7 +26,7 @@ module.exports = function ({ models, api }) {
 	async function getData(threadID) {
 		const data = (await Thread.findOne({ where: { threadID }}));
 		if (data) return data.get({ plain: true });
-		else return null;
+		else return false;
 	}
 
 	async function setData({threadID, options}) {

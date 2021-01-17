@@ -26,7 +26,7 @@ module.exports = function ({ models, api }) {
 	async function getData(userID) {
 		const data = (await User.findOne({ where: { userID } }));
 		if (data) return data.get({ plain: true });
-		else return null;
+		else return false;
 	}
 
 	async function setData(userID, options = {}) {
@@ -35,7 +35,7 @@ module.exports = function ({ models, api }) {
 			return true;
 		}
 		catch (e) {
-			logger(err, 2);
+			//logger(e, 2);
 			return false;
 		}
 	}

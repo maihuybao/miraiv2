@@ -6,6 +6,22 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 			Thread = require("./controllers/thread")({ models, api }),
 			Currency = require("./controllers/currency")({ models });
 
+	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
+	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
+	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
+
+	(async () => {
+		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
+		let threadBanned, userBanned, threadSetting;
+		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		threadSetting = (await Thread.getAll());
+		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
+		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
+		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
+		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
+	})();
+
 	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
 	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
 	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
@@ -15,31 +31,15 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, Thread, User, Currency, models });
 
-	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
-	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
-	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
-
-	(async () => {
-		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		var threadBanned, userBanned, threadSetting;
-		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		threadSetting = (await Thread.getAll(['threadID', 'settings'])).map(e => e.get({ plain: true }));
-		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
-		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
-		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
-		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
-	})();
-
 function sendEvent({ event }) {
 	switch (event.type) {
 		case "message":
 		case "message_reply": 
+			handleCreateDatabase({ event })
 			handleCommand({ event })
 			handleReply({ event })
 			handleCommandEvent({ event })
 			handleChangeName({ event })
-			handleCreateDatabase({ event })
 			break;
 		case "event":
 			handleEvent({ event })

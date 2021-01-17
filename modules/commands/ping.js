@@ -28,7 +28,8 @@ module.exports.run = async function({ api, event, args }) {
 		mentions.push({
 			tag: body[i],
 			id: all[i],
-			fromIndex: i - 1
+			fromIndex: i - 1,
+			offset: 0
 		});
 	}
 	api.sendMessage({ body: `‎${body}`, mentions }, event.threadID, async (err, info) => {

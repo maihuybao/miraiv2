@@ -11,7 +11,7 @@ const { Sequelize, sequelize } = require("./includes/database");
 const login = require("fca-unofficial");
 let appStateFile;
 
-const client = new Object({
+let client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
@@ -22,9 +22,9 @@ const client = new Object({
 	threadSetting: new Map()
 });
 
-const __GLOBAL = new Object({
+let __GLOBAL = new Object({
 	settings: new Array()
-})
+});
 
 //=========Login =========//
 
@@ -51,7 +51,7 @@ const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((f
 for (const file of commandFiles) {
 	let command = require(join(__dirname, "/modules/commands", `${file}`));
 	try {
-		if (!command.config || !command.run) throw new Error(`Sai format!`);
+		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 		if (command.config.dependencies) {
 			try {
@@ -120,7 +120,7 @@ catch (error) {
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
-		if (err) return require("./error")({ error: err });
+		if (err) return logger(err);
 
 		let listen = require("./includes/listen")({ api, models, client, __GLOBAL });
 		let onListen = () => api.listenMqtt(listen);
@@ -135,11 +135,10 @@ function onBot({ models }) {
 		});
 
 		onListen();
-		setTimeout(() => {
+		setInterval(async () => {
 			onListen().stopListening();
-			setTimeout(() => {
-				onListen()
-			}, 2000);
+			await new Promise(resolve => setTimeout(resolve, 2 * 1000));
+			onListen();
 		}, 300000);
 	});
 }

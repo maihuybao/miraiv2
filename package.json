@@ -7,7 +7,7 @@
 		"node": "12.18.2"
 	},
 	"scripts": {
-		"start": "node mirai"
+		"start": "node interface"
 	},
 	"repository": {
 		"type": "git",
