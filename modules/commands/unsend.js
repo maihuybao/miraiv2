@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Gỡ tin nhắn của bot",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "unsend",
 	cooldowns: 0,
 	info: [

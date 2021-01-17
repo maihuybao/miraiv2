@@ -3,8 +3,8 @@ module.exports.config = {
 	version: "1.0.1",
 	hasPermssion: 0,
 	credits: "MewMew",
-	description: "Commnet trên pỏnhub ( ͡° ͜ʖ ͡°)",
-	commandCategory: "group",
+	description: "Comment trên pỏnhub ( ͡° ͜ʖ ͡°)",
+	commandCategory: "NSFW",
 	usages: "phub [text]",
 	cooldowns: 10,
 	dependencies: ["canvas", "axios", "fs-extra"]

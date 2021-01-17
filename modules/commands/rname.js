@@ -3,8 +3,8 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "CatalizCS",
-	description: "Random biệt danh tiếng NHẬT :thinking:",
-	commandCategory: "general",
+	description: "Random biệt danh tiếng NHẬT 🤔",
+	commandCategory: "General",
 	usages: "rname",
 	cooldowns: 5,
 	dependencies: ["request"]

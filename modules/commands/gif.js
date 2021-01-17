@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "lấy ảnh gif",
-	commandCategory: "group",
+	commandCategory: "Media",
 	usages: "gif bomman",
 	cooldowns: 5,
 	dependencies: ["request","fs-extra"]

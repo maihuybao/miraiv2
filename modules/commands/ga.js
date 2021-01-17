@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Give away dành cho nhóm chat, bao xịn xò xD",
-	commandCategory: "Genaral",
+	commandCategory: "Group",
 	usages: "ga [args]",
 	cooldowns: 5,
 	info: [
@@ -36,7 +36,7 @@ module.exports.handleReaction = async ({ client, api, event, User, handleReactio
 	return api.sendMessage(`${value} Đã tham gia thành công giveaway có ID: #${handleReaction.ID}`, event.userID);
 }
 
-module.exports.run = async ({ client, api, event, args, User }) => {
+module.exports.run = async ({ client, api, event, args, utils, User }) => {
 	if (!client.GA) client.GA = new Map();
 	if (args[0] == "create") {
 		let reward = args.slice(1).join(" ");

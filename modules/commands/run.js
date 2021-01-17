@@ -1,10 +1,10 @@
 module.exports.config = {
 	name: "run",
 	version: "1.0.0",
-	hasPermssion: 1,
+	hasPermssion: 2,
 	credits: "CatalizCS",
 	description: "running shell",
-	commandCategory: "general",
+	commandCategory: "System",
 	usages: "run",
 	cooldowns: 5,
 	dependencies: ["vm2","path"]

@@ -4,7 +4,7 @@
 	hasPermssion: 0,
 	credits: "Mewmew",
 	description: "Dạy bot (dùng cho lệnh sim)",
-	commandCategory: "general",
+	commandCategory: "Chatbot",
 	usages: "teach [In] => [Out]",
 	cooldowns: 5,
 	dependencies: ["axios"],

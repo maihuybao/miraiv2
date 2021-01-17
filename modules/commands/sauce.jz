@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Tìm kiếm thông tin ảnh thông qua ảnh (chỉ dành cho anime và hentai)",
-	commandCategory: "general",
+	commandCategory: "Media",
 	usages: "sauce",
 	cooldowns: 5,
 	dependencies: ["sagiri","axios","nsfwjs","@tensorflow/tfjs-node"],

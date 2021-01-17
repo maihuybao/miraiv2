@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "CatalizCS",
 	description: "Đặt lại prefix của nhóm",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "setprefix [prefix]",
 	cooldowns: 5,
 	info: [

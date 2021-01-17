@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Phát nhạc thông qua link YouTube, SoundCloud hoặc từ khoá tìm kiếm",
-	commandCategory: "media",
+	commandCategory: "Media",
 	usages: "sing [Text]",
 	cooldowns: 10,
 	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader","fs-extra","fluent-ffmpeg","@ffmpeg-installer/ffmpeg"],

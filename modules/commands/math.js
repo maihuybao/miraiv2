@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "MewMew",
 	description: "Làm toán",
-	commandCategory: "general",
+	commandCategory: "Study",
 	usages: "math 1 + 2",
 	cooldowns: 5,
 	dependencies: ["request"],

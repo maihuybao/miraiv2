@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module command",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "command [exec] args",
 	cooldowns: 5,
 	info: [

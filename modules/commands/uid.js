@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Lấy ID người dùng.",
-	commandCategory: "general",
+	commandCategory: "General",
 	usages: "uid",
 	cooldowns: 5,
 	info: [

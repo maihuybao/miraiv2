@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Thì là bài cào ?",
-	commandCategory: "general",
+	commandCategory: "Games",
 	usages: "baicao [args]",
 	cooldowns: 1,
 	info: [

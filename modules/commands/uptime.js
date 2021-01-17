@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Kiểm tra thời gian bot đã online",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "uptime",
 	cooldowns: 5
 };

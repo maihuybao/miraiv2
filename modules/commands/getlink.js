@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Lấy url download từ video, audio được gửi từ nhóm",
-	commandCategory: "general",
+	commandCategory: "General",
 	usages: "getLink",
 	cooldowns: 5,
 };

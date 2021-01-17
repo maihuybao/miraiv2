@@ -3,8 +3,8 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "CatalizCS",
-	description: "Gửi tính năng, ý tưởng, ý kiến mới đến author(that iz me lel)",
-	commandCategory: "general",
+	description: "Gửi tính năng, ý tưởng, ý kiến mới đến author",
+	commandCategory: "General",
 	usages: "suggest [Text]",
 	cooldowns: 5,
 	info: [
