@@ -1,7 +1,7 @@
 const logger = require("../../utils/log.js");
 
 module.exports = function ({ models }) {
-	const Currency = models.use('currency');
+	const Currencies = models.use('Currencies');
 
 	async function getAll(...data) {
 		var where, attributes;
@@ -11,7 +11,7 @@ module.exports = function ({ models }) {
 			else where = i;
 		}
 		try {
-			return (await Currency.findAll({ where, attributes })).map(e => e.get({ plain: true }));
+			return (await Currencies.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
 			logger(err, 2);
@@ -20,14 +20,14 @@ module.exports = function ({ models }) {
 	}
 
 	async function getData(userID) {
-		const data = (await Currency.findOne({ where: { userID }}));
+		const data = (await Currencies.findOne({ where: { userID }}));
 		if (data) return data.get({ plain: true });
 		else return null;
 	}
 
 	async function setData(userID, options = {}) {
 		try {
-			(await Currency.findOne({ where: { userID } })).update(options);
+			(await Currencies.findOne({ where: { userID } })).update(options);
 			return true;
 		}
 		catch (e) {
@@ -37,13 +37,13 @@ module.exports = function ({ models }) {
 	}
 
 	async function delData(userID) {
-		return (await Currency.findOne({ where: { userID } })).destroy();
+		return (await Currencies.findOne({ where: { userID } })).destroy();
 	}
 
 	async function createData({ userID, defaults }) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
-			(await Currency.findOrCreate({ where: { userID }, defaults }))
+			(await Currencies.findOrCreate({ where: { userID }, defaults }))
 			return true;
 		}
 		catch (e) {

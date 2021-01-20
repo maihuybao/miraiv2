@@ -8,3 +8,4 @@ package-lock.json
 *.png
 node_modules/
 logs/
+includes/data.sqlite

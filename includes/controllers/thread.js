@@ -1,7 +1,7 @@
 const logger = require("../../utils/log.js");
 
 module.exports = function ({ models, api }) {
-	const Thread = models.use('thread');
+	const Thread = models.use('Thread');
 
 	async function getInfo(threadID) {
 		return await api.getThreadInfo(threadID);

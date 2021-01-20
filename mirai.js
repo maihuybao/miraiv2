@@ -38,7 +38,7 @@ require("npmlog").emitLog = () => {};
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
-	var local = JSON.parse(fs.readFileSync('./package.json')).version;
+	var local = JSON.parse(readFileSync('./package.json')).version;
 	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
 	else modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
@@ -141,6 +141,23 @@ function onBot({ models }) {
 		}, 300000);
 	});
 }
+
+(async () => {
+	let migrations = readdirSync(`./includes/database/migrations`);
+	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", {type: Sequelize.QueryTypes.SELECT});
+	for (let name in completedMigrations) {
+		if (completedMigrations.hasOwnProperty(name)) {
+			let index = migrations.indexOf(completedMigrations[name].name);
+			if (index !== -1) migrations.splice(index, 1);
+		}
+	}
+
+	for (let i = 0, c = migrations.length; i < c; i++) {
+		let migration = require(`./includes/database/migrations/` + migrations[i]);
+		migration.up(sequelize.queryInterface, Sequelize);
+		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migrations[i] } });
+	}
+})()
 
 sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),

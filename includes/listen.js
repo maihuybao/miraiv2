@@ -23,7 +23,7 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 		var threadBanned, userBanned, threadSetting;
 		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		threadSetting = await Thread.getAll();
+		threadSetting = await Thread.getAll(['settings']);
 		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
 		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
 		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
