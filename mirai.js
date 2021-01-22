@@ -1,6 +1,6 @@
 //=========Call Variable =========//
 
-const { readdirSync, readFileSync, writeFileSync } = require("fs-extra");
+const { readdirSync, readFileSync, writeFileSync, existsSync, copySync } = require("fs-extra");
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const semver = require('semver');
@@ -35,6 +35,8 @@ catch (e) {
 }
 
 require("npmlog").emitLog = () => {};
+
+if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");

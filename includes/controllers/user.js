@@ -1,7 +1,7 @@
 const logger = require("../../utils/log.js");
 
 module.exports = function ({ models, api }) {
-	const User = models.use('User');
+	const User = models.use('Users');
 
 	async function getInfo(id) {
 		return (await api.getUserInfo(id))[id];

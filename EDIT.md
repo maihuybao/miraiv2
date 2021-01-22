@@ -49,9 +49,9 @@ Bảng Thread của Database.
 - Thread.delData(tid): Xóa nhóm chat trong database.
 - Thread.createData({ tid, default }): Tạo nhóm chat trong database (default: giá trị được gán mặc định).
 
-## Currency
+## Currencies
 
-Bảng Currency của Database.
+Bảng Currencies của Database.
 
 ### Cách dùng
 - Currency.getAll(data\*): Lấy tất cả giá trị của currency có ở data trong database.
@@ -69,4 +69,4 @@ Bảng Currency của Database.
   + VD: User.getAll(['uid', 'name']) -> Đưa ra các dữ liệu chỉ chứa uid và name của tất cả user.
 
 - options(\*\*): Là 1 Object chứa thông tin cần đặt.
-  + VD: User.setData(uid, { name: 'SpermLord The Second' }) -> Đặt tên của user thành "SpermLord The Second" trong database.
+  + VD: User.setData(uid, { name: 'SpermLord The Second' }) -> Đặt tên của user có ID là "uid" thành "SpermLord The Second" trong database.

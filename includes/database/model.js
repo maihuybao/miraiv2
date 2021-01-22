@@ -1,9 +1,9 @@
 module.exports = function ({ Sequelize, sequelize }) {
-	const { User, Thread, Currencies } = require("./models");
+	const { Users, Threads, Currencies } = require("./models");
 	return {
 		model: {
-			User,
-			Thread,
+			Users,
+			Threads,
 			Currencies
 		},
 		use: function (modelName) {
