@@ -159,7 +159,7 @@ function onBot({ models }) {
 		migration.up(sequelize.queryInterface, Sequelize);
 		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migrations[i] } });
 	}
-})()
+})();
 
 sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),

@@ -17,32 +17,32 @@ module.exports.config = {
 	]
 };
 
-module.exports.handleReaction = async ({ client, api, event, User, handleReaction }) => {
+module.exports.handleReaction = async ({ client, api, event, Users, handleReaction }) => {
 	let data = client.GA.get(handleReaction.ID);
 	if (data.status == "close" || data.status == "ended") return;
 	if (event.reaction == undefined) {
 		data.joined.splice(data.joined.indexOf(event.userID), 1);
 		client.GA.set(handleReaction.ID, data);
 		var value = await api.getThreadInfo(event.threadID);
-		if (!(value.nicknames)[event.userID]) value = (await User.getInfo(event.userID)).name;
+		if (!(value.nicknames)[event.userID]) value = (await Users.getInfo(event.userID)).name;
 		else value = (value.nicknames)[event.userID];
 		return api.sendMessage(`${value} Đã rời giveaway có ID: #${handleReaction.ID}`, event.userID);
 	}
 	data.joined.push(event.userID);
 	client.GA.set(handleReaction.ID, data);
 	var value = await api.getThreadInfo(event.threadID);
-	if (!(value.nicknames)[event.userID]) value = (await User.getInfo(event.userID)).name;
+	if (!(value.nicknames)[event.userID]) value = (await Users.getInfo(event.userID)).name;
 	else value = (value.nicknames)[event.userID];
 	return api.sendMessage(`${value} Đã tham gia thành công giveaway có ID: #${handleReaction.ID}`, event.userID);
 }
 
-module.exports.run = async ({ client, api, event, args, utils, User }) => {
+module.exports.run = async ({ client, api, event, args, utils, Users }) => {
 	if (!client.GA) client.GA = new Map();
 	if (args[0] == "create") {
 		let reward = args.slice(1).join(" ");
 		let randomNumber = (Math.floor(Math.random() * 100000) + 100000).toString().substring(1);
 		var value = await api.getThreadInfo(event.threadID);
-		if (!(value.nicknames)[event.senderID]) value = (await User.getInfo(event.senderID)).name;
+		if (!(value.nicknames)[event.senderID]) value = (await Users.getInfo(event.senderID)).name;
 		else value = (value.nicknames)[event.senderID];
 		api.sendMessage(
 			"====== Give Away ======" +
@@ -94,7 +94,7 @@ module.exports.run = async ({ client, api, event, args, utils, User }) => {
 		data.joined.push(event.senderID);
 		client.GA.set(ID, data);
 		var value = await api.getThreadInfo(event.threadID);
-		if (!(value.nicknames)[event.userID]) value = (await User.getInfo(event.senderID)).name;
+		if (!(value.nicknames)[event.userID]) value = (await Users.getInfo(event.senderID)).name;
 		else value = (value.nicknames)[event.senderID];
 		return api.sendMessage(`${value} Đã tham gia thành công giveaway có ID: #${ID}`, event.senderID);
 	}
@@ -105,7 +105,7 @@ module.exports.run = async ({ client, api, event, args, utils, User }) => {
 		if (!data) return api.sendMessage("ID GiveAway bạn nhập không tồn tại!", event.threadID, event.messageID);
 		if (data.authorID !== event.senderID) return api.sendMessage("Bạn không phải là người chủ trì ID GiveaWay này!", event.threadID, event.messageID);
 		let winner = data.joined[Math.floor(Math.random() * data.joined.length)];
-		let userInfo = await User.getInfo(winner);
+		let userInfo = await Users.getInfo(winner);
 		var name = userInfo.name;
 		return api.sendMessage({
 			body: `Yahoo ${name}, bạn đã thắng giveaway có ID: #${data.ID}\nBạn hãy liên hệ tới: ${data.author}(https://fb.me/${data.authorID})`,

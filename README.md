@@ -44,16 +44,16 @@ WIP!
 
 ## Video hướng dẫn deploy và sử dụng Mirai Bot:
 
-WIP
+WIP!
 
 ## Deployment
 Click this button:
 [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/catalizcs/miraiv2)
 [![Run on Repl.it](https://repl.it/badge/github/catalizcs/miraiv2)](https://repl.it/github/catalizcs/miraiv2)
 
-# Edit
-- If you want to add/delete/edit command, please read [EDIT.md](EDIT.md).
-- Nếu bạn muốn thêm/xóa/sửa lệnh, hãy đọc [EDIT.md](EDIT.md).
+# Modification
+- If you want to add/delete/edit command, please read [MODIFICATION.md](MODIFICATION.md).
+- Nếu bạn muốn thêm/xóa/sửa lệnh, hãy đọc [MODIFICATION.md](MODIFICATION.md).
 
 # Contributing
 - Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.

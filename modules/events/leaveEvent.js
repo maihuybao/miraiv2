@@ -6,10 +6,10 @@ module.exports.config = {
 	description: "Listen events"
 };
 
-module.exports.run = async function({ api, event, client, __GLOBAL, User }) {
+module.exports.run = async function({ api, event, client, __GLOBAL, Users }) {
 	let name;
 	try {
-		name = User.getData(event.logMessageData.leftParticipantFbId).name;	
+		name = Users.getData(event.logMessageData.leftParticipantFbId).name;	
 	}
 	catch {
 		name = (await api.getUserInfo(event.logMessageData.leftParticipantFbId))[event.logMessageData.leftParticipantFbId].name;

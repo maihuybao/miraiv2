@@ -20,7 +20,7 @@ module.exports = function ({ models }) {
 	}
 
 	async function getData(userID) {
-		const data = (await Currencies.findOne({ where: { userID }}));
+		const data = await Currencies.findOne({ where: { userID }});
 		if (data) return data.get({ plain: true });
 		else return null;
 	}
@@ -30,7 +30,7 @@ module.exports = function ({ models }) {
 			(await Currencies.findOne({ where: { userID } })).update(options);
 			return true;
 		}
-		catch (e) {
+		catch (err) {
 			logger(err, 2);
 			return false;
 		}
@@ -40,14 +40,40 @@ module.exports = function ({ models }) {
 		return (await Currencies.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData({ userID, defaults }) {
+	async function createData(userID, defaults = {}) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
-			(await Currencies.findOrCreate({ where: { userID }, defaults }))
+			await Currencies.findOrCreate({ where: { userID }, defaults });
 			return true;
 		}
-		catch (e) {
-			logger(e, 2);
+		catch (err) {
+			logger(err, 2);
+			return false;
+		}
+	}
+
+	async function increaseMoney(userID, money) {
+		if (typeof money != 'number') throw 'Phải là 1 số.';
+		try {
+			let balance = (await getData(userID)).money;
+			await setData(userID, { money: balance + money });
+			return true;
+		}
+		catch (err) {
+			logger(err, 2);
+			return false;
+		}
+	}
+
+	async function decreaseMoney(userID, money) {
+		if (typeof money != 'number') throw 'Phải là 1 số.';
+		try {
+			let balance = (await getData(userID)).money;
+			await setData(userID, { money: balance - money });
+			return true;
+		}
+		catch (err) {
+			logger(err, 2);
 			return false;
 		}
 	}
@@ -57,6 +83,8 @@ module.exports = function ({ models }) {
 		getData,
 		setData,
 		delData,
-		createData
+		createData,
+		increaseMoney,
+		decreaseMoney
 	}
 }

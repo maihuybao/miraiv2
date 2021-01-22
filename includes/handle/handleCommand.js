@@ -3,7 +3,7 @@ const logger = require("../../utils/log.js");
 const moment = require("moment-timezone");
 const stringSimilarity = require('string-similarity');
 
-module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency, utils }) {
+module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
 	return async function({ event }) {
 		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
@@ -32,7 +32,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		//========= Check permssion =========//
 
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
-		let threadAdmins = await Thread.getInfo(threadID);
+		let threadAdmins = await Threads.getInfo(threadID);
 		let find = threadAdmins.adminIDs.find(el => el.id == senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 
@@ -57,7 +57,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 
 		//========= Run command =========//
 		try {
-			command.run({ api, __GLOBAL, client, event, args, models, User, Thread, Currency, utils });
+			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);

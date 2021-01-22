@@ -17,12 +17,12 @@ module.exports.config = {
 	]
 };
 
-module.exports.handleReaction = async function({ api, event, args, client, __GLOBAL, Thread, handleReaction }) {
+module.exports.handleReaction = async function({ api, event, args, client, __GLOBAL, Threads, handleReaction }) {
 	let { threadID, messageID } = event;
 	let settings, data;
-	data = (await Thread.getData(threadID)).settings;
+	data = (await Threads.getData(threadID)).settings;
 	data["PREFIX"] = handleReaction.PREFIX;
-	await Thread.setData({ threadID, options: { settings: data } });
+	await Threads.setData({ threadID, options: { settings: data } });
 	await client.threadSetting.set(parseInt(threadID), data);
 	return api.sendMessage(`Đã chuyển đổi prefix của nhóm thành: ${handleReaction.PREFIX}`, threadID, messageID);
 }

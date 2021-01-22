@@ -15,7 +15,7 @@ module.exports = {
 				/SQLITE_BUSY/,
 			],
 			name: 'query',
-			max: 10
+			max: 20
 		},
 		logging: false,
 		transactionType: 'IMMEDIATE',

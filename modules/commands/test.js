@@ -1,13 +1,13 @@
 module.exports.config = {
-	name: "nameCommand", // Tên lệnh, được sử dụng trong việc gọi lệnh
+	name: "test", // Tên lệnh, được sử dụng trong việc gọi lệnh
 	version: "version", // phiên bản của module này
-	hasPermssion: 0/1/2, // Quyền hạn sử dụng, với 0 là toàn bộ thành viên, 1 là quản trị viên trở lên, 2 là admin/owner
+	hasPermssion: 0, // Quyền hạn sử dụng, với 0 là toàn bộ thành viên, 1 là quản trị viên trở lên, 2 là admin/owner
 	credits: "Name need credit", // Công nhận module sở hữu là ai
 	description: "say bla bla ở đây", // Thông tin chi tiết về lệnh
 	commandCategory: "group", // Thuộc vào nhóm nào
 	usages: "name Text1 Text2", // Cách sử dụng lệnh
 	cooldowns: 5, // Thời gian một người có thể lặp lại lệnh
-	dependencies: ["name package"], //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
+	dependencies: [], //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
 	// Info là phần chi tiết thêm của cách sử dụng lệnh
 	// Key: Từ khoá thuộc trong usages
 	// prompt: Chi tiết dữ liệu đầu vào của key
@@ -41,6 +41,6 @@ module.exports.event = function({ api, event, client, __GLOBAL }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
-	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+module.exports.run = async function({ api, event, args, client, __GLOBAL, Currencies }) {
+	await Currencies.increaseMoney(event.senderID, 200);
 }

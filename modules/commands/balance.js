@@ -17,14 +17,14 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async function({ api, event, args, Currency, utils }) {
+module.exports.run = async function({ api, event, args, Currencies, utils }) {
 	if (!args[0]) {
-		const money = (await Currency.getData(userID = event.senderID)).money;
+		const money = (await Currencies.getData(userID = event.senderID)).money;
 		return api.sendMessage(`Số tiền bạn hiện đang có: ${money} đô`, event.threadID);
 	}
 	else if (Object.keys(event.mentions).length == 1) {
 		var mention = Object.keys(event.mentions)[0];
-		const money = (await Currency.getData(userID = mention)).money;
+		const money = (await Currencies.getData(userID = mention)).money;
 		return api.sendMessage({
 			body: `Số tiền của ${event.mentions[mention].replace("@", "")} hiện đang có là: ${money} đô.`,
 			mentions: [{
@@ -37,7 +37,7 @@ module.exports.run = async function({ api, event, args, Currency, utils }) {
 		var mention = Object.keys(event.mentions);
 		let msg = "";
 		mention.forEach(async (value) => {
-			const data = (await Currency.getData(userID = value));
+			const data = (await Currencies.getData(userID = value));
 			if (data == null) return;
 			msg =+ ` - ${event.mentions[value].replace("@", "")}: ${data.money} đô\n`;
 		});
