@@ -120,7 +120,7 @@ catch (error) {
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
-		if (err) return require("./error")({ error: err });
+		if (err) return logger(err);
 
 		let listen = require("./includes/listen")({ api, models, client, __GLOBAL });
 		let onListen = () => api.listenMqtt(listen);
@@ -135,14 +135,14 @@ function onBot({ models }) {
 		});
 
 		onListen();
-		setTimeout(() => {
+		setInterval(async () => {
 			onListen().stopListening();
-			setTimeout(() => {
-				onListen()
-			}, 2000);
+			await new Promise(resolve => setTimeout(resolve, 2 * 1000));
+			onListen();
 		}, 300000);
 	});
 }
+
 
 (async () => {
 	let migrations = readdirSync(`./includes/database/migrations`);
