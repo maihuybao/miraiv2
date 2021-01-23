@@ -44,7 +44,7 @@ module.exports = function ({ models, api }) {
 		return (await Users.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData({userID, defaults}) {
+	async function createData(userID, defaults) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
 			await Users.findOrCreate({ where: { userID }, defaults });

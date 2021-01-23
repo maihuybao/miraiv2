@@ -29,7 +29,7 @@ module.exports = function ({ models, api }) {
 		else return null;
 	}
 
-	async function setData({threadID, options}) {
+	async function setData(threadID, options) {
 		if (typeof options != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
 			(await Threads.findOne({ where: { threadID } })).update(options);
@@ -45,7 +45,7 @@ module.exports = function ({ models, api }) {
 		return (await Threads.findOne({ where: { threadID } })).destroy();
 	}
 
-	async function createData({threadID, defaults}) {
+	async function createData(threadID, defaults) {
 		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
 			await Threads.findOrCreate({ where: { threadID }, defaults });

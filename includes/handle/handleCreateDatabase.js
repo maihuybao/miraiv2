@@ -8,16 +8,16 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies }) {
 
 		if ((await Threads.getData(threadID)) == null) {
 			let name = (await api.getThreadInfo(threadID)).name;
-			await Threads.createData({ threadID, defaults: { name, settings } });
+			await Threads.createData(threadID, { name, settings });
 			logger(`New Thread: ${threadID}`, "[ DATABASE ]")
 		}
 		if ((await Users.getData(senderID)) == null) {
 			let name = (await api.getUserInfo(senderID))[senderID].name;
-			await Users.createData({ userID: senderID, defaults: { name } });
+			await Users.createData(senderID, { name });
 			logger(`New User: ${senderID}`, "[ DATABASE ]")
 		}
-		if ((await Currencies.getData(userID = senderID)) == null) {
-			await Currencies.createData({ userID: senderID, defaults: { money: 0 } });
+		if ((await Currencies.getData(senderID)) == null) {
+			await Currencies.createData(senderID, { money: 0 });
 			logger(`New Currency: ${senderID}`, "[ DATABASE ]")
 		}
 	}
