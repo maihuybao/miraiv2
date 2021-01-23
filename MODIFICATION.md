@@ -1,6 +1,8 @@
 <p align="center">
 	<a href="Overview">Tổng Quan</a>
 	-
+	<a href="#Database Controller">Database Modication</a>
+	-
 	<a href="#Database Controller">Database Controller</a>
 </p>
 
@@ -23,6 +25,77 @@ Hướng dẫn Thêm/Xóa/Sửa lệnh của bot.
 - Mở file [tên lệnh].js trong modules/commands/ cần sửa.
 - Sửa ¯\\\_(ツ)\_/¯.
 
+# Database Modification
+
+## Chuẩn bị
+
+- Bật CMD/Terminal trong folder chứa bot.
+- Nhập ```npx sequelize migration:generate --name [Tên tùy ý]``` (VD: ... --name createTestColumnInUsers).
+- Mở file ...-[Tên vừa đặt].js trong includes/database/migrations để chuẩn bị code.
+
+## Thêm cột
+
+- Trong function up, bạn hãy chèn dòng này vào sau \*/:
+```js
+await queryInterface.addColumn([tên bảng], [tên cột], Sequelize.[kiểu dữ liệu]);
+```
+  + Ví dụ:
+```js
+await queryInterface.addColumn('Users', 'isDead', Sequelize.BOOLEAN);
+```
+- Lưu file.
+- Mở file [tên bảng].js trong includes/database/models.
+- Chèn dòng: "[Tên cột]: DataTypes.[kiểu dữ liệu]," vào cuối đối số thứ nhất của [Tên bảng].init().
+  + Ví dụ:
+```js
+Users.init({
+  userID: DataTypes.BIGINT,
+  name: DataTypes.STRING,
+  banned: DataTypes.BOOLEAN,
+  time2unban: DataTypes.STRING,
+  reasonban: DataTypes.STRING,
+  isDead: DataTypes.BOOLEAN, <-- Đây là dòng đã được chèn dựa trên VD trước đó.
+},
+{
+  sequelize,
+  modelName: 'Users',
+});
+```
+- Chạy và dùng bot như bình thường.
+
+## Xóa cột
+
+- Trong function up, bạn hãy chèn dòng này vào sau \*/:
+```js
+await queryInterface.removeColumn([tên bảng], [tên cột]);
+```
+  + Ví dụ:
+```js
+await queryInterface.removeColumn('Users', 'isDead');
+```
+- Lưu file.
+- Mở file [tên bảng].js trong includes/database/models.
+- Xóa dòng: "[Tên cột]: DataTypes..." của [Tên bảng].init().
+  + Ví dụ:
+```js
+Users.init({
+  userID: DataTypes.BIGINT,
+  name: DataTypes.STRING,
+  banned: DataTypes.BOOLEAN,
+  time2unban: DataTypes.STRING,
+  reasonban: DataTypes.STRING, <-- Đã xóa dòng "isDead..." dựa trên VD Thêm cột.
+},
+{
+  sequelize,
+  modelName: 'Users',
+});
+```
+- Chạy và dùng bot như bình thường.
+
+## Chú ý!
+
+- Hiện tại chưa có cách dùng function down trực tiếp từ code (lười nghĩ) nên cần phải dùng bằng cmd (cách làm trên Google (lười nghĩ p2)).
+
 # Database Controller
 
 ## Users
@@ -35,7 +108,7 @@ Bảng Users của Database.
 - Users.getData(uid): Lấy thông tin user trong database.
 - Users.setData(uid, options\*\*): Đặt thông tin user trong database.
 - Users.delData(uid): Xóa user trong database.
-- Users.createData({ uid, default }): Tạo user trong database (default: giá trị được gán mặc định).
+- Users.createData(uid, default): Tạo user trong database (default: giá trị được gán mặc định).
 
 ## Threads
 
@@ -47,7 +120,7 @@ Bảng Threads của Database.
 - Threads.getData(tid): Lấy thông tin nhóm chat trong database.
 - Threads.setData(tid, options\*\*): Đặt thông tin nhóm chat trong database.
 - Threads.delData(tid): Xóa nhóm chat trong database.
-- Threads.createData({ tid, default }): Tạo nhóm chat trong database (default: giá trị được gán mặc định).
+- Threads.createData(tid, default): Tạo nhóm chat trong database (default: giá trị được gán mặc định).
 
 ## Currencies
 

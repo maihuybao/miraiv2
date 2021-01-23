@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     banned: DataTypes.BOOLEAN,
     time2unban: DataTypes.STRING,
-    reasonban: DataTypes.STRING
+    reasonban: DataTypes.STRING,
   },
   {
     sequelize,
