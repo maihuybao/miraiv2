@@ -52,8 +52,8 @@ Click this button:
 [![Run on Repl.it](https://repl.it/badge/github/catalizcs/miraiv2)](https://repl.it/github/catalizcs/miraiv2)
 
 # Modification
-- If you want to add/delete/edit command, please read [MODIFICATION.md](MODIFICATION.md).
-- Nếu bạn muốn thêm/xóa/sửa lệnh, hãy đọc [MODIFICATION.md](MODIFICATION.md).
+- If you want to modify bot, please read [MODIFICATION.md](MODIFICATION.md).
+- Nếu bạn muốn chỉnh sửa bot, hãy đọc [MODIFICATION.md](MODIFICATION.md).
 
 # Contributing
 - Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
