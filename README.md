@@ -13,7 +13,7 @@
 	-
 	<a href="#Installation">Hướng Dẫn Cài Đặt</a>
 	-
-	<a href="#Edit">Chỉnh sửa</a>
+	<a href="#Modification">Chỉnh sửa</a>
 	-
 	<a href="#Contributing">Đóng góp</a>
 	-
