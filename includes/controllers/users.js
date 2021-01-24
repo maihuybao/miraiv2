@@ -30,6 +30,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function setData(userID, options = {}) {
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Phải là 1 Object.';
 		try {
 			(await Users.findOne({ where: { userID } })).update(options);
 			return true;
@@ -44,8 +45,8 @@ module.exports = function ({ models, api }) {
 		return (await Users.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData(userID, defaults) {
-		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+	async function createData(userID, defaults = {}) {
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Phải là 1 Object.';
 		try {
 			await Users.findOrCreate({ where: { userID }, defaults });
 			return true;

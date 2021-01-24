@@ -26,6 +26,7 @@ module.exports = function ({ models }) {
 	}
 
 	async function setData(userID, options = {}) {
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Phải là 1 Object.';
 		try {
 			(await Currencies.findOne({ where: { userID } })).update(options);
 			return true;
@@ -41,7 +42,7 @@ module.exports = function ({ models }) {
 	}
 
 	async function createData(userID, defaults = {}) {
-		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Phải là 1 Object.';
 		try {
 			await Currencies.findOrCreate({ where: { userID }, defaults });
 			return true;

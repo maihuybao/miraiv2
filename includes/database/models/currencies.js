@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Currencies extends Model {
     /**
@@ -13,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
+
   Currencies.init({
     userID: DataTypes.BIGINT,
     money: DataTypes.BIGINT,

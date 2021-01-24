@@ -29,8 +29,8 @@ module.exports = function ({ models, api }) {
 		else return null;
 	}
 
-	async function setData(threadID, options) {
-		if (typeof options != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+	async function setData(threadID, options = {}) {
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Phải là 1 Object.';
 		try {
 			(await Threads.findOne({ where: { threadID } })).update(options);
 			return true;
@@ -45,8 +45,8 @@ module.exports = function ({ models, api }) {
 		return (await Threads.findOne({ where: { threadID } })).destroy();
 	}
 
-	async function createData(threadID, defaults) {
-		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+	async function createData(threadID, defaults = {}) {
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Phải là 1 Object.';
 		try {
 			await Threads.findOrCreate({ where: { threadID }, defaults });
 			return true;
