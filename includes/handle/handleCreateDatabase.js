@@ -17,7 +17,7 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies }) {
 			logger(`New User: ${senderID}`, "[ DATABASE ]")
 		}
 		if ((await Currencies.getData(senderID)) == null) {
-			await Currencies.createData(senderID, { money: 0 });
+			await Currencies.createData(senderID);
 			logger(`New Currency: ${senderID}`, "[ DATABASE ]")
 		}
 	}

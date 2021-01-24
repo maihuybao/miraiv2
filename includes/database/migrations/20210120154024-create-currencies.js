@@ -21,7 +21,14 @@ module.exports = {
         unique: true
       },
       money: {
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        defaultValue: 0
+      },
+      exp: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        defaultValue: 0
       }
     });
   },
