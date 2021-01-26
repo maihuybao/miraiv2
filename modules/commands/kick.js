@@ -23,5 +23,5 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 				},3000)
 			}
 		}
-	})     
+	})
 }
