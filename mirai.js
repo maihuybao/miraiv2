@@ -135,10 +135,9 @@ function onBot({ models }) {
 		});
 
 		onListen();
-		setInterval(async () => {
+		setInterval(() => {
 			onListen().stopListening();
-			await new Promise(resolve => setTimeout(resolve, 2 * 1000));
-			onListen();
+			setTimeout(() => onListen(), 2000);
 		}, 300000);
 	});
 }

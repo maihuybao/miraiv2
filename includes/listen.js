@@ -30,36 +30,40 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
 
-function sendEvent({ event }) {
-	switch (event.type) {
-		case "message":
-		case "message_reply": 
-			handleCommand({ event })
-			handleReply({ event })
-			handleCommandEvent({ event })
-			handleChangeName({ event })
-			handleCreateDatabase({ event })
-			break;
-		case "event":
-			handleEvent({ event })
-			break;
-		case "message_reaction":
-			handleReaction({ event })
-			break;
-		default:
-			break;
+	function sendEvent({ event }) {
+		switch (event.type) {
+			case "message":
+			case "message_reply": 
+				handleCommand({ event })
+				handleReply({ event })
+				handleCommandEvent({ event })
+				handleChangeName({ event })
+				handleCreateDatabase({ event })
+				break;
+			case "event":
+				handleEvent({ event })
+				break;
+			case "message_reaction":
+				handleReaction({ event })
+				break;
+			default:
+				break;
+		}
 	}
-}
 
-	return async (error, event) => {
+	return (error, event) => {
 		if (error) logger(JSON.stringify(error), 2);
-
-		try {
-			sendEvent({ event })
+		if (client.event && JSON.stringify(client.event) == JSON.stringify(event) || event.messageID && client.messageID == event.messageID) ""
+		else {
+			client.event = event;
+			client.messageID = event.messageID;
+			try {
+				sendEvent({ event })
+			}
+			catch (e) {
+				logger(JSON.stringify(e), 2);
+			}	
 		}
-		catch (e) {
-			sendEvent({ event })
-		}
-	};
+	}
 }
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

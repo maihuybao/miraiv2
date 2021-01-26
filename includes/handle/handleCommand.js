@@ -63,9 +63,9 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			logger(error + " tại lệnh: " + command.config.name, 2);
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
-		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
+		if (__GLOBAL.settings.DEVELOP_MODE == true) {
 			var time = new Date();
-			logger(`[ ${time.toLocaleString()} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+			logger(`[ ${time.toLocaleString()} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }

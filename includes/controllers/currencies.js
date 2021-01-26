@@ -22,7 +22,7 @@ module.exports = function ({ models }) {
 	async function getData(userID) {
 		const data = await Currencies.findOne({ where: { userID }});
 		if (data) return data.get({ plain: true });
-		else return null;
+		else return false;
 	}
 
 	async function setData(userID, options = {}) {

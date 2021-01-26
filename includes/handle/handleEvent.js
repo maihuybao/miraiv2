@@ -12,7 +12,7 @@ module.exports = function({ api, __GLOBAL, client }) {
 				const eventRun = client.events.get(key);
 				try {
 					eventRun.run({ api, event, __GLOBAL, client });
-					if (__GLOBAL.settings.DEVELOP_MODE == "on") {
+					if (__GLOBAL.settings.DEVELOP_MODE == true) {
 						var time = new Date();
 						logger(`[ ${time.toLocaleString()} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}

@@ -1,11 +1,7 @@
 const logger = require("../../utils/log.js");
 
-module.exports = function ({ models, api }) {
-	const Users = models.use('Users');
-
-	async function getInfo(id) {
-		return (await api.getUserInfo(id))[id];
-	}
+module.exports = function ({ models }) {
+	const Currency = models.use('currency');
 
 	async function getAll(...data) {
 		var where, attributes;
@@ -15,7 +11,7 @@ module.exports = function ({ models, api }) {
 			else where = i;
 		}
 		try {
-			return (await Users.findAll({ where, attributes })).map(e => e.get({ plain: true }));
+			return (await Currency.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
 			logger(err, 2);
@@ -24,31 +20,30 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function getData(userID) {
-		const data = await Users.findOne({ where: { userID } });
+		const data = (await Currency.findOne({ where: { userID }}));
 		if (data) return data.get({ plain: true });
 		else return false;
 	}
 
 	async function setData(userID, options = {}) {
-		if (typeof options != 'object' && !Array.isArray(options)) throw 'Phải là 1 Object.';
 		try {
-			(await Users.findOne({ where: { userID } })).update(options);
+			(await Currency.findOne({ where: { userID } })).update(options);
 			return true;
 		}
 		catch (e) {
-			logger(e, 2);
+			logger(err, 2);
 			return false;
 		}
 	}
 
 	async function delData(userID) {
-		return (await Users.findOne({ where: { userID } })).destroy();
+		return (await Currency.findOne({ where: { userID } })).destroy();
 	}
 
-	async function createData(userID, defaults = {}) {
-		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Phải là 1 Object.';
+	async function createData({ userID, defaults }) {
+		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 		try {
-			await Users.findOrCreate({ where: { userID }, defaults });
+			(await Currency.findOrCreate({ where: { userID }, defaults }))
 			return true;
 		}
 		catch (e) {
@@ -58,11 +53,11 @@ module.exports = function ({ models, api }) {
 	}
 
 	return {
-		getInfo,
 		getAll,
 		getData,
 		setData,
 		delData,
 		createData
 	}
+
 }

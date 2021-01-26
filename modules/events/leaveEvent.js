@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "Listen events"
 };
 
-module.exports.run = async function({ api, event, client, __GLOBAL, Users }) {
+module.exports.run = async function({ api, event, Users }) {
 	let name;
 	try {
 		name = Users.getData(event.logMessageData.leftParticipantFbId).name;	

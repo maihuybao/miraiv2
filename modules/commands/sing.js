@@ -30,7 +30,7 @@ module.exports.handleReply = async function({ api, event, client, __GLOBAL, hand
 module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 	const ytdl = require("ytdl-core");
 	const YouTubeAPI = require("simple-youtube-api");
-	const scdl = require("soundcloud-downloader");
+	const scdl = require("soundcloud-downloader").default;
 	const { createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
 	var ffmpeg = require("fluent-ffmpeg");
 	var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -57,10 +57,11 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 
 	}
 	else if (scRegex.test(args[0])) {
+		let body;
 		try {
 			var songInfo = await scdl.getInfo(args[0], __GLOBAL.settings.SOUNDCLOUD_API);
 			var timePlay = Math.ceil(songInfo.duration / 1000);
-			let body = `Tiêu đề: ${songInfo.title} | ${(timePlay - (timePlay %= 60)) / 60 + (9 < timePlay ? ':' : ':0') + timePlay}]`;
+			body = `Tiêu đề: ${songInfo.title} | ${(timePlay - (timePlay %= 60)) / 60 + (9 < timePlay ? ':' : ':0') + timePlay}]`;
 		}
 		catch (error) {
 			if (error.statusCode == "404") return api.sendMessage("Không tìm thấy bài nhạc của bạn thông qua link trên ;w;", event.threadID, event.messageID);
