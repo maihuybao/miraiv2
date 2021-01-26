@@ -1,16 +1,10 @@
 module.exports = function ({ Sequelize, sequelize }) {
-	const force = false;
-	const user = require("./models/user")({ sequelize, Sequelize });
-	const thread = require("./models/thread")({ sequelize, Sequelize });
-	const currency = require("./models/currency")({ sequelize, Sequelize });
-	user.sync({ force });
-	thread.sync({ force });
-	currency.sync({ force });
+	const { Users, Threads, Currencies } = require("./models");
 	return {
 		model: {
-			user,
-			thread,
-			currency
+			Users,
+			Threads,
+			Currencies
 		},
 		use: function (modelName) {
 			return this.model[`${modelName}`];

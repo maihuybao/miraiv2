@@ -1,4 +1,3 @@
-config.json
 appstate.json
 package-lock.json
 .env
@@ -9,4 +8,4 @@ package-lock.json
 *.png
 node_modules/
 logs/
-*.sqlite
+includes/data.sqlite

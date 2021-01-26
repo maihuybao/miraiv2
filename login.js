@@ -11,7 +11,7 @@ var rl = readline.createInterface({
 const option = {
 	logLevel: "silent",
 	forceLogin: true,
-	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
+	userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
 };
 
 const config = require("./config.json");
@@ -41,5 +41,5 @@ login({ email, password }, option, (err, api) => {
 	var json = JSON.stringify(api.getAppState());
 	fs.writeFileSync('appstate.json', json);
 	console.log("Đã ghi xong appstate!");
-	process.exit(0);
+	//process.exit(1);
 });

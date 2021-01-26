@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý tin nhắn chờ của bot",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "pending",
 	cooldowns: 5
 };

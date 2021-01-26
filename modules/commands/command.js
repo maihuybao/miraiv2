@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module command",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "command [exec] args",
 	cooldowns: 5,
 	info: [
@@ -22,6 +22,7 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 	const logger = require("../../utils/log.js")
 	const { join, resolve } = require("path");
 	const { execSync } = require('child_process');
+	const node_modules = '../../node_modules/';
 	try{ client.commands.delete(nameOfModule) } catch(e) { return api.sendMessage(`Không thể reload module của bạn, lỗi: ${e}`, event.threadID) };
 	delete require.cache[require.resolve(`./${nameOfModule}.js`)];
 	const command = require(join(__dirname, `${nameOfModule}`));
@@ -30,7 +31,7 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		if (command.config.dependencies) {
 			try {
-				for (let i of command.config.dependencies) require.resolve(i);
+				for (let i of command.config.dependencies) require(i);
 			}
 			catch (e) {
 				api.sendMessage(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, event.threadID);
@@ -53,7 +54,7 @@ function unloadModule({ nameOfModule, event, api, client, args }) {
 		return api.sendMessage(`Disabled command ${nameOfModule}!`, event.threadID);
 	}
 	catch(e) {
-		return api.sendMessage(`Cant disable module command ${nameOfModule} with error: ${e}`, event.threadID);
+		return api.sendMessage(`Cant disable module command ${nameOfModule} with error: ${error}`, event.threadID);
 	}
 }
 
@@ -74,7 +75,7 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	if (args[0] == "all") {
 		let commands = client.commands.values();
 		let infoCommand = "";
-		for (let cmd of commands) {
+		for (const cmd of commands) {
 			if (cmd.config.name && cmd.config.version && cmd.config.credits) {
 				infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
 			};

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
-	commandCategory: "system",
+	commandCategory: "Group",
 	usages: "ping [Text]",
 	cooldowns: 70,
 	info: [
@@ -28,8 +28,7 @@ module.exports.run = async function({ api, event, args }) {
 		mentions.push({
 			tag: body[i],
 			id: all[i],
-			fromIndex: i - 1,
-			offset: 0
+			fromIndex: i - 1
 		});
 	}
 	api.sendMessage({ body: `‎${body}`, mentions }, event.threadID, async (err, info) => {

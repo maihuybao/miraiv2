@@ -1,9 +1,8 @@
 //=========Call Variable =========//
 
-const { readdirSync, accessSync, existsSync, readFileSync, writeFileSync, removeSync } = require("fs-extra");
+const { readdirSync, readFileSync, writeFileSync, existsSync, copySync } = require("fs-extra");
 const { join, resolve } = require("path");
-const { execSync, exec } = require('child_process');
-const node_modules = '../node_modules/';
+const { execSync } = require('child_process');
 const semver = require('semver');
 const axios = require("axios");
 const logger = require("./utils/log.js");
@@ -11,7 +10,7 @@ const { Sequelize, sequelize } = require("./includes/database");
 const login = require("fca-unofficial");
 let appStateFile;
 
-let client = new Object({
+const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
@@ -22,9 +21,9 @@ let client = new Object({
 	threadSetting: new Map()
 });
 
-let __GLOBAL = new Object({
+const __GLOBAL = new Object({
 	settings: new Array()
-});
+})
 
 //=========Login =========//
 
@@ -35,12 +34,13 @@ catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
 }
 
-require("npmlog").info = () => {};
-require("npmlog").pause();
+require("npmlog").emitLog = () => {};
+
+if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
-	var local = JSON.parse(fs.readFileSync('./package.json')).version;
+	var local = JSON.parse(readFileSync('./package.json')).version;
 	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
 	else modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
@@ -48,14 +48,14 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 //========= Get all command files =========//
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
-for (const file of commandFiles) {
-	let command = require(join(__dirname, "/modules/commands", `${file}`));
+for (let file of commandFiles) {
+	var command = require(join(__dirname, "/modules/commands", `${file}`));
 	try {
-		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
+		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 		if (command.config.dependencies) {
 			try {
-				for (const i of command.config.dependencies) require.resolve(i);
+				for (let i of command.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
@@ -77,13 +77,13 @@ for (const file of commandFiles) {
 
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js"));
 for (let file of eventFiles) {
-	let event = require(join(__dirname, "/modules/events", `${file}`));
+	var event = require(join(__dirname, "/modules/events", `${file}`));
 	try {
 		if (!event.config || !event.run) throw new Error(`Sai format!`);
 		if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
 		if (event.config.dependencies) {
 			try {
-				for (const i of event.config.dependencies) require.resolve(i);
+				for (let i of event.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
@@ -135,13 +135,30 @@ function onBot({ models }) {
 		});
 
 		onListen();
-		setInterval(async () => {
+		setInterval(() => {
 			onListen().stopListening();
-			await new Promise(resolve => setTimeout(resolve, 2 * 1000));
-			onListen();
+			setTimeout(() => onListen(), 2000);
 		}, 300000);
 	});
 }
+
+
+(async () => {
+	let migrations = readdirSync(`./includes/database/migrations`);
+	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", {type: Sequelize.QueryTypes.SELECT});
+	for (let name in completedMigrations) {
+		if (completedMigrations.hasOwnProperty(name)) {
+			let index = migrations.indexOf(completedMigrations[name].name);
+			if (index !== -1) migrations.splice(index, 1);
+		}
+	}
+
+	for (let i = 0, c = migrations.length; i < c; i++) {
+		let migration = require(`./includes/database/migrations/` + migrations[i]);
+		migration.up(sequelize.queryInterface, Sequelize);
+		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migrations[i] } });
+	}
+})();
 
 sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),

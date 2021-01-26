@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "lấy ảnh gif",
-	commandCategory: "group",
+	commandCategory: "Media",
 	usages: "gif bomman",
 	cooldowns: 5,
 	dependencies: ["request","fs-extra"]
@@ -14,7 +14,7 @@ module.exports.run = function({ api, event, args, __GLOBAL }) {
 	var fs = require("fs-extra");
 	var request = require("request");
 	var { threadID, messageID } = event
-	if (!args) return api.sendMessage("Không tìm thấy tag bạn nhập", threadID, messageID);
+	if (!args[0]) return api.sendMessage("Không tìm thấy tag bạn nhập", threadID, messageID);
 	return request(`https://api.tenor.com/v1/random?key=${__GLOBAL.settings.TENOR}&q=${args[0]}&limit=1`, (err, response, body) => {
 		if (err) throw err;
 		var string = JSON.parse(body);

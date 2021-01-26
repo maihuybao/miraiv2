@@ -1,10 +1,18 @@
 const logger = require("../utils/log.js");
 
 module.exports = function({ api, client, __GLOBAL, models }) {
+	const Users = require("./controllers/users")({ models, api }),
+				Threads = require("./controllers/threads")({ models, api }),
+				Currencies = require("./controllers/currencies")({ models });
 
-	const User = require("./controllers/user")({ models, api }),
-			Thread = require("./controllers/thread")({ models, api }),
-			Currency = require("./controllers/currency")({ models });
+	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
+	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
+	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models });
 
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
@@ -12,55 +20,50 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 
 	(async () => {
 		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		let threadBanned, userBanned, threadSetting;
-		threadBanned = (await Thread.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		userBanned = (await User.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		threadSetting = (await Thread.getAll());
+		var threadBanned, userBanned, threadSetting;
+		threadBanned = (await Threads.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		userBanned = (await Users.getAll({ banned: true })).map(e => e.get({ plain: true }));
+		threadSetting = await Threads.getAll(['settings']);
 		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
 		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
 		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
 
-	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
-	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
-	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, User, Thread, Currency, utils });
-	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, User, Thread, Currency });
-	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, User, Thread, Currency });
-	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, User, Thread, Currency });
-	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, Thread, User, Currency, models });
-
-function sendEvent({ event }) {
-	switch (event.type) {
-		case "message":
-		case "message_reply": 
-			handleCreateDatabase({ event })
-			handleCommand({ event })
-			handleReply({ event })
-			handleCommandEvent({ event })
-			handleChangeName({ event })
-			break;
-		case "event":
-			handleEvent({ event })
-			break;
-		case "message_reaction":
-			handleReaction({ event })
-			break;
-		default:
-			break;
+	function sendEvent({ event }) {
+		switch (event.type) {
+			case "message":
+			case "message_reply": 
+				handleCommand({ event })
+				handleReply({ event })
+				handleCommandEvent({ event })
+				handleChangeName({ event })
+				handleCreateDatabase({ event })
+				break;
+			case "event":
+				handleEvent({ event })
+				break;
+			case "message_reaction":
+				handleReaction({ event })
+				break;
+			default:
+				break;
+		}
 	}
-}
 
-	return async (error, event) => {
+	return (error, event) => {
 		if (error) logger(JSON.stringify(error), 2);
-
-		try {
-			sendEvent({ event })
+		if (client.event && JSON.stringify(client.event) == JSON.stringify(event) || event.messageID && client.messageID == event.messageID) ""
+		else {
+			client.event = event;
+			client.messageID = event.messageID;
+			try {
+				sendEvent({ event })
+			}
+			catch (e) {
+				logger(JSON.stringify(e), 2);
+			}	
 		}
-		catch (e) {
-			sendEvent({ event })
-		}
-	};
+	}
 }
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

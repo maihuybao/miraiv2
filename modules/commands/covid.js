@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Lấy thông tin về tình hình dịch bệnh COVID-19",
-	commandCategory: "general",
+	commandCategory: "General",
 	usages: "covid",
 	cooldowns: 5,
 	dependencies: ["axios"]

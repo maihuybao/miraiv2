@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Tìm kiếm kết quả trên google!",
-	commandCategory: "general",
+	commandCategory: "Media",
 	usages: "search [Text]",
 	cooldowns: 5,
 	dependencies: ["request", "fs"],

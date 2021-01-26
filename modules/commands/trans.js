@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Dịch văn bản",
-	commandCategory: "general",
+	commandCategory: "Media",
 	usages: "trans [Text]",
 	cooldowns: 5,
 	dependencies: ["request"],
