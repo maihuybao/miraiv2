@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "General",
 	usages: "qr [text]",
 	cooldowns: 5,
-	dependencies: ["request","qrcode","fs-extra"]
+	dependencies: ["request","qrcode"]
 };
 
 module.exports.run = async function({ api, event, args }) {

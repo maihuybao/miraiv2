@@ -10,7 +10,7 @@ const { Sequelize, sequelize } = require("./includes/database");
 const login = require("fca-unofficial");
 let appStateFile;
 
-const client = new Object({
+let client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
@@ -21,7 +21,7 @@ const client = new Object({
 	threadSetting: new Map()
 });
 
-const __GLOBAL = new Object({
+let __GLOBAL = new Object({
 	settings: new Array()
 })
 
@@ -51,7 +51,7 @@ const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((f
 for (let file of commandFiles) {
 	var command = require(join(__dirname, "/modules/commands", `${file}`));
 	try {
-		if (!command.config || !command.run) throw new Error(`Sai format!`);
+		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 		if (command.config.dependencies) {
 			try {

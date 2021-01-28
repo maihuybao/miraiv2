@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "NSFW",
 	usages: "phub [text]",
 	cooldowns: 10,
-	dependencies: ["canvas", "axios", "fs-extra"]
+	dependencies: ["canvas", "axios"]
 };
 
 function wrapText(ctx, text, maxWidth) {

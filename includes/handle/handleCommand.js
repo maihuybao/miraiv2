@@ -1,6 +1,5 @@
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
-const moment = require("moment-timezone");
 const stringSimilarity = require('string-similarity');
 
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
@@ -46,10 +45,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			let expirationTime = timestamps.get(senderID) + cooldownAmount;
 			if (now < expirationTime) {
 				let timeLeft = (expirationTime - now) / 1000;
-				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, threadID, async (err, info) => {
-					await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-					api.unsendMessage(info.messageID);
-				}, messageID);
+				return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 			}
 		}
 		timestamps.set(senderID, now);

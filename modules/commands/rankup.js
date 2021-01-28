@@ -9,17 +9,17 @@ module.exports.config = {
 	cooldowns: 5,
 };
 
-module.exports.event = async function({ api, event, User }) {
+module.exports.event = async function({ api, event, Users }) {
 	let {threadID, senderID } = event;
-	let data = (await User.getData(senderID)).otherInfo || {};
+	let data = (await Users.getData(senderID)).otherInfo || {};
 	data["COUNT"]++;
-	await User.setData(userID = senderID, options = { otherInfo: data });
-	let countMess = (await User.getData(senderID)).otherInfo;
+	await Users.setData(senderID, options = { otherInfo: data });
+	let countMess = (await Users.getData(senderID)).otherInfo;
 	if (typeof countMess == "undefined") return;
 	let curLevel = Math.floor((Math.sqrt(1 + (4 * countMess.COUNT / 3) + 1) / 2));
 	let level = Math.floor((Math.sqrt(1 + (4 * (countMess.COUNT + 1) / 3) + 1) / 2));
  	if (level > curLevel) {
- 		let name = (await User.getInfo(senderID)).name;
+ 		let name = (await Users.getInfo(senderID)).name;
  		return api.sendMessage({
  			body: `Trình độ chém gió của ${name} đã đạt tới level ${level}`,
  			mentions:[{
@@ -29,6 +29,6 @@ module.exports.event = async function({ api, event, User }) {
  		}, threadID);
  	}
 }
-module.exports.run = async function({ api, event, args, User }) {
+module.exports.run = async function({ api, event, args, Users }) {
 
 }

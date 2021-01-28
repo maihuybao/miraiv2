@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "Media",
 	usages: "sing [Text]",
 	cooldowns: 10,
-	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader","fs-extra","fluent-ffmpeg","@ffmpeg-installer/ffmpeg"],
+	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader","fluent-ffmpeg","@ffmpeg-installer/ffmpeg"],
 	info: [
 		{
 			key: 'Text',

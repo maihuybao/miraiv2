@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "Media",
 	usages: "gif bomman",
 	cooldowns: 5,
-	dependencies: ["request","fs-extra"]
+	dependencies: ["request"]
 };
 
 module.exports.run = function({ api, event, args, __GLOBAL }) {

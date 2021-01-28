@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "general",
 	usages: "math 1 + 2",
 	cooldowns: 5,
-	dependencies: ["axios", "fs-extra"],
+	dependencies: ["axios"],
 	info: [
 		{
 			key: 'none',
