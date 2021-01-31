@@ -18,13 +18,15 @@ module.exports.config = {
 	]
 };
 
-module.exports.handleReply = async function({ api, event, client, __GLOBAL, handleReply }) {
+module.exports.handleReply = async function({ api, event, handleReply }) {
 	const ytdl = require("ytdl-core");
-	const { createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
-	var ffmpeg = require("fluent-ffmpeg");
-	var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-	ffmpeg.setFfmpegPath(ffmpegPath);
-	ffmpeg().input(ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`)).toFormat("mp3").pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({attachment: createReadStream(__dirname + "/cache/music.mp3")}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID));
+	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
+	ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`, { filter: format => format.itag == "18" })
+	.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`))
+	.on("close", () => {
+		if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`) .size > 2614400) return api.sendMessage("Đã vượt quá dung lượng cho phép", event.threadID);
+		api.sendMessage({attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`), event.messageID)
+	});
 }
 
 module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
@@ -81,8 +83,8 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 			for (let value of results) {
 				if (typeof value.id == 'undefined') return;
 				link.push(value.id);
-				let songInfo = (await ytdl.getInfo(value.id));
-				msg += (`${num+=1}. ${songInfo.videoDetails.title} | [${(songInfo.videoDetails.lengthSeconds - (songInfo.videoDetails.lengthSeconds %= 60)) / 60 + (9 < songInfo.videoDetails.lengthSeconds ? ':' : ':0') + songInfo.videoDetails.lengthSeconds}]\n`);
+				console.log(value);
+				msg += (`${num+=1}. ${value.title}\n`);
 			}
 			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: "sing", messageID: info.messageID, author: event.senderID, link }), event.messageID);
 		}

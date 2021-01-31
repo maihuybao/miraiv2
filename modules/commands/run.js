@@ -12,7 +12,7 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, args, client, __GLOBAL, Threads, Users, Currencies, models }) {
 	const { VM } = require("vm2");
-	var out = (a) => api.sendMessage(`${a}`, event.threadID);
+	var out = async (a) => api.sendMessage(`${a}`, event.threadID);
 	const vm = new VM({
 		eval: false,
 		wasm: false,

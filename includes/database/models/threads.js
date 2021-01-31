@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     banned: DataTypes.BOOLEAN,
     time2unban: DataTypes.STRING,
     reasonban: DataTypes.STRING,
+    settings: DataTypes.JSON
   },
   {
     sequelize,

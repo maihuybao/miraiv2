@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   Currencies.init({
     userID: DataTypes.BIGINT,
     money: DataTypes.BIGINT,
+    exp: DataTypes.BIGINT
   },
   {
     sequelize,

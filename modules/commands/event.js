@@ -19,10 +19,8 @@ module.exports.config = {
 
 //Reload module
 async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
-	const logger = require("../utils/log.js")
-	const { join, resolve } = require("path");
+	const { join } = require("path");
 	const { execSync } = require('child_process');
-	const node_modules = '../node_modules/';
 	try{ client.events.delete(nameOfModule) } catch(e) { return api.sendMessage(`Không thể reload module của bạn, lỗi: ${e}`, event.threadID) };
 	delete require.cache[require.resolve(`../events/${nameOfModule}.js`)];
 	const command = require(join(__dirname, `../events/${nameOfModule}`));
@@ -31,12 +29,10 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 		if (!command.config || !command.run) throw new Error(`Sai format!`);
 		if (command.config.dependencies) {
 			try {
-				for (let i of command.config.dependencies) require(i);
+				for (let i of command.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
-				api.sendMessage(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, event.threadID);
-				if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
-				else execSync('npm install -s ' + command.config.dependencies.join(" "));
+				execSync('npm install -s ' + command.config.dependencies.join(" "));
 				api.sendMessage(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, event.threadID);
 			}
 		}
@@ -48,7 +44,7 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 	}
 }
 
-function unloadModule({ nameOfModule, event, api, client, args }) {
+function unloadModule({ nameOfModule, event, api, client }) {
 	try{
 		client.events.delete(nameOfModule);
 		return api.sendMessage(`Unloaded command ${nameOfModule}!`, event.threadID);
@@ -58,7 +54,7 @@ function unloadModule({ nameOfModule, event, api, client, args }) {
 	}
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event, args, client, __GLOBAL, utils }) {
 	if (args[0] == "all") {
 		let commands = client.events.values();
 		let infoCommand = "";

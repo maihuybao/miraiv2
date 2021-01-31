@@ -136,8 +136,8 @@ function onBot({ models }) {
 
 		onListen();
 		setInterval(() => {
-			onListen().stopListening();
-			setTimeout(() => onListen(), 2000);
+			api.listenMqtt().stopListening();
+			setTimeout(() => onListen(), 5000);
 		}, 300000);
 	});
 }

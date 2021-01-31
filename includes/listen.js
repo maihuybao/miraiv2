@@ -23,33 +23,12 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 		var threadBanned, userBanned, threadSetting;
 		threadBanned = (await Threads.getAll({ banned: true })).map(e => e.get({ plain: true }));
 		userBanned = (await Users.getAll({ banned: true })).map(e => e.get({ plain: true }));
-		threadSetting = await Threads.getAll(['settings']);
+		threadSetting = await Threads.getAll(['threadID', 'settings']);
 		threadBanned.forEach(info => client.threadBanned.set(info.threadID, { reason: info.reasonban, time2unban: info.time2unban }));
 		userBanned.forEach(info => client.userBanned.set(info.userID, { reason: info.reasonban, time2unban: info.time2unban }));
 		threadSetting.forEach(info => client.threadSetting.set(info.threadID, info.settings));
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
-
-	function sendEvent({ event }) {
-		switch (event.type) {
-			case "message":
-			case "message_reply": 
-				handleCommand({ event })
-				handleReply({ event })
-				handleCommandEvent({ event })
-				handleChangeName({ event })
-				handleCreateDatabase({ event })
-				break;
-			case "event":
-				handleEvent({ event })
-				break;
-			case "message_reaction":
-				handleReaction({ event })
-				break;
-			default:
-				break;
-		}
-	}
 
 	return (error, event) => {
 		if (error) logger(JSON.stringify(error), 2);
@@ -58,7 +37,24 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 			client.event = event;
 			client.messageID = event.messageID;
 			try {
-				sendEvent({ event })
+				switch (event.type) {
+					case "message":
+					case "message_reply": 
+						handleCommand({ event })
+						handleReply({ event })
+						handleCommandEvent({ event })
+						handleChangeName({ event })
+						handleCreateDatabase({ event })
+						break;
+					case "event":
+						handleEvent({ event })
+						break;
+					case "message_reaction":
+						handleReaction({ event })
+						break;
+					default:
+						break;
+				}
 			}
 			catch (e) {
 				logger(JSON.stringify(e), 2);

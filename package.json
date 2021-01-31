@@ -29,8 +29,9 @@
 	},
 	"homepage": "https://github.com/catalizcs/miraiv2#readme",
 	"dependencies": {
+		"axios": "",
 		"body-parser": "",
-		"canvas": "^2.6.1",
+		"canvas": "",
 		"chalk": "",
 		"child_process": "",
 		"fca-unofficial": "",

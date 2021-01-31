@@ -28,10 +28,10 @@ function displayBoard(data) {
 			var temp = data.board[i][j].toString();
 			if (temp == "0") msg += "[  ]  "
 			else if (temp == "1") {
-				(data.isX) ? msg += "[⭕]  " : msg += "[❌]  ";
+				(data.isX) ? msg += "[O]  " : msg += "[X]  ";
 			}   
 			else {
-				(data.isX) ? msg += "[❌]  " : msg += "[⭕]  ";
+				(data.isX) ? msg += "[X]  " : msg += "[O]  ";
 			}
 		}
 		msg += "\n";
@@ -138,7 +138,7 @@ function checkGameOver(data) {
 
 function AIStart(data) {
 	var point = [Math.round(Math.random()) * 2, Math.round(Math.random()) * 2];
-	placeMove({p, player: 1, data});
+	placeMove({point, player: 1, data});
 }
 
 
@@ -158,16 +158,13 @@ module.exports.event = ({ event, api, client }) => {
 				api.sendMessage(`${displayBoard(data)}`, threadID, messageID);
 			}
 			else {
-				api.sendMessage(temp, threadID, messageID);
-				api.sendMessage(`${displayBoard(data)}`, threadID, messageID);
+				api.sendMessage(temp, threadID);
+				api.sendMessage(`${displayBoard(data)}`, threadID);
 			}
 			if(checkGameOver(data)) {
 				if(checkAIWon(data)) api.sendMessage("AI has won!", threadID, messageID);
 				else if(checkPlayerWon(data)) api.sendMessage("Player has won!", threadID, messageID);
-				else {
-					api.sendMessage("It's a draw!", threadID, messageID);
-					api.sendMessage("\nResetting game state." + displayBoard(data), threadID, messageID);
-				}
+				else api.sendMessage("It's a draw!", threadID, messageID);
 			client.tictactoe.delete(threadID);
 			}
 		}
@@ -184,7 +181,8 @@ module.exports.run = ({ event, api, args, client }) => {
 		   case "random": 
 				if(Math.random() > 0.5) {
 				  newData = startBoard({isX: true, client, data, threadID});
-				  api.sendMessage("you go first, X", threadID, messageID); 
+				  api.sendMessage("you go first, X", threadID, messageID);
+				  api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
 				}
 				else {
 					newData = startBoard({isX: false, client, data, threadID});
@@ -194,7 +192,8 @@ module.exports.run = ({ event, api, args, client }) => {
 			break;
 			case "x":
 				newData = startBoard({isX: true, client, data, threadID});
-				api.sendMessage("you go first, X", threadID, messageID); 
+				api.sendMessage("you go first, X", threadID, messageID);
+				api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
 			break;
 			case "o":
 				newData = startBoard({isX: false, client, data, threadID});

@@ -65,7 +65,7 @@ module.exports.event = async ({ event, api, client }) => {
 		values.ready += 1;
 		player.ready = true;
 		api.sendMessage(`Người chơi: ${player.id} Đã sẵn sàng lật bài, còn lại: ${values.player.length - values.ready} người chơi chưa lật bài`, event.threadID);
-		if (values.player.length -1 == values.ready) {
+		if (values.player.length == values.ready) {
 			let player = values.player;
 			player.sort((a, b) => {
 				if (a.tong > b.tong) return -1;
