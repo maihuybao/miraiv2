@@ -15,11 +15,14 @@ module.exports.config = {
 			type: 'Reply',
 			example: 'Không Có'
 		}
-	]
+	],
+	envConfig: {
+		"SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41"
+	}
 };
 
 module.exports.run = async ({ api, event,__GLOBAL }) => {
-	const sagiri = require('sagiri'), search = sagiri(__GLOBAL.settings.SAUCENAO_API);
+	const sagiri = require('sagiri'), search = sagiri(__GLOBAL.sauce.SAUCENAO_API);
 	if (event.type != "message_reply") return api.sendMessage(`Vui lòng bạn reply bức ảnh cần phải tìm!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments.length > 1) return api.sendMessage(`Vui lòng reply chỉ một ảnh!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments[0].type == 'photo') {

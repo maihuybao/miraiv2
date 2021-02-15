@@ -6,6 +6,7 @@ package-lock.json
 *.mp3
 *.mp4
 *.png
+*.gif
 node_modules/
 logs/
 includes/data.sqlite

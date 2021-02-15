@@ -2,7 +2,7 @@
 	name: "teach",
 	version: "0.0.1-beta",
 	hasPermssion: 0,
-	credits: "Mewmew",
+	credits: "MewMew",
 	description: "Dạy bot (dùng cho lệnh sim)",
 	commandCategory: "Chatbot",
 	usages: "teach [In] => [Out]",

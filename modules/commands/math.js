@@ -39,14 +39,17 @@ module.exports.config = {
 			type: 'Tọa độ vector',
 			example: 'math -v (1, 2, 3) - (5, 6, 7)'
 		}
-	]
+	],
+	envConfig: {
+		"WOLFRAM": "T8J8YV-H265UQ762K"
+	}
 };
 module.exports.run = async function ({ api, event, args, __GLOBAL }) {
 	var axios = require("axios");
 	var fs = require("fs-extra");
 	var { threadID, messageID } = event;
 	var out = (msg) => api.sendMessage(msg, threadID, messageID);
-	var text = [], key = __GLOBAL.settings.WOLFRAM;
+	var text = [], key = __GLOBAL.math.WOLFRAM;
 	var content = (event.type == 'message_reply') ? event.messageReply.body : args.join(" ");
 	if (!content) return out("Vui lòng nhập phép tính");
 	else if (content.indexOf("-p") == 0) {

@@ -15,18 +15,21 @@ module.exports.config = {
 			type: 'Văn Bản',
 			example: 'rap chậm thôi'
 		}
-	]
+	],
+	envConfig: {
+		"YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
+		"SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub"
+	}
 };
 
 module.exports.handleReply = async function({ api, event, handleReply }) {
+	const ffmpeg = require("fluent-ffmpeg");
+	const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+	ffmpeg.setFfmpegPath(ffmpegPath);
 	const ytdl = require("ytdl-core");
 	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
-	ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`, { filter: format => format.itag == "18" })
-	.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`))
-	.on("close", () => {
-		if (statSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`) .size > 2614400) return api.sendMessage("Đã vượt quá dung lượng cho phép", event.threadID);
-		api.sendMessage({attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`), event.messageID)
-	});
+	api.sendMessage("Đang xử lý request của bạn!", event.threadID,event.messageID)
+	ffmpeg().input(ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`)).toFormat("mp3").pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)).on("close", () => api.sendMessage({attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`), event.messageID));
 }
 
 module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
@@ -38,7 +41,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 	var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 	ffmpeg.setFfmpegPath(ffmpegPath);
 	
-	const youtube = new YouTubeAPI(__GLOBAL.settings.YOUTUBE_API);
+	const youtube = new YouTubeAPI(__GLOBAL["sing"].YOUTUBE_API);
 	
 	if (args.length == 0 || !args) return api.sendMessage('Phần tìm kiếm không được để trống!', event.threadID, event.messageID);
 	const keywordSearch = args.join(" ");
@@ -61,7 +64,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 	else if (scRegex.test(args[0])) {
 		let body;
 		try {
-			var songInfo = await scdl.getInfo(args[0], __GLOBAL.settings.SOUNDCLOUD_API);
+			var songInfo = await scdl.getInfo(args[0], __GLOBAL.sing.SOUNDCLOUD_API);
 			var timePlay = Math.ceil(songInfo.duration / 1000);
 			body = `Tiêu đề: ${songInfo.title} | ${(timePlay - (timePlay %= 60)) / 60 + (9 < timePlay ? ':' : ':0') + timePlay}]`;
 		}
@@ -83,7 +86,6 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 			for (let value of results) {
 				if (typeof value.id == 'undefined') return;
 				link.push(value.id);
-				console.log(value);
 				msg += (`${num+=1}. ${value.title}\n`);
 			}
 			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: "sing", messageID: info.messageID, author: event.senderID, link }), event.messageID);

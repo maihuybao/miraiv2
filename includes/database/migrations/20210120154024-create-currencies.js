@@ -29,6 +29,16 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
         defaultValue: 0
+      },
+      dailyTime: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        defaultValue: 0
+      },
+      workTime: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        defaultValue: 0
       }
     });
   },

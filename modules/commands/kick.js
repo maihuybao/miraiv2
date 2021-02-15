@@ -10,7 +10,7 @@ module.exports.config = {
 	dependencies: [] 
 };
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event }) {
 	var mention = Object.keys(event.mentions);
 	return api.getThreadInfo(event.threadID, (err, info) => {
 		if (err) return api.sendMessage("Đã có lỗi xảy ra!",event.threadID);

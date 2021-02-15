@@ -26,7 +26,10 @@ module.exports.config = {
 			type: 'Số liệu',
 			example: '1, 2, 3'
 		}
-	]
+	],
+	envConfig: {
+		//Đây là nơi bạn sẽ setup toàn bộ env của module, chẳng hạn APIKEY, ...
+	}
 };
 
 module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {

@@ -7,7 +7,8 @@
 		"node": "12.18.2"
 	},
 	"scripts": {
-		"start": "node --trace-warnings mirai"
+		"start": "node --trace-warnings mirai",
+		"pm2": "pm2 start pm2_apps.json && pm2 monit"
 	},
 	"repository": {
 		"type": "git",
@@ -37,8 +38,10 @@
 		"fca-unofficial": "",
 		"figlet": "",
 		"fs-extra": "",
+		"moment": "",
 		"ms": "",
 		"npmlog": "",
+		"pm2": "",
 		"readline": "",
 		"semver": "",
 		"sequelize": "",

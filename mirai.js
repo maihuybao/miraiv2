@@ -10,7 +10,7 @@ const { Sequelize, sequelize } = require("./includes/database");
 const login = require("fca-unofficial");
 let appStateFile;
 
-let client = new Object({
+const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	cooldowns: new Map(),
@@ -18,17 +18,40 @@ let client = new Object({
 	handleReaction: new Array(),
 	userBanned: new Map(),
 	threadBanned: new Map(),
-	threadSetting: new Map()
+	threadSetting: new Map(),
+	globalConfig: ""
 });
 
-let __GLOBAL = new Object({
+const __GLOBAL = new Object({
 	settings: new Array()
 })
+
+//check argv
+
+let argv = process.argv.slice(2);
+
+if (argv.length !== 0) client.globalConfig = argv[0];
+else client.globalConfig = "./config.json";
+
+//set config to __GLOBAL
+
+ let config = require(`./${client.globalConfig}`);
+if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
+
+try {
+	for (let [name, value] of Object.entries(config)) {
+		__GLOBAL.settings[name] = value;
+	}
+	logger("Config Loaded!", "[ LOADER ]");
+}
+catch (error) {
+	return logger("Không thể load config!", "[ LOADER ]");
+}
 
 //=========Login =========//
 
 try {
-	appStateFile = resolve(__dirname, './appstate.json');
+	appStateFile = resolve(__dirname, `./${config.APPSTATEPATH}`);
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
@@ -48,23 +71,37 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 //========= Get all command files =========//
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
-for (let file of commandFiles) {
+for (const file of commandFiles) {
 	var command = require(join(__dirname, "/modules/commands", `${file}`));
 	try {
 		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
 		if (command.config.dependencies) {
 			try {
-				for (let i of command.config.dependencies) require.resolve(i);
+				for (const i of command.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
-				if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
-				else execSync('npm install -s ' + command.config.dependencies.join(" "));
+				execSync('npm install -s ' + command.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/commands/${file}`)];
 				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
 			}
 		}
+        if (command.config.envConfig) {
+            try {
+                for (const [key, value] of Object.entries(command.config.envConfig)) {
+                    if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
+                    if (typeof config[command.config.name] == "undefined") config[command.config.name] = new Object();
+                    if (typeof config[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = config[command.config.name][key]
+                    else __GLOBAL[command.config.name][key] = value || "";
+                    if (typeof config[command.config.name][key] == "undefined") config[command.config.name][key] = value || "";
+                }
+                logger(`Loaded config module ${command.config.name}`, "[ LOADER ]")
+            } catch (error) {
+                console.log(error);
+                logger(`Không thể tải config module ${command.config.name}`, "[ LOADER ]");
+            }
+        }
 		client.commands.set(command.config.name, command);
 		logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
 	}
@@ -76,7 +113,7 @@ for (let file of commandFiles) {
 //========= Get all event files =========//
 
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js"));
-for (let file of eventFiles) {
+for (const file of eventFiles) {
 	var event = require(join(__dirname, "/modules/events", `${file}`));
 	try {
 		if (!event.config || !event.run) throw new Error(`Sai format!`);
@@ -87,12 +124,25 @@ for (let file of eventFiles) {
 			}
 			catch (e) {
 				logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
-				if (process.env.API_SERVER_EXTERNAL == 'https://api.glitch.com') execSync('pnpm i ' + command.config.dependencies.join(" "));
-				else execSync('npm install -s ' + command.config.dependencies.join(" "));
+				execSync('npm install -s ' + event.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/events/${file}`)];
 				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`, "[ LOADER ]");
 			}
 		}
+        if (event.config.envConfig) {
+            try {
+                for (const [key, value] of Object.entries(event.config.envConfig)) {
+                    if (typeof __GLOBAL[event.config.name] == "undefined") __GLOBAL[event.config.name] = new Object();
+                    if (typeof config[event.config.name] == "undefined") config[event.config.name] = new Object();
+                    if (typeof config[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = config[event.config.name][key]
+                    else __GLOBAL[event.config.name][key] = value || "";
+                    if (typeof config[event.config.name][key] == "undefined") config[event.config.name][key] = value || "";
+                }
+                logger(`Loaded config event module ${event.config.name}`, "[ LOADER ]")
+            } catch (error) {
+                logger(`Không thể tải config event module ${event.config.name}`, "[ LOADER ]");
+            }
+        }
 		client.events.set(event.config.name, event);
 		logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
 	}
@@ -102,25 +152,14 @@ for (let file of eventFiles) {
 }
 
 logger(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`, "[ LOADER ]")
+writeFileSync(client.globalConfig, JSON.stringify(config, null, 4));
 
-//========= Set variable to __GLOBAL =========//
-
-const config = require("./config.json");
-if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
-
-try {
-	for (let [name, value] of Object.entries(config)) {
-		__GLOBAL.settings[name] = value;
-	}
-	logger("Config Loaded!", "[ LOADER ]");
-}
-catch (error) {
-	return logger("Không thể load config!", "[ LOADER ]");
-}
+execSync('npm cache clean --force');
+logger("Npm cache cleaned!", "[ LOADER ]");
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
-		if (err) return logger(err);
+		if (err) return logger(JSON.stringify(err));
 
 		let listen = require("./includes/listen")({ api, models, client, __GLOBAL });
 		let onListen = () => api.listenMqtt(listen);
@@ -133,19 +172,27 @@ function onBot({ models }) {
 			updatePresence: false,
 			selfListen: false
 		});
-
-		onListen();
-		setInterval(() => {
-			api.listenMqtt().stopListening();
-			setTimeout(() => onListen(), 5000);
-		}, 300000);
+		try {
+			onListen();
+			setInterval(() => {
+				api.listenMqtt().stopListening();
+				setTimeout(() => onListen(), 2000);
+				if (__GLOBAL.settings.DEVELOP_MODE == true) {
+					const moment = require("moment");
+					var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+					logger(`[ ${time} ] Listen restarted`, "[ DEV MODE ]");
+				}
+			}, 1800000);
+		}
+		catch(e) {
+			logger(`${e.name}: ${e.message}`, "[ LISTEN ]")
+		}
 	});
 }
 
-
 (async () => {
 	let migrations = readdirSync(`./includes/database/migrations`);
-	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", {type: Sequelize.QueryTypes.SELECT});
+	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
 	for (let name in completedMigrations) {
 		if (completedMigrations.hasOwnProperty(name)) {
 			let index = migrations.indexOf(completedMigrations[name].name);

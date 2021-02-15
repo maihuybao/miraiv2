@@ -7,7 +7,10 @@ module.exports.config = {
 	commandCategory: "Media",
 	usages: "gif bomman",
 	cooldowns: 5,
-	dependencies: ["request"]
+	dependencies: ["request"],
+	envConfig: {
+		"TENOR": "73YIAOY3ACT1"
+	}
 };
 
 module.exports.run = function({ api, event, args, __GLOBAL }) {
@@ -15,7 +18,7 @@ module.exports.run = function({ api, event, args, __GLOBAL }) {
 	var request = require("request");
 	var { threadID, messageID } = event
 	if (!args[0]) return api.sendMessage("Không tìm thấy tag bạn nhập", threadID, messageID);
-	return request(`https://api.tenor.com/v1/random?key=${__GLOBAL.settings.TENOR}&q=${args[0]}&limit=1`, (err, response, body) => {
+	return request(`https://api.tenor.com/v1/random?key=${__GLOBAL.gif.TENOR}&q=${args[0]}&limit=1`, (err, response, body) => {
 		if (err) throw err;
 		var string = JSON.parse(body);
 		var stringURL = string.results[0].media[0].tinygif.url;

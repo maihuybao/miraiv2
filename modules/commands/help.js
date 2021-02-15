@@ -35,6 +35,7 @@ module.exports.run = function({ api, event, args, client }) {
 	if (!infoHelp || infoHelp.length == 0) infoText = 'Không có';
 	else {
 		for (var i = 0; i < infoHelp.length; i++) {
+			
 			infoText +=
 				`\n+ key: ${infoHelp[i].key}` + 
 				`\n • Thông tin: ${infoHelp[i].prompt}` + 

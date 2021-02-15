@@ -27,13 +27,15 @@ module.exports.handleReaction = async function({ api, event, client, Threads, ha
 }
 
 module.exports.run = async ({ api, event, args, client }) => {
-	if (!args) return api.sendMessage("Phần prefix cần đặt không được để trống", event.threadID, event.messageID);
-	return api.sendMessage("Bạn có chắc bạn muốn đổi prefix của nhóm thành: " + args[0], event.threadID, (error, info) => {
+	if (typeof args[0] == "undefined") return api.sendMessage("Phần prefix cần đặt không được để trống", event.threadID, event.messageID);
+	let prefix = args[0].trim();
+	if (!prefix) return api.sendMessage("Phần prefix cần đặt không được để trống", event.threadID, event.messageID);
+	return api.sendMessage("Bạn có chắc bạn muốn đổi prefix của nhóm thành: " + prefix, event.threadID, (error, info) => {
 		client.handleReaction.push({
 			name: "setprefix",
 			messageID: info.messageID,
 			author: event.senderID,
-			PREFIX: args[0]
+			PREFIX: prefix
 		})
 	})
 }

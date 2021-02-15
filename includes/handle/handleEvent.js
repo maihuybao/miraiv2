@@ -1,6 +1,6 @@
 const logger = require("../../utils/log.js");
 
-module.exports = function({ api, __GLOBAL, client }) {
+module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
 	return async function({ event }) {
 		let timeStart = Date.now();
 		let { senderID, threadID } = event;
@@ -11,10 +11,11 @@ module.exports = function({ api, __GLOBAL, client }) {
 			if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
 				const eventRun = client.events.get(key);
 				try {
-					eventRun.run({ api, event, __GLOBAL, client });
+					eventRun.run({ api,event, __GLOBAL, client, models, Users, Threads, Currencies });
 					if (__GLOBAL.settings.DEVELOP_MODE == true) {
-						var time = new Date();
-						logger(`[ ${time.toLocaleString()} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+						const moment = require("moment");
+						var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+						logger(`[ ${time} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}
 				}
 				catch (error) {

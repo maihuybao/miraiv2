@@ -32,8 +32,8 @@ module.exports.event = async ({ event, api, client }) => {
 			let card2 = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 			let card3 = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 			let tong = (card1+card2+card3);
-			if (tong > 20) tong -= 20;
-			if (tong > 10) tong -= 10;
+			if (tong >= 20) tong -= 20;
+			if (tong >= 10) tong -= 10;
 			values.player[i].card1 = card1;
 			values.player[i].card2 = card2;
 			values.player[i].card3 = card3;
@@ -52,8 +52,8 @@ module.exports.event = async ({ event, api, client }) => {
 		let card = ["card1","card2","card3"];
 		player[card[(Math.floor(Math.random() * card.length))]] = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 		player.tong = (player.card1+player.card2+player.card3);
-		if (player.tong >= 10) player.tong -= 10;
 		if (player.tong >= 20) player.tong -= 20;
+		if (player.tong >= 10) player.tong -= 10;
 		player.doibai -= 1;
 		client.baicao.set(values);
 		return api.sendMessage(`Bài của bạn sau khi được đổi: ${player.card1} | ${player.card2} | ${player.card3} \n\nTổng bài của bạn: ${player.tong}`, player.id);
@@ -165,5 +165,5 @@ module.exports.run = async ({ api, event, args, client, utils }) => {
 		})
 		return api.sendMessage("Bạn có thấy tin nhắn của bot gửi tới bạn? Nếu không, hãy kiểm tra phần tin nhắn chờ hoặc tin nhắn spam!", event.threadID, event.messageID);
 	}
-	else return utils.throwError("balance", event.threadID, event.messageID);
+	else return utils.throwError("baicao", event.threadID, event.messageID);
 }

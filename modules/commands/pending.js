@@ -25,7 +25,7 @@ module.exports.handleReaction = async function({ api, event, client, __GLOBAL, h
 	return api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event, clientL }) {
 	api.getThreadList(100, null, ["PENDING", "OTHER"], (err, list) => {
 		api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, event.messageID);
 		list.forEach((infoPending) => {
