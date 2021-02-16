@@ -68,7 +68,7 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(readFileSync('./package.json')).version;
 	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
-	else modules.log('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
+	else logger('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
