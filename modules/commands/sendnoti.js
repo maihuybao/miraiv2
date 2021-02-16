@@ -2,9 +2,9 @@ module.exports.config = {
 	name: "sendnoti",
 	version: "1.0.0",
 	hasPermssion: 2,
-	credits: "CatalizCS",
+	credits: "SpermLord",
 	description: "Gửi tin nhắn tới các nhóm!",
-	commandCategory: "system",
+	commandCategory: "System",
 	usages: "sendnoti [Text]",
 	cooldowns: 5,
 	info: [

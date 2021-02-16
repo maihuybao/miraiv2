@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Dịch văn bản",
-	commandCategory: "general",
+	commandCategory: "Media",
 	usages: "trans [Text]",
 	cooldowns: 5,
 	dependencies: ["request"],
@@ -26,7 +26,7 @@ module.exports.run = async ({ api, event, args }) => {
 	var lang = content.substring(content.indexOf(" -> ") + 4);
 	if (event.type == "message_reply") {
 		translateThis = event.messageReply.body
-		if (content.indexOf(" -> ") != -1) lang = content.substring(content.indexOf(" -> ") + 4);
+		if (content.indexOf("-> ") !== -1) lang = content.substring(content.indexOf("-> ") + 3);
 		else lang = 'vi';
 	}
 	else if (content.indexOf(" -> ") == -1) {

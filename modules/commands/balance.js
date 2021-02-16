@@ -17,16 +17,16 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async function({ api, event, args, Currency, utils }) {
+module.exports.run = async function({ api, event, args, Currencies, utils }) {
 	if (!args[0]) {
-		const money = (await Currency.getData(userID = event.senderID)).money;
+		const money = (await Currencies.getData(event.senderID)).money;
 		return api.sendMessage(`Số tiền bạn hiện đang có: ${money} đô`, event.threadID);
 	}
 	else if (Object.keys(event.mentions).length == 1) {
 		var mention = Object.keys(event.mentions)[0];
-		const money = (await Currency.getData(userID = mention)).money;
+		const money = (await Currencies.getData(mention)).money;
 		return api.sendMessage({
-			body: `Số tiền của ${event.mentions[mention].replace("@", "")} hiện đang có là: ${money} đô.`,
+			body: `Số tiền của ${event.mentions[mention].replace("@", "")} hiện đang có là: ${money} coin.`,
 			mentions: [{
 				tag: event.mentions[mention].replace("@", ""),
 				id: mention
@@ -34,13 +34,13 @@ module.exports.run = async function({ api, event, args, Currency, utils }) {
 		}, event.threadID, event.messageID);
 	}
 	else if (Object.keys(event.mentions).length > 0) {
-		var mention = Object.keys(event.mentions);
+		let mention = Object.keys(event.mentions);
 		let msg = "";
-		mention.forEach(async (value) => {
-			const data = (await Currency.getData(userID = value));
-			if (data == null) return;
-			msg =+ ` - ${event.mentions[value].replace("@", "")}: ${data.money} đô\n`;
-		});
+		for (let value of mention) {
+			let data = (await Currencies.getData(value)) || {};
+			if (!data) data.money = 0;
+			msg += (` - ${event.mentions[value].replace("@", "")}: ${data.money} coin\n`);
+		};
 		return api.sendMessage(`Số tiền của thành viên: \n${msg}`, event.threadID, event.messageID);
 	}
 	else return utils.throwError("balance", event.threadID, event.messageID);

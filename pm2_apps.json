@@ -1,0 +1,16 @@
+{
+    "apps": [
+        {
+            "name": "MiraiProject",
+            "script": "./mirai.js",
+            "exec_mode": "cluster",
+            "args": "config.json"
+        },
+        {
+            "name": "Mirai-project-2",
+            "script": "./mirai.js",
+            "exec_mode": "cluster",
+            "args": "config1.json"
+        }
+    ]
+}

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "mitsuki",
-	commandCategory: "group",
+	commandCategory: "Chatbot",
 	usages: "mit hello",
 	cooldowns: 5,
 	dependencies: ["request"]

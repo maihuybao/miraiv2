@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Trò chuyện cùng con sim mất dạy nhất quả đất",
-	commandCategory: "general",
+	commandCategory: "Chatbot",
 	usages: "sim [Text]",
 	cooldowns: 5,
 	dependencies: ["request"],

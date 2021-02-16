@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "group", // Thuộc vào nhóm nào
 	usages: "name Text1 Text2", // Cách sử dụng lệnh
 	cooldowns: 5, // Thời gian một người có thể lặp lại lệnh
-	dependencies: ["name package"] //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
+	dependencies: ["name package"], //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
 	// Info là phần chi tiết thêm của cách sử dụng lệnh
 	// Key: Từ khoá thuộc trong usages
 	// prompt: Chi tiết dữ liệu đầu vào của key
@@ -26,7 +26,10 @@ module.exports.config = {
 			type: 'Số liệu',
 			example: '1, 2, 3'
 		}
-	]
+	],
+	envConfig: {
+		//Đây là nơi bạn sẽ setup toàn bộ env của module, chẳng hạn APIKEY, ...
+	}
 };
 
 module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {

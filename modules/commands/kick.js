@@ -4,13 +4,13 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Thọ",
 	description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
-	commandCategory: "group", 
+	commandCategory: "Group", 
 	usages: "kick [tag]", 
 	cooldowns: 0,
 	dependencies: [] 
 };
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event }) {
 	var mention = Object.keys(event.mentions);
 	return api.getThreadInfo(event.threadID, (err, info) => {
 		if (err) return api.sendMessage("Đã có lỗi xảy ra!",event.threadID);
@@ -23,5 +23,5 @@ module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 				},3000)
 			}
 		}
-	})     
+	})
 }

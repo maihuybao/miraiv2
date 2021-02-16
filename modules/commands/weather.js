@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Xem thông tin thời tiết tại khu vực",
-	commandCategory: "general",
+	commandCategory: "General",
 	usages: "weather [Location]",
 	cooldowns: 5,
 	dependencies: ["moment-timezone","request"],
@@ -15,7 +15,10 @@ module.exports.config = {
 			type: 'Văn bản',
 			example: 'Hà Nội'
 		}
-	]
+	],
+	envConfig: {
+		"OPEN_WEATHER": "081c82065cfee62cb7988ddf90914bdd"
+	}
 };
 
 module.exports.run = async ({ api, event, args, __GLOBAL }) => {
@@ -23,7 +26,7 @@ module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	const moment = require("moment-timezone");
 	var city = args.join(" ");
 	if (city.length == 0) return api.sendMessage(`Bạn chưa nhập địa điểm, hãy đọc hướng dẫn tại ${prefix}help weather!`,event.threadID, event.messageID);
-	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + __GLOBAL.settings.OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
+	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + __GLOBAL.weather.OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
 		if (err) throw err;
 		var weatherData = JSON.parse(body);
 		if (weatherData.cod !== 200) return api.sendMessage(`Địa điểm ${city} không tồn tại!`, event.threadID, event.messageID);

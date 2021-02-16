@@ -1,17 +1,17 @@
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const logger = require("../../utils/log.js");
-const moment = require("moment-timezone");
 const stringSimilarity = require('string-similarity');
 
-module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currency, utils }) {
+module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
 	return async function({ event }) {
+		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
-		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
-		var threadSetting = client.threadSetting.get(event.threadID) || {};
+		threadID = parseInt(threadID);
+		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || senderID == threadID) return;
+		var threadSetting = client.threadSetting.get(threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
-		var timeStart = Date.now();
 
 		//=========Get command user use=========//
 
@@ -31,7 +31,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 		//========= Check permssion =========//
 
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
-		let threadAdmins = await Thread.getInfo(threadID);
+		let threadAdmins = await Threads.getInfo(threadID);
 		let find = threadAdmins.adminIDs.find(el => el.id == senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 
@@ -45,10 +45,7 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 			let expirationTime = timestamps.get(senderID) + cooldownAmount;
 			if (now < expirationTime) {
 				let timeLeft = (expirationTime - now) / 1000;
-				return api.sendMessage(`Hãy chờ ${timeLeft.toFixed(1)} giây để có thể tái sử dụng lại lệnh ${command.config.name}.`, threadID, async (err, info) => {
-					await new Promise(resolve => setTimeout(resolve, (timeLeft * 1000)));
-					api.unsendMessage(info.messageID);
-				}, messageID);
+				return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 			}
 		}
 		timestamps.set(senderID, now);
@@ -56,15 +53,16 @@ module.exports = function({ api, __GLOBAL, client, models, User, Thread, Currenc
 
 		//========= Run command =========//
 		try {
-			command.run({ api, __GLOBAL, client, event, args, models, User, Thread, Currency, utils });
+			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
-		if (__GLOBAL.settings.DEVELOP_MODE == "on") {
-			var time = new Date();
-			logger(`[ ${time.toLocaleString()} ]Command Executed: ${commandName} | User: ${senderID} | Arguments: ${(args) ? args : "none"} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+		if (__GLOBAL.settings.DEVELOP_MODE == true) {
+			const moment = require("moment");
+			var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+			logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }

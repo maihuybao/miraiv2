@@ -1,9 +1,0 @@
-
-{
-  "restart": {
-    "include": [
-      "\\.json"
-    ]
-  },
-  "throttle": 3000
-}

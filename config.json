@@ -1,0 +1,16 @@
+{
+    "DEVELOP_MODE": false,
+    "autoCreateDB": true,
+    "EMAIL": "",
+    "PASSWORD": "",
+    "OTPKEY": "",
+    "BOTNAME": "",
+    "PREFIX": "!",
+    "ADMINBOT": "",
+    "DATABASE": {
+        "sqlite": {
+            "storage": "data.sqlite"
+        }
+    },
+    "APPSTATEPATH": "appstate.json"
+}

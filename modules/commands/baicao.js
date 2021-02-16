@@ -3,14 +3,18 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "CatalizCS",
-	description: "Thì là bài cào ?",
-	commandCategory: "general",
+	description: "Game bài cào dành cho nhóm",
+	commandCategory: "games",
 	usages: "baicao [args]",
 	cooldowns: 1,
 	info: [
 		{
 			key: "args",
 			prompt: "create, start, list, join, leave"
+		},
+		{
+			key: "không cần prefix",
+			prompt: "chia bài, đổi bài, ready, nonready"
 		}
 	]
 };
@@ -21,15 +25,15 @@ module.exports.event = async ({ event, api, client }) => {
 	if (!client.baicao.has(threadID)) return;
 	let values = client.baicao.get(threadID);
 	if (values.start != 1) return;
-	if (body.indexOf("chia bài") !== -1) {
+	if (body.indexOf("chia bài") == 0) {
 		if (values.chiabai == 1) return;
 		for(var i = 0; i < values.player.length; i++) {
 			let card1 = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 			let card2 = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 			let card3 = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 			let tong = (card1+card2+card3);
-			if (tong > 20) tong -= 20;
-			if (tong > 10) tong -= 10;
+			if (tong >= 20) tong -= 20;
+			if (tong >= 10) tong -= 10;
 			values.player[i].card1 = card1;
 			values.player[i].card2 = card2;
 			values.player[i].card3 = card3;
@@ -40,7 +44,7 @@ module.exports.event = async ({ event, api, client }) => {
 		client.baicao.set(event.threadID, values);
 		return api.sendMessage("Bài đã được chia thành công! tất cả mọi người đều có 2 lượt đổi bài", threadID);
 	}
-	if (body.indexOf("đổi bài") !== -1) {
+	if (body.indexOf("đổi bài") == 0) {
 		if (values.chiabai != 1) return;
 		let player = values.player.find(item => item.id == senderID);
 		if (player.doibai == 0) return api.sendMessage("Bạn đã sử dụng toàn bộ lượt đổi bài", threadID);
@@ -48,43 +52,66 @@ module.exports.event = async ({ event, api, client }) => {
 		let card = ["card1","card2","card3"];
 		player[card[(Math.floor(Math.random() * card.length))]] = Math.floor(Math.random() * (9 - 1 + 1)) + 1;
 		player.tong = (player.card1+player.card2+player.card3);
-		if (player.tong >= 10) player.tong -= 10;
 		if (player.tong >= 20) player.tong -= 20;
+		if (player.tong >= 10) player.tong -= 10;
 		player.doibai -= 1;
 		client.baicao.set(values);
 		return api.sendMessage(`Bài của bạn sau khi được đổi: ${player.card1} | ${player.card2} | ${player.card3} \n\nTổng bài của bạn: ${player.tong}`, player.id);
 	}
-	if (body.indexOf("ready") !== -1) {
+	if (body.indexOf("ready") == 0) {
 		if (values.chiabai != 1) return;
 		let player = values.player.find(item => item.id == senderID);
 		if (player.ready == true) return;
 		values.ready += 1;
 		player.ready = true;
-		return api.sendMessage(`Người chơi: ${player.id} Đã sẵn sàng lật bài, còn lại: ${values.player.length - values.ready} người chơi chưa lật bài`, event.threadID);
-	}
-	if (values.player.length == values.ready) {
-		let player = values.player;
-		player.sort((a, b) => {
-			if (a.tong > b.tong) return -1;
-			if (a.tong < b.tong) return 1;
-			if (a.id > b.id) return 1;
-			if (a.id < b.id) return -1;
-		});
-		let ranking = "";
-		let num = 0;
-		for (const info of player) {
-			num++
-			ranking += `${num} • UID: ${info.id} Với ${info.tong} nút\n`
+		api.sendMessage(`Người chơi: ${player.id} Đã sẵn sàng lật bài, còn lại: ${values.player.length - values.ready} người chơi chưa lật bài`, event.threadID);
+		if (values.player.length == values.ready) {
+			let player = values.player;
+			player.sort((a, b) => {
+				if (a.tong > b.tong) return -1;
+				if (a.tong < b.tong) return 1;
+				if (a.id > b.id) return 1;
+				if (a.id < b.id) return -1;
+			});
+			let ranking = "";
+			let num = 0;
+			for (const info of player) {
+				num++
+				var name;
+				try {
+					name = Users.getData(info.id).name;	
+				}
+				catch {
+					name = (await api.getUserInfo(info.id))[info.id].name;
+				}
+				ranking += `${num} • ${name} Với ${info.tong} nút\n`
+			}
+			client.baicao.delete(threadID);
+			return api.sendMessage(
+				"Kết quả" +
+				"\n" + ranking
+			,threadID);
 		}
-		client.baicao.delete(threadID);
-		return api.sendMessage(
-			"Kết quả" +
-			"\n" + ranking
-		,threadID);
+		else return
+	}
+	if (body.indexOf("nonready") == 0) {
+		let data = values.player.filter(item => item.ready == false);
+		let msg = "";
+		for (const info of data) {
+			var name;
+			try {
+				name = Users.getData(info.id).name;	
+			}
+			catch {
+				name = (await api.getUserInfo(info.id))[info.id].name;
+			}
+			msg += name + ", ";
+		}
+		return api.sendMessage("Những người chơi chưa ready bao gồm: " + msg, threadID);
 	}
 }
 
-module.exports.run = async ({ api, event, args, client }) => {
+module.exports.run = async ({ api, event, args, client, utils }) => {
 	if (!client.baicao) client.baicao = new Map();
 	let values = client.baicao.get(event.threadID);
 	if (args[0] == "create") {
@@ -136,6 +163,7 @@ module.exports.run = async ({ api, event, args, client }) => {
 		values.player.forEach(info => {
 			api.sendMessage("Bạn có thấy tin nhắn này?", info.id);
 		})
-		return api.sendMessage("Bạn có thấy tin nhắn của bot gửi tới bạn? nếu không có bạn phải add friend với bot và nhắn tin!", event.threadID, event.messageID);
+		return api.sendMessage("Bạn có thấy tin nhắn của bot gửi tới bạn? Nếu không, hãy kiểm tra phần tin nhắn chờ hoặc tin nhắn spam!", event.threadID, event.messageID);
 	}
+	else return utils.throwError("baicao", event.threadID, event.messageID);
 }

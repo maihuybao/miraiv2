@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "tạo shortcut cho 1 tin nhắn",
-	commandCategory: "group",
+	commandCategory: "Group",
 	usages: "short a => abcdefghiklmnoqprsuvtxy",
 	cooldowns: 5,
 	dependencies: ["fs-extra"]
@@ -12,7 +12,7 @@ module.exports.config = {
 const fs = require("fs-extra");
 if (!fs.existsSync(__dirname + "/cache/shortcut.json")) fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
 
-module.exports.event = function({ api, event, client, __GLOBAL }) {
+module.exports.event = function({ api, event }) {
 	if (event.body.length !== -1) {
 		let shortcut = JSON.parse(fs.readFileSync(__dirname + "/cache/shortcut.json"));
 		if (shortcut.some(item => item.id == event.threadID)) {
@@ -29,8 +29,8 @@ module.exports.event = function({ api, event, client, __GLOBAL }) {
 	}
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
-	var { senderID, threadID, messageID } = event;
+module.exports.run = function({ api, event, args }) {
+	var { threadID, messageID } = event;
 	var content = args.join(" ");
 	if (!content) return api.sendMessage("Sai Format", threadID, messageID);
 	if (content.indexOf(`del`) == 0) {

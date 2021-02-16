@@ -1,7 +1,7 @@
 const logger = require("../../utils/log.js");
 
 module.exports = function ({ models, api }) {
-	const Thread = models.use('thread');
+	const Threads = models.use('Threads');
 
 	async function getInfo(threadID) {
 		return await api.getThreadInfo(threadID);
@@ -15,7 +15,7 @@ module.exports = function ({ models, api }) {
 			else where = i;
 		}
 		try {
-			return (await Thread.findAll({ where, attributes })).map(e => e.get({ plain: true }));
+			return (await Threads.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
 			logger(err, 2);
@@ -24,15 +24,15 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function getData(threadID) {
-		const data = (await Thread.findOne({ where: { threadID }}));
+		const data = await Threads.findOne({ where: { threadID }});
 		if (data) return data.get({ plain: true });
-		else return null;
+		else return false;
 	}
 
-	async function setData({threadID, options}) {
-		if (typeof options != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+	async function setData(threadID, options = {}) {
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Phải là 1 Object.';
 		try {
-			(await Thread.findOne({ where: { threadID } })).update(options);
+			(await Threads.findOne({ where: { threadID } })).update(options);
 			return true;
 		}
 		catch (e) {
@@ -42,13 +42,13 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function delData(threadID) {
-		return (await Thread.findOne({ where: { threadID } })).destroy();
+		return (await Threads.findOne({ where: { threadID } })).destroy();
 	}
 
-	async function createData({threadID, defaults}) {
-		if (typeof defaults != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
+	async function createData(threadID, defaults = {}) {
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Phải là 1 Object.';
 		try {
-			(await Thread.findOrCreate({ where: { threadID }, defaults }))
+			await Threads.findOrCreate({ where: { threadID }, defaults });
 			return true;
 		}
 		catch (e) {
@@ -65,5 +65,4 @@ module.exports = function ({ models, api }) {
 		delData,
 		createData
 	}
-
 }

@@ -2,9 +2,9 @@
 	name: "teach",
 	version: "0.0.1-beta",
 	hasPermssion: 0,
-	credits: "Mewmew",
+	credits: "MewMew",
 	description: "Dạy bot (dùng cho lệnh sim)",
-	commandCategory: "general",
+	commandCategory: "Chatbot",
 	usages: "teach [In] => [Out]",
 	cooldowns: 5,
 	dependencies: ["axios"],
@@ -25,7 +25,7 @@
 };
 
 module.exports.run = async function({ api, event, args }) {
-	let res = await require("axios")("http://api.simsimi.tk/sim/v2", {
+	let res = await require("axios")("https://api.simsimi.tk/teach", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: { teach: args.join(" ") }

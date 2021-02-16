@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Khiến bot trả về file âm thanh của chị google thông qua văn bản",
-	commandCategory: "general",
+	commandCategory: "Media",
 	usages: "say [Lang] [Text]",
 	cooldowns: 5,
 	info: [
@@ -25,7 +25,7 @@ module.exports.config = {
 
 module.exports.run = function({ api, event, args }) {
 	const request = require("request");
-	const fs = require("fs");
+	const fs = require("fs-extra");
 	var content = (event.type == "message_reply") ? event.messageReply.body : args.join(" ");
 	var languageToSay = (["ru","en","ko","ja"].some(item => content.indexOf(item) == 0)) ? content.slice(0, content.indexOf(" ")) : 'vi';
 	var msg = (languageToSay != 'vi') ? content.slice(3, content.length) : content;

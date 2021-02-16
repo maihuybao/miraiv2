@@ -4,10 +4,10 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Sunii",
 	description: "Tạo twitter Trum",
-	commandCategory: "group",
+	commandCategory: "General",
 	usages: "fact [text]",
 	cooldowns: 10,
-	dependencies: ["canvas", "axios", "fs-extra"]
+	dependencies: ["canvas", "axios"]
 };
 
 function wrapText(ctx, text, maxWidth) {

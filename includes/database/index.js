@@ -1,9 +1,16 @@
 const Sequelize = require("sequelize");
 const path = require("path");
+let pathConfig = "";
+//check argv
+const argv = process.argv.slice(2);
+if (argv.length !== 0) pathConfig = argv[0];
+else pathConfig = "config.json";
+let config = require(`../../${pathConfig}`);
+let dialect = "sqlite";
 module.exports = {
 	sequelize: new Sequelize({
-		dialect: "sqlite",
-		storage: path.resolve(__dirname, "../data.sqlite"),
+		dialect,
+		storage: path.resolve(__dirname, `../${config.DATABASE[dialect].storage}`),
 		pool: {
 			max: 10,
 			min: 0,
@@ -15,7 +22,7 @@ module.exports = {
 				/SQLITE_BUSY/,
 			],
 			name: 'query',
-			max: 10
+			max: 20
 		},
 		logging: false,
 		transactionType: 'IMMEDIATE',
@@ -29,7 +36,7 @@ module.exports = {
 			timestamps: true
 		},
 		sync: {
-			force: true
+			force: false
 		},
 	}),
 	Sequelize,
