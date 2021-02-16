@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "Chatbot",
 	usages: "sim [Text]",
 	cooldowns: 5,
-	dependencies: ["request"],
+	dependencies: ["axios"],
 	info: [
 		{
 			key: "Text",
