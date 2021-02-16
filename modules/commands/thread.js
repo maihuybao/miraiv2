@@ -30,7 +30,7 @@ module.exports.handleReaction = async ({ event, api, Threads, client, handleReac
 		}
 		case "unban": {
 			await Threads.setData(handleReaction.target, options = { banned: 0 });
-			client.threadBanned.delete(handleReaction.target);
+			client.threadBanned.delete(handleReaction.target.toString());
 			api.sendMessage(`[${handleReaction.target}] Đã unban thành công!`, event.threadID);
 			break;
 		}

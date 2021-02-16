@@ -26,4 +26,5 @@ module.exports.run = async function({ api, event, Users, Threads, client }) {
 	if (existsSync(dirGif)) mkdirSync(dirGif, { recursive: true })
 	if (existsSync(dirGif + `${event.threadID}.gif`)) formPush = { body: msg, attachment: createReadStream(dirGif + `${event.threadID}.gif`) }
 	else formPush = { body: msg }
-	return api.sendMessage(formPush, event.threadID);}
+	return api.sendMessage(formPush, event.threadID);
+}

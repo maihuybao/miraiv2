@@ -29,7 +29,7 @@ module.exports.config = {
 
 module.exports.event = async ({ event, api, __GLOBAL, client }) => {
     let { messageID, threadID, body } = event;
-    let data = client.threadSetting.get(threadID);
+    let data = client.threadSetting.get(threadID) || {};
     if (data["safety-check"] != true) return;
     const lookup = require("safe-browse-url-lookup")({ apiKey: __GLOBAL["safety-check"].APIKEY });
     const regex = /([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#]?[\w-]+)*\/?/gm;

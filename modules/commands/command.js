@@ -23,7 +23,7 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 	const { join } = require("path");
 	const { execSync } = require('child_process');
 	const { writeFileSync } = require("fs-extra");
-	let config = require(`../../${client.globalConfig}`);
+	let config = require(`./../../${client.globalConfig}`);
 	try{ client.commands.delete(nameOfModule) } catch(e) { return api.sendMessage(`Không thể reload module của bạn, lỗi: ${e}`, event.threadID) };
 	delete require.cache[require.resolve(`./${nameOfModule}.js`)];
 	const command = require(join(__dirname, `${nameOfModule}`));

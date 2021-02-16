@@ -44,7 +44,7 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
                 name = (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
             }
 			await Users.setData(handleReaction.target, options = { banned: 0 });
-			client.userBanned.delete(handleReaction.target);
+			client.userBanned.delete(handleReaction.target.toString());
 			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID);
 			break;
 		}

@@ -31,7 +31,10 @@ const __GLOBAL = new Object({
 let argv = process.argv.slice(2);
 
 if (argv.length !== 0) client.globalConfig = argv[0];
-else client.globalConfig = "./config.json";
+else client.globalConfig = "config.json";
+
+if (!existsSync(`./${client.globalConfig}`)) return logger("Không tìm thấy file config của bot!", 2);
+
 
 //set config to __GLOBAL
 

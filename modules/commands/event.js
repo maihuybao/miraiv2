@@ -39,20 +39,20 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 				api.sendMessage(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, event.threadID);
 			}
 		}
-		if (event.config.envConfig) {
+		if (command.config.envConfig) {
             try {
-                for (const [key, value] of Object.entries(event.config.envConfig)) {
-                    if (typeof __GLOBAL[event.config.name] == "undefined") __GLOBAL[event.config.name] = new Object();
-                    if (typeof config[event.config.name] == "undefined") config[event.config.name] = new Object();
-                    if (typeof config[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = config[event.config.name][key]
-                    else __GLOBAL[event.config.name][key] = value || "";
-                    if (typeof config[event.config.name][key] == "undefined") config[event.config.name][key] = value || "";
+                for (const [key, value] of Object.entries(command.config.envConfig)) {
+                    if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
+                    if (typeof config[command.config.name] == "undefined") config[command.config.name] = new Object();
+                    if (typeof config[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = config[command.config.name][key]
+                    else __GLOBAL[command.config.name][key] = value || "";
+                    if (typeof config[command.config.name][key] == "undefined") config[command.config.name][key] = value || "";
                 }
                 logger(`Loaded config event module ${event.config.name}`, "[ LOADER ]")
             } catch (error) {
                 logger(`Không thể tải config event module ${event.config.name}`, "[ LOADER ]");
             }
-        }
+        }s
 		client.events.set(command.config.name, command);
 		writeFileSync(`../../${client.globalConfig}`, JSON.stringify(config, null, 4));
 		return api.sendMessage(`Loaded evenr ${command.config.name}!`, event.threadID);
