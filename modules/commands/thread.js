@@ -5,14 +5,26 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Cấm hoặc gỡ cấm nhóm",
 	commandCategory: "System",
-	usages: "thread args",
+	usages: "thread args input",
 	cooldowns: 5,
 	info: [
 		{
-			key: 'Tag',
-			prompt: 'Để trống hoặc tag một người nào đó, có thể tag nhiều người',
-			type: 'Văn Bản',
-			example: '@Mirai-chan'
+			key: 'args => ban',
+			prompt: 'Nhập input là ID thread cần ban',
+			type: 'Number',
+			example: '100000'
+		},
+		{
+			key: 'args => unban',
+			prompt: 'Nhập input là ID thread cần unban',
+			type: 'Number',
+			example: '100000'
+		},
+		{
+			key: 'args => search',
+			prompt: 'Nhập input là từ khoá cần tìm thread',
+			type: 'String',
+			example: 'khu'
 		}
 	]
 };
