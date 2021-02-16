@@ -47,7 +47,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
         var title = JSON.stringify($('h3.title-news').eq(e).text()).replace(/\\n|\\t|\"/g, "");
         var desc = $('p.description').eq(e).text();
         var link = $('h3.title-news a').eq(e).attr('href');
-        out(`${title}\n\n${desc}\n\n${link}`);
+        out(`${title}\n\n${desc}\n${link}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
