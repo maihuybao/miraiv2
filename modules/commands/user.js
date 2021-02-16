@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Cấm hoặc gỡ cấm người dùng",
 	commandCategory: "System",
-	usages: "thread args input",
+	usages: "user args input",
 	cooldowns: 5,
 	info: [
 		{
