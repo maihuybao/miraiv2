@@ -1,5 +1,6 @@
 {
     "DEVELOP_MODE": false,
+    "AUTOCHANGENAME": false,
     "autoCreateDB": true,
     "EMAIL": "",
     "PASSWORD": "",

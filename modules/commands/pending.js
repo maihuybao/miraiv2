@@ -26,7 +26,7 @@ module.exports.handleReaction = async function({ api, event, client, __GLOBAL, h
 }
 
 module.exports.run = function({ api, event, clientL }) {
-	api.getThreadList(100, null, ["PENDING", "OTHER"], (err, list) => {
+	api.getThreadList(100, null, ["PENDING", "OTHER", "unread"], (err, list) => {
 		api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, event.messageID);
 		list.forEach((infoPending) => {
 			if (!infoPending.isGroup || infoPending.isSubscribed == false) return api.deleteThread(infoPending.threadID);
