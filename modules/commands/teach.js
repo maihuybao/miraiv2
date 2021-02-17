@@ -25,7 +25,7 @@
 };
 
 module.exports.run = async function({ api, event, args }) {
-	let res = await require("axios")("https://api.simsimi.tk/teach", {
+	let res = await require("axios")("https://simsimi.miraiproject.tk/teach", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: { teach: args.join(" ") }

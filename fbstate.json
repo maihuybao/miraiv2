@@ -1,0 +1,164 @@
+[
+	{
+		"key": "sb",
+		"value": "eVghYM2GQZAwvCcNEnZJpU7v",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.758Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "datr",
+		"value": "eVghYOvpEuDSk-nkB7YcoUhP",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "dpr",
+		"value": "1.100000023841858",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "wd",
+		"value": "1422x597",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "locale",
+		"value": "en_US",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "c_user",
+		"value": "100048944291189",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "xs",
+		"value": "10%3Ae7W-LKziFa8kPA%3A2%3A1613464576%3A20354%3A6179",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "fr",
+		"value": "1n4eLz1kY5Z6FKjHB.AWU5xJ3iNWCgXMXivYAPJJQYVPk.BgIVh5.BX.AAA.0.0.BgK4P-.AWUuz0G20_Y",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "spin",
+		"value": "r.1003310594_b.trunk_t.1613464577_s.1_v.2_",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "sb",
+		"value": "eVghYM2GQZAwvCcNEnZJpU7v",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.758Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "datr",
+		"value": "eVghYOvpEuDSk-nkB7YcoUhP",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "dpr",
+		"value": "1.100000023841858",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "wd",
+		"value": "1422x597",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "locale",
+		"value": "en_US",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "c_user",
+		"value": "100048944291189",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.786Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "xs",
+		"value": "10%3Ae7W-LKziFa8kPA%3A2%3A1613464576%3A20354%3A6179",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "fr",
+		"value": "1n4eLz1kY5Z6FKjHB.AWU5xJ3iNWCgXMXivYAPJJQYVPk.BgIVh5.BX.AAA.0.0.BgK4P-.AWUuz0G20_Y",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	},
+	{
+		"key": "spin",
+		"value": "r.1003310594_b.trunk_t.1613464577_s.1_v.2_",
+		"domain": "facebook.com",
+		"path": "/",
+		"hostOnly": false,
+		"creation": "2021-02-17T05:42:29.801Z",
+		"lastAccessed": "2021-02-17T05:42:32.499Z"
+	}
+]

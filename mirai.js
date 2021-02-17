@@ -172,8 +172,8 @@ function onBot({ models }) {
 			forceLogin: true,
 			listenEvents: true,
 			logLevel: "error",
-			updatePresence: false,
-			selfListen: false
+			updatePresence: true,
+			selfListen: true
 		});
 		try {
 			onListen();
