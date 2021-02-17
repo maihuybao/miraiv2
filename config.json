@@ -1,5 +1,5 @@
 {
-    "DEVELOP_MODE": true,
+    "DEVELOP_MODE": false,
     "autoCreateDB": true,
     "AUTOCHANGENAME": false,
     "EMAIL": "",
