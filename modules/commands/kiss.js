@@ -19,6 +19,8 @@ module.exports.run = function({
   client,
   __GLOBAL
 }) {
+  var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
+  if (!args.join(" ")) return out("Bạn chưa Tag");
   return request('https://nekos.life/api/v2/img/kiss', (err, response, body) => {
     let picData = JSON.parse(body);
     let getURL = picData.url;

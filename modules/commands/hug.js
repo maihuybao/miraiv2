@@ -20,6 +20,9 @@ module.exports.run = function({
   client,
   __GLOBAL
 }) {
+  var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
+  if (!args.join(" ")) return out("Bạn chưa nhập tin nhắn");
+  else
   return request('https://nekos.life/api/v2/img/hug', (err, response, body) => {
     let picData = JSON.parse(body);
     var mention = Object.keys(event.mentions)[0];

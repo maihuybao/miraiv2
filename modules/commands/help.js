@@ -28,7 +28,7 @@ module.exports.run = function({ api, event, args, client }) {
 			else helpGroup.find(item => item.group.toLowerCase() == i.config.commandCategory.toLowerCase()).cmds.push(i.config.name);
 		}
 		helpGroup.forEach(help => helpMsg += `===== ${help.group.charAt(0).toUpperCase() + help.group.slice(1)} =====\n${help.cmds.join(', ')}\n\n`);
-		return api.sendMessage(`Hiện tại đang có ${client.commands.size} lệnh có thể sử dụng trên bot này \n\n` + helpMsg, event.threadID, event.messageID);
+		return api.sendMessage(`Hiện tại đang có ${client.commands.size} lệnh có thể sử dụng trên bot này \n\n` + helpMsg, event.threadID,(e,i) => setTimeout(() => api.unsendMessage(i.messageID), 30000));
 	}
 	const infoHelp = nameHelp.config.info;
 	var infoText = "";
