@@ -51,7 +51,6 @@ module.exports.run = async ({ args, api, event, __GLOBAL, Currencies }) => {
         });
         for (const lastData of exp) {
             number++;
-            if ((number - __GLOBAL.checktt.maxColumn) > 1 ) return;
             msg += `${number}. ${lastData.name} với ${lastData.exp} tin nhắn \n`;
         }
         return api.sendMessage(msg, event.threadID);

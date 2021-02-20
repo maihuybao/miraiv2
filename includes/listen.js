@@ -34,10 +34,9 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 
 	return (error, event) => {
 		if (error) logger(JSON.stringify(error), 2);
-		if (client.event && JSON.stringify(client.event) == JSON.stringify(event) || event.messageID && client.messageID == event.messageID || typeof event.messageID == "undefined") ""
+		if (client.event && JSON.stringify(event) == JSON.stringify(client.event) || typeof event.type == "undefined") "";
 		else {
 			client.event = event;
-			client.messageID = event.messageID;
 			try {
 				switch (event.type) {
 					case "message":
@@ -61,7 +60,7 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 			catch (e) {
 				""
 			}
-			if (__GLOBAL.settings.DEVELOP_MODE == true) console.log(event);
+			if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 		}
 	}
 }

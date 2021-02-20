@@ -13,7 +13,7 @@ module.exports.config = {
 module.exports.event = ({ event, api, client }) => {
     const request = require("request");
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
-    let settings = client.threadSetting.get(event.threadID);
+    let settings = client.threadSetting.get(event.threadID) || {};
     let mention = Object.keys(event.mentions);
     if (!settings["roleplay"] || !settings || mention.length == 0) return;
     let animeData = JSON.parse(readFileSync(__dirname + "/cache/anime.json"));

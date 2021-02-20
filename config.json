@@ -1,7 +1,8 @@
 {
-    "DEVELOP_MODE": false,
-    "AUTOCHANGENAME": false,
+    "DeveloperMode": false,
+    "AutoChangeName": false,
     "autoCreateDB": true,
+    "allowInbox": true,
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",
