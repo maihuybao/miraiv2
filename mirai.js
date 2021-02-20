@@ -171,16 +171,15 @@ function onBot({ models }) {
 		api.setOptions({
 			forceLogin: true,
 			listenEvents: true,
-			logLevel: "error",
-			updatePresence: true,
-			selfListen: true
+			logLevel: "silent",
+			selfListen: false
 		});
 		try {
 			onListen();
 			setInterval(() => {
 				api.listenMqtt().stopListening();
 				setTimeout(() => onListen(), 2000);
-				if (__GLOBAL.settings.DEVELOP_MODE == true) {
+				if (__GLOBAL.settings.DeveloperMode == true) {
 					const moment = require("moment");
 					var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 					logger(`[ ${time} ] Listen restarted`, "[ DEV MODE ]");

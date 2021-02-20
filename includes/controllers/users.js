@@ -6,13 +6,7 @@ module.exports = function ({ models, api }) {
 	async function getInfo(id) {
 		return (await api.getUserInfo(id))[id];
 	}
-	async function getName(uid) {
-		return (await Users.findOne({ where: { uid } })).get({ plain: true }).name;
-	}
 
-	async function getGender(uid) {
-		return (await getInfo(uid)).gender;
-	}
 	async function getAll(...data) {
 		var where, attributes;
 		for (let i of data) {
@@ -65,8 +59,6 @@ module.exports = function ({ models, api }) {
 
 	return {
 		getInfo,
-		getName,
-		getGender,
 		getAll,
 		getData,
 		setData,

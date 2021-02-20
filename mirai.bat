@@ -1,2 +1,2 @@
 @echo off
-npm start
+pm2 start mirai.js --no-daemon

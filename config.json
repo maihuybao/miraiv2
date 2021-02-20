@@ -1,7 +1,8 @@
 {
-    "DEVELOP_MODE": false,
+    "DeveloperMode": false,
+    "AutoChangeName": false,
     "autoCreateDB": true,
-    "AUTOCHANGENAME": false,
+    "allowInbox": true,
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",
@@ -37,7 +38,7 @@
         "SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41"
     },
     "shortlink": {
-        "bitlyAPI": "8026712c27e9a3a02617da9efb008d3c3c919360"
+        "bitlyAPI": ""
     },
     "sing": {
         "YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
