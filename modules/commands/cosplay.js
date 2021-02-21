@@ -21,8 +21,8 @@ module.exports.run = function({api,event,args,client,__GLOBAL
       data
     } = await axios.get('https://api.simsimi.tk/cosplay.php');
     var callback = () => api.sendMessage({
-      attachment: fs.createReadStream(__dirname + "/src/1.png")
-    }, event.threadID, () => fs.unlinkSync(__dirname + "/src/1.png"));
-    return request(encodeURI(`${data.link}`)).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
+      attachment: fs.createReadStream(__dirname + "/cache/1.png")
+    }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/1.png"));
+    return request(encodeURI(`${data.link}`)).pipe(fs.createWriteStream(__dirname + '/cache/1.png')).on('close', () => callback());
   })();
 }
