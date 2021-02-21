@@ -34,9 +34,9 @@ module.exports.run = function({
     let callback = function() {
       api.sendMessage({
         body: `${jsonData[randomNumber].caption} on ${date}`,
-        attachment: fs.createReadStream(__dirname + `/src/randompic.png`)
-      }, event.threadID, () => fs.unlinkSync(__dirname + `/src/randompic.png`), event.messageID);
+        attachment: fs.createReadStream(__dirname + `/cache/randompic.png`)
+      }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/randompic.png`), event.messageID);
     };
-    request(image_link).pipe(fs.createWriteStream(__dirname + `/src/randompic.png`)).on("close", callback);
+    request(image_link).pipe(fs.createWriteStream(__dirname + `/cache/randompic.png`)).on("close", callback);
   });
 }
