@@ -3,13 +3,13 @@ const request = require('request');
 const fs = require('fs')
 
 module.exports.config = {
-  name: "cosplay",
+  name: "jimmy",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "BerVer",
-  description: "cosplay",
+  description: "Ngắm Trap jimmy",
   commandCategory: "random-ing",
-  usages: "cosplay",
+  usages: "jimmy",
   cooldowns: 5,
   dependencies: ["axios","fs","request"]
 };
@@ -19,7 +19,7 @@ module.exports.run = function({api,event,args,client,__GLOBAL
   	var request = require("request");
 var options = {
   'method': 'GET',
-  'url': 'https://api.berver.tech/cosplay',
+  'url': 'https://api.berver.tech/jimmy',
   'headers': {
   }
 }
