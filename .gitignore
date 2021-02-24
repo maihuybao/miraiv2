@@ -12,3 +12,4 @@ logs/
 includes/data.sqlite
 fbstate.json
 fbstate.json
+modules/commands/miraiv2/
