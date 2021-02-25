@@ -25,11 +25,11 @@ var options = {
 }
 request(options, function (error, response) {
 	if (error) throw new Error(error);
-  var a =JSON.parse(response.body).data;
+  var a = JSON.parse(response.body).data;
     var callback = () => api.sendMessage({
       attachment: fs.createReadStream(__dirname + "/src/1.png")
     }, event.threadID, () => fs.unlinkSync(__dirname + "/src/1.png"));
-    return request(encodeURI(`${a}`)).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
+    return request(`${a}`).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
     console.log(rq)
   });
 }

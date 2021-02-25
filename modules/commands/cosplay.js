@@ -8,7 +8,7 @@ module.exports.config = {
   hasPermssion: 0,
   credits: "BerVer",
   description: "cosplay",
-  commandCategory: "random-ing",
+  commandCategory: "random-img",
   usages: "cosplay",
   cooldowns: 5,
   dependencies: ["axios","fs","request"]

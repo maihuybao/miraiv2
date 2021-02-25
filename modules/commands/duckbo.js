@@ -3,13 +3,13 @@ const request = require('request');
 const fs = require('fs')
 
 module.exports.config = {
-  name: "jimmy",
+  name: "duckbo",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "BerVer",
-  description: "Ngắm Trap jimmy",
+  description: "duckbo",
   commandCategory: "random-img",
-  usages: "jimmy",
+  usages: "duckbo",
   cooldowns: 5,
   dependencies: ["axios","fs","request"]
 };
@@ -19,7 +19,7 @@ module.exports.run = function({api,event,args,client,__GLOBAL
   	var request = require("request");
 var options = {
   'method': 'GET',
-  'url': 'https://api.berver.tech/jimmy',
+  'url': 'https://api.berver.tech/duckbo',
   'headers': {
   }
 }
