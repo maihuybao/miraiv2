@@ -12,10 +12,10 @@ module.exports = {
 		dialect,
 		storage: path.resolve(__dirname, `../${config.DATABASE[dialect].storage}`),
 		pool: {
-			max: 10,
+			max: 20,
 			min: 0,
-			acquire: 30000,
-			idle: 10000
+			acquire: 60000,
+			idle: 20000
 		},
 		retry: {
 			match: [

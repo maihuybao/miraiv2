@@ -16,7 +16,7 @@ module.exports.config = {
 		}
 	]
 };
-d
+
 module.exports.run = function({ api, event }) {
 	if (event.messageReply.senderID != api.getCurrentUserID()) return api.sendMessage('Không thể gỡ tin nhắn của người khác.', event.threadID, event.messageID);
 	if (event.type != "message_reply") return api.sendMessage('Hãy reply tin nhắn cần gỡ.', event.threadID, event.messageID);

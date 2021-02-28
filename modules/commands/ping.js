@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
-	commandCategory: "",
+	commandCategory: "system",
 	usages: "ping [Text]",
 	cooldowns: 70,
 	info: [

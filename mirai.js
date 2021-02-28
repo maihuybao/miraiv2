@@ -33,22 +33,22 @@ let argv = process.argv.slice(2);
 if (argv.length !== 0) client.globalConfig = argv[0];
 else client.globalConfig = "config.json";
 
-if (!existsSync(`./${client.globalConfig}`)) return logger("Không tìm thấy file config của bot!", 2);
+if (!existsSync(`./${client.globalConfig}`)) return logger.loader("Không tìm thấy file config của bot!", "error");
 
 
 //set config to __GLOBAL
 
  let config = require(`./${client.globalConfig}`);
-if (!config || config.length == 0) return logger("Không tìm thấy file config của bot!!", 2);
+if (!config || config.length == 0) return logger.loader("Không tìm thấy file config của bot!!", "error");
 
 try {
 	for (let [name, value] of Object.entries(config)) {
 		__GLOBAL.settings[name] = value;
 	}
-	logger("Config Loaded!", "[ LOADER ]");
+	logger.loader("Config Loaded!");
 }
 catch (error) {
-	return logger("Không thể load config!", "[ LOADER ]");
+	return logger.loader("Không thể load config!", "error");
 }
 
 //=========Login =========//
@@ -79,7 +79,7 @@ for (const file of commandFiles) {
 		var command = require(join(__dirname, "/modules/commands", `${file}`));
 	}
 	catch(e) {
-		logger(`Không thể load module: file.js với lỗi: ${e.name} - ${e.message}`, "[ LOADER ]")
+		logger.loader(`Không thể load module: ${file} với lỗi: ${e.name} - ${e.message}`, "error")
 	}
 	
 	try {
@@ -90,10 +90,10 @@ for (const file of commandFiles) {
 				for (const i of command.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
-				logger(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "[ LOADER ]");
+				logger.loader(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "warm");
 				execSync('npm install -s ' + command.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/commands/${file}`)];
-				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, "[ LOADER ]");
+				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`);
 			}
 		}
         if (command.config.envConfig) {
@@ -105,17 +105,17 @@ for (const file of commandFiles) {
                     else __GLOBAL[command.config.name][key] = value || "";
                     if (typeof config[command.config.name][key] == "undefined") config[command.config.name][key] = value || "";
                 }
-                logger(`Loaded config module ${command.config.name}`, "[ LOADER ]")
+                logger.loader(`Loaded config module ${command.config.name}`)
             } catch (error) {
                 console.log(error);
-                logger(`Không thể tải config module ${command.config.name}`, "[ LOADER ]");
+                logger.loader(`Không thể tải config module ${command.config.name}`, "error");
             }
         }
 		client.commands.set(command.config.name, command);
-		logger(`Loaded command ${command.config.name}!`, "[ LOADER ]");
+		logger.loader(`Loaded command ${command.config.name}!`);
 	}
 	catch (error) {
-		logger(`Không thể load module command ${file} với lỗi: ${error.message}`, "[ LOADER ]");
+		logger.loader(`Không thể load module command ${file} với lỗi: ${error.message}`, "error");
 	}
 }
 
@@ -124,10 +124,10 @@ for (const file of commandFiles) {
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js"));
 for (const file of eventFiles) {
 	try {
-		var command = require(join(__dirname, "/modules/commands", `${file}`));
+		var event = require(join(__dirname, "/modules/events", `${file}`));
 	}
 	catch(e) {
-		logger(`Không thể load module: file.js với lỗi: ${e.name} - ${e.message}`, "[ LOADER ]")
+		logger.loader(`Không thể load module: ${file} với lỗi: ${e.name} - ${e.message}`, "error")
 	}
 
 	try {
@@ -138,10 +138,10 @@ for (const file of eventFiles) {
 				for (let i of event.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
-				logger(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "[ LOADER ]");
+				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "warm");
 				execSync('npm install -s ' + event.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/events/${file}`)];
-				logger(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`, "[ LOADER ]");
+				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`);
 			}
 		}
         if (event.config.envConfig) {
@@ -153,24 +153,21 @@ for (const file of eventFiles) {
                     else __GLOBAL[event.config.name][key] = value || "";
                     if (typeof config[event.config.name][key] == "undefined") config[event.config.name][key] = value || "";
                 }
-                logger(`Loaded config event module ${event.config.name}`, "[ LOADER ]")
+                logger.loader(`Loaded config event module ${event.config.name}`)
             } catch (error) {
-                logger(`Không thể tải config event module ${event.config.name}`, "[ LOADER ]");
+                logger.loader(`Không thể tải config event module ${event.config.name}`, "error");
             }
         }
 		client.events.set(event.config.name, event);
-		logger(`Loaded event ${event.config.name}!`, "[ LOADER ]");
+		logger.loader(`Loaded event ${event.config.name}!`);
 	}
 	catch (error) {
-		logger(`Không thể load module event ${file} với lỗi: ${error.message}`, "[ LOADER ]");
+		logger.loader(`Không thể load module event ${file} với lỗi: ${error.message}`, "error");
 	}
 }
 
-logger(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`, "[ LOADER ]")
+logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
 writeFileSync(client.globalConfig, JSON.stringify(config, null, 4));
-
-execSync('npm cache clean --force');
-logger("Npm cache cleaned!", "[ LOADER ]");
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
