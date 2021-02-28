@@ -8,7 +8,7 @@
 	},
 	"scripts": {
 		"start": "node --trace-warnings mirai",
-		"pm2": "pm2 start pm2_apps.json && pm2 monit"
+		"pm2": "pm2 start pm2_apps.json --no-daemon"
 	},
 	"repository": {
 		"type": "git",
