@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Rút gọn url của bạn",
-	commandCategory: "General",
+	commandCategory: "other",
 	usages: "shortlink [link]",
 	cooldowns: 5,
 	dependencies: ["bitly"],

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "( ͡° ͜ʖ ͡°)",
-	commandCategory: "general",
+	commandCategory: "random-text",
 	usages: "penis",
 	cooldowns: 1
 };

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Kiểm tra tốc độ đánh văn bản của bạn!",
-	commandCategory: "minigame",
+	commandCategory: "game-sp",
 	usages: "reactiontest",
 	cooldowns: 5
 };

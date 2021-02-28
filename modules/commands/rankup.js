@@ -8,9 +8,12 @@ module.exports.config = {
 	usages: "rankup on/off",
 	dependencies: ["fs-extra"],
 	cooldowns: 5,
+	envConfig: {
+		unsendMessageAfter: 5
+	}
 };
 
-module.exports.event = async function({ api, event, Currencies, Users, client }) {
+module.exports.event = async function({ api, event, Currencies, Users, client, __GLOBAL }) {
 	let {threadID, senderID } = event;
 	let data = (await Currencies.getData(senderID));
 	if (!data) return;
@@ -36,7 +39,10 @@ module.exports.event = async function({ api, event, Currencies, Users, client })
 		if (existsSync(dirGif)) mkdirSync(dirGif, { recursive: true })
 		if (existsSync(dirGif + `${event.threadID}.gif`)) formPush = { body: msg, attachment: createReadStream(dirGif + `${event.threadID}.gif`), mentions: [{ tag: name, id: senderID }] }
 		else formPush = { body: msg, mentions: [{ tag: name, id: senderID }] }
-		return api.sendMessage(formPush, threadID);
+		return api.sendMessage(formPush, threadID, async (error, info) => {
+			await new Promise(resolve => setTimeout(resolve, __GLOBAL.rankup.unsendMessageAfter * 1000));
+			api.unsendMessage(info.messageID);
+		});
  	}
 }
 module.exports.run = async function({ api, event, args, Threads, client, utils }) {

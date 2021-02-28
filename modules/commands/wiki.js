@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Tìm mọi thông tin cần biêt thông qua Wikipedia",
-	commandCategory: "general",
+	commandCategory: "study",
 	usages: "wiki args input",
 	cooldowns: 1,
 	dependencies: ['wikijs'],

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 2,
 	credits: "CatalizCS",
 	description: "running shell",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "run",
 	cooldowns: 5,
 	dependencies: ["vm2","path"]

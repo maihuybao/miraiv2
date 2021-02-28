@@ -75,7 +75,13 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
 for (const file of commandFiles) {
-	var command = require(join(__dirname, "/modules/commands", `${file}`));
+	try {
+		var command = require(join(__dirname, "/modules/commands", `${file}`));
+	}
+	catch(e) {
+		logger(`Không thể load module: file.js với lỗi: ${e.name} - ${e.message}`, "[ LOADER ]")
+	}
+	
 	try {
 		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
 		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
@@ -117,7 +123,13 @@ for (const file of commandFiles) {
 
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js"));
 for (const file of eventFiles) {
-	var event = require(join(__dirname, "/modules/events", `${file}`));
+	try {
+		var command = require(join(__dirname, "/modules/commands", `${file}`));
+	}
+	catch(e) {
+		logger(`Không thể load module: file.js với lỗi: ${e.name} - ${e.message}`, "[ LOADER ]")
+	}
+
 	try {
 		if (!event.config || !event.run) throw new Error(`Sai format!`);
 		if (client.events.has(event.config.name)) throw new Error('Bị trùng!');

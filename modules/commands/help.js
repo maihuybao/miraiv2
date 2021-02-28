@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Hướng dẫn cho người mới",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "help [Text]",
 	cooldowns: 5,
 	info: [

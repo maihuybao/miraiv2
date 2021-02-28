@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "MewMew",
     description: "Chơi nối từ với bot or thành viên trong nhóm",
-    commandCategory: "group",
+    commandCategory: "game-mp",
     usages: "linkword",
     cooldowns: 5,
     dependencies: ["axios"],

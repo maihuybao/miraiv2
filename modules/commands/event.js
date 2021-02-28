@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module event",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "event [exec] args",
 	dependencies: ["fs"],
 	cooldowns: 5,
@@ -17,6 +17,8 @@ module.exports.config = {
 		}
 	]
 };
+
+//need recode :D
 
 //Reload module
 async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
@@ -58,7 +60,7 @@ async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
 		return api.sendMessage(`Loaded evenr ${command.config.name}!`, event.threadID);
 	}
 	catch (error) {
-		return api.sendMessage(`Không thể load module command ${nameOfModule} với lỗi: ${error.message}`, event.threadID);
+		return api.sendMessage(`Không thể load module event ${nameOfModule} với lỗi: ${error.message}`, event.threadID);
 	}
 }
 

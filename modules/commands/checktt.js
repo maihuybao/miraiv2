@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "dik",
-	commandCategory: "Group",
+	commandCategory: "system",
 	usages: "checktt args",
 	cooldowns: 5,
 	info: [

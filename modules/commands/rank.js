@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "Lấy rank hiện tại của bạn trên hệ thống bot, remake rank_card from canvacord",
 	commandCategory: "System",
 	usages: "rank",
-	cooldowns: 5,
+	cooldowns: 20,
 	dependencies: ["fs-extra","axios","path","canvas","jimp", "request"]
 };
 
@@ -138,7 +138,8 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	const fs = require("fs-extra");
 	
 	let dataAll = (await Currencies.getAll(["userID", "exp"]));
-	console.log(dataAll);
+	let mention = Object.keys(event.mentions);
+
 	dataAll.sort((a, b) => {
 		if (a.exp > b.exp) return -1;
 		if (a.exp < b.exp) return 1;
@@ -153,5 +154,24 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 		else getInfo(event.senderID, Currencies)
 		.then(point => makeRankCard({ id: event.senderID, name, rank, ...point }))
 		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+	}
+	if (mention.length == 1) {
+		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
+		let name = Users.getData(mention[0]).name || (await api.getUserInfo(mention[0]))[mention[0]].name;
+		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
+		else getInfo(mention[0], Currencies)
+		.then(point => makeRankCard({ id: mention[0], name, rank, ...point }))
+		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+	}
+	if (mention.length > 1) {
+		for (const userID of mention) {
+			let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
+			let name = Users.getData(userID).name || (await api.getUserInfo(userID))[userID].name;
+			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
+			else getInfo(userID, Currencies)
+			.then(point => makeRankCard({ id: userID, name, rank, ...point }))
+			.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+	
+		}
 	}
 }

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0/1/2, // Quyền hạn sử dụng, với 0 là toàn bộ thành viên, 1 là quản trị viên trở lên, 2 là admin/owner
 	credits: "Name need credit", // Công nhận module sở hữu là ai
 	description: "say bla bla ở đây", // Thông tin chi tiết về lệnh
-	commandCategory: "group", // Thuộc vào nhóm nào
+	commandCategory: "group", // Thuộc vào nhóm nào: system, other, game-sp, game-mp, random-img, edit-img, media, economy, ...
 	usages: "name Text1 Text2", // Cách sử dụng lệnh
 	cooldowns: 5, // Thời gian một người có thể lặp lại lệnh
 	dependencies: ["name package"], //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!

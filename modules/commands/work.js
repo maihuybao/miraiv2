@@ -38,7 +38,7 @@ module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
             "làm nội trợ",
             "đi vả mấy thằng sao đỏ, giun vàng",
             "đi bán hoa",
-            "tìm jav/hentai code cho Quang Sáng",
+            "tìm jav/hentai code cho Nghĩa",
             "đi chơi Yasuo trong rank và gánh team"
         ];
         let amount = Math.floor(Math.random() * 600);

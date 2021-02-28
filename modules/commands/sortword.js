@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "MewMew",
     description: "Sắp xếp lại 1 từ tiếng anh bị xáo trộn",
-    commandCategory: "group",
+    commandCategory: "game-sp",
     usages: "sortword",
     cooldowns: 5,
     dependencies: ["axios"],

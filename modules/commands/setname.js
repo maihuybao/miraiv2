@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Thọ",
 	description: "Đổi biệt danh trong nhóm của bạn hoặc của người bạn tag",
-	commandCategory: "Group",
+	commandCategory: "other",
 	usages: "setname [name]",
 	cooldowns: 3
 };

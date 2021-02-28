@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Kiểm tra/báo cáo trang web bạn hoặc ai đó không an toàn!",
-	commandCategory: "General",
+	commandCategory: "safety",
 	usages: "safety-check args",
 	dependencies: ["safe-browse-url-lookup"],
 	cooldowns: 5,

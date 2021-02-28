@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Random biệt danh tiếng NHẬT 🤔",
-	commandCategory: "General",
+	commandCategory: "other",
 	usages: "rname",
 	cooldowns: 5,
 	dependencies: ["request"],

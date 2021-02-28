@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "MewMew",
     description: "Tin tức trên vnexpress.net",
-    commandCategory: "general",
+    commandCategory: "news",
     usages: "news [từ khóa]",
     cooldowns: 5,
     dependencies: ["cheerio", "axios"]

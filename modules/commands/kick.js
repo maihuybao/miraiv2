@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Thọ",
 	description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
-	commandCategory: "Group", 
+	commandCategory: "other", 
 	usages: "kick [tag]", 
 	cooldowns: 0,
 	dependencies: [] 

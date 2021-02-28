@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "suggest",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "other",
 	description: "Gửi tính năng, ý tưởng, ý kiến mới đến author",
 	commandCategory: "General",
 	usages: "suggest [Text]",

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "tạo shortcut cho 1 tin nhắn",
-	commandCategory: "Group",
+	commandCategory: "system",
 	usages: "short a => abcdefghiklmnoqprsuvtxy",
 	cooldowns: 5,
 	dependencies: ["fs-extra"]

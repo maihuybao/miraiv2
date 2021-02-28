@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 2,
 	credits: "CatalizCS",
 	description: "Cấm hoặc gỡ cấm người dùng",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "user args input",
 	cooldowns: 5,
 	info: [

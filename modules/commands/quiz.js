@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 0,
 	description: "Trả lời câu hỏi (tiếng anh)",
-	commandCategory: "General",
+	commandCategory: "game-mp",
 	usages: "quiz",
 	cooldowns: 5,
 	dependencies: ["axios"],
@@ -36,7 +36,7 @@ module.exports.run = async ({  api, event, args, client }) => {
 	let difficulties = ["easy", "medium", "hard"];
 	let difficulty = args[0];
 	(difficulties.some(item => difficulty == item)) ? "" : difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-	let fetch = await axios(`https://opentdb.com/api.php?amount=1&encode=url3986&type=boolean&difficulty=${difficulty}&category=31`);
+	let fetch = await axios(`https://opentdb.com/api.php?amount=1&encode=url3986&type=boolean&difficulty=${difficulty}`);
 	if (!fetch.data) return api.sendMessage("Không thể tìm thấy câu hỏi do server bận", event.threadID, event.messageID);
 	return api.sendMessage(`Đây là câu hỏi dành cho bạn:\n        ${decodeURIComponent(fetch.data.results[0].question)}\n\n   👍: True       😢: False`, event.threadID, async (err, info) => {
 		client.handleReaction.push({

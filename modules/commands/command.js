@@ -4,7 +4,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module command",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "command [exec] args",
 	cooldowns: 5,
 	dependencies: ["fs-extra"],
@@ -17,6 +17,8 @@ module.exports.config = {
 		}
 	]
 };
+
+//need recode :D
 
 //Reload module
 async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {

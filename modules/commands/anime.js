@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "Random lấy ảnh anime! (Safe For Work)",
 	commandCategory: "random-img",
 	usages: "anime tag",
-	cooldowns: 1,
+    cooldowns: 5,
 	dependencies: ['request', 'fs-extra'],
     info: [
 		{
@@ -27,7 +27,8 @@ module.exports.config = {
 const { existsSync, createWriteStream } = require("fs-extra");
 const request = require("request");
 
-if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json").pipe(createWriteStream(__dirname + "/cache/anime.json"));
+if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
+.pipe(createWriteStream(__dirname + "/cache/anime.json"));
 
 module.exports.run = ({ event, api, args }) => {
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
@@ -44,6 +45,8 @@ module.exports.run = ({ event, api, args }) => {
         let URL = "";
         (!picData.data) ? URL = picData.url : URL = picData.data.response.url;
         let ext = URL.substring(URL.lastIndexOf(".") + 1);
-        request(URL).pipe(createWriteStream(__dirname + `/cache/anime.${ext}`)).on("close", () => api.sendMessage({ attachment: createReadStream(__dirname + `/cache/anime.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/anime.${ext}`), event.messageID));
+        request(URL)
+        .pipe(createWriteStream(__dirname + `/cache/anime.${ext}`))
+        .on("close", () => api.sendMessage({ attachment: createReadStream(__dirname + `/cache/anime.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/anime.${ext}`), event.messageID));
     })
 }

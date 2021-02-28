@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Nhận 200 coins mỗi ngày!",
-	commandCategory: "Economy",
+	commandCategory: "economy",
 	usages: "daily",
     cooldowns: 5,
     dependencies: ["parse-ms"],
