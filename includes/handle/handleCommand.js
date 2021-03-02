@@ -30,10 +30,13 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 
 		//========= Check permssion =========//
 
+		var permssion;
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
+		else permssion = 2;
 		let threadAdmins = await Threads.getInfo(threadID);
 		let find = threadAdmins.adminIDs.find(el => el.id == senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
+		else permssion = 1;
 
 		//=========Check cooldown=========//
 
@@ -53,7 +56,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 
 		//========= Run command =========//
 		try {
-			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils });
+			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils, permssion });
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, 2);

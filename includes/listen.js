@@ -1,6 +1,6 @@
 const logger = require("../utils/log.js");
 
-module.exports = function({ api, client, __GLOBAL, models }) {
+module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
 				Currencies = require("./controllers/currencies")({ models });
@@ -32,15 +32,18 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models });
 
+	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
+
 	return (error, event) => {
 		if (error) logger(JSON.stringify(error), 2);
-		if (client.event && JSON.stringify(event) == JSON.stringify(client.event) || typeof event.type == "undefined") "";
+		if (client.event && client.event == event || ["presence","typ","read_receipt"].some(type => type == event.type)) "";
 		else {
 			client.event = event;
 			try {
 				switch (event.type) {
 					case "message":
-					case "message_reply": 
+					case "message_reply":
+					case "message_unsend":
 						handleCommand({ event })
 						handleReply({ event })
 						handleCommandEvent({ event })
@@ -56,11 +59,11 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 					default:
 						break;
 				}
+				if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 			}
 			catch (e) {
 				""
 			}
-			if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 		}
 	}
 }

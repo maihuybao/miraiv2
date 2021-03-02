@@ -1,14 +1,13 @@
 //=========Call Variable =========//
 
-const { readdirSync, readFileSync, writeFileSync, existsSync, copySync } = require("fs-extra");
+const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, createWriteStream } = require("fs-extra");
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
-const semver = require('semver');
-const axios = require("axios");
 const logger = require("./utils/log.js");
-const { Sequelize, sequelize } = require("./includes/database");
 const login = require("fca-unofficial");
-let appStateFile;
+const request = require("request");
+var appStateFile;
+var timeStart = Date.now();
 
 const client = new Object({
 	commands: new Map(),
@@ -28,21 +27,22 @@ const __GLOBAL = new Object({
 
 //check argv
 
-let argv = process.argv.slice(2);
+var argv = require('minimist')(process.argv.slice(2));
+var dirConfig, configValue;
 
-if (argv.length !== 0) client.globalConfig = argv[0];
-else client.globalConfig = "config.json";
-
-if (!existsSync(`./${client.globalConfig}`)) return logger.loader("Không tìm thấy file config của bot!", "error");
-
-
-//set config to __GLOBAL
-
- let config = require(`./${client.globalConfig}`);
-if (!config || config.length == 0) return logger.loader("Không tìm thấy file config của bot!!", "error");
+if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][0]);
+else dirConfig = join(process.cwd(), "config.json");
 
 try {
-	for (let [name, value] of Object.entries(config)) {
+	configValue = require(dirConfig);
+	logger.loader(`Đã tìm thấy file config: ${argv["_"][0]}`);
+}
+catch {
+	logger.loader(`Không tìm thấy file config: ${argv["_"][0]}`, "error");
+}
+
+try {
+	for (const [name, value] of Object.entries(configValue)) {
 		__GLOBAL.settings[name] = value;
 	}
 	logger.loader("Config Loaded!");
@@ -54,7 +54,7 @@ catch (error) {
 //=========Login =========//
 
 try {
-	appStateFile = resolve(__dirname, `./${config.APPSTATEPATH}`);
+	appStateFile = resolve(join(process.cwd(), __GLOBAL.settings["APPSTATEPATH"]));
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
@@ -64,6 +64,8 @@ require("npmlog").emitLog = () => {};
 
 if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
 
+const semver = require('semver');
+const axios = require("axios");
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(readFileSync('./package.json')).version;
@@ -100,10 +102,10 @@ for (const file of commandFiles) {
             try {
                 for (const [key, value] of Object.entries(command.config.envConfig)) {
                     if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
-                    if (typeof config[command.config.name] == "undefined") config[command.config.name] = new Object();
-                    if (typeof config[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = config[command.config.name][key]
+                    if (typeof configValue[command.config.name] == "undefined") configValue[command.config.name] = new Object();
+                    if (typeof configValue[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = configValue[command.config.name][key]
                     else __GLOBAL[command.config.name][key] = value || "";
-                    if (typeof config[command.config.name][key] == "undefined") config[command.config.name][key] = value || "";
+                    if (typeof configValue[command.config.name][key] == "undefined") configValue[command.config.name][key] = value || "";
                 }
                 logger.loader(`Loaded config module ${command.config.name}`)
             } catch (error) {
@@ -148,10 +150,10 @@ for (const file of eventFiles) {
             try {
                 for (const [key, value] of Object.entries(event.config.envConfig)) {
                     if (typeof __GLOBAL[event.config.name] == "undefined") __GLOBAL[event.config.name] = new Object();
-                    if (typeof config[event.config.name] == "undefined") config[event.config.name] = new Object();
-                    if (typeof config[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = config[event.config.name][key]
+                    if (typeof configValue[event.config.name] == "undefined") configValue[event.config.name] = new Object();
+                    if (typeof configValue[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = config[event.config.name][key]
                     else __GLOBAL[event.config.name][key] = value || "";
-                    if (typeof config[event.config.name][key] == "undefined") config[event.config.name][key] = value || "";
+                    if (typeof configValue[event.config.name][key] == "undefined") configValue[event.config.name][key] = value || "";
                 }
                 logger.loader(`Loaded config event module ${event.config.name}`)
             } catch (error) {
@@ -167,14 +169,14 @@ for (const file of eventFiles) {
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
-writeFileSync(client.globalConfig, JSON.stringify(config, null, 4));
+writeFileSync(dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
 		if (err) return logger(JSON.stringify(err));
 
-		let listen = require("./includes/listen")({ api, models, client, __GLOBAL });
-		let onListen = () => api.listenMqtt(listen);
+		const listen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
+		const onListen = () => api.listenMqtt(listen);
 
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		api.setOptions({
@@ -201,6 +203,7 @@ function onBot({ models }) {
 	});
 }
 
+const { Sequelize, sequelize } = require("./includes/database");
 (async () => {
 	let migrations = readdirSync(`./includes/database/migrations`);
 	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });

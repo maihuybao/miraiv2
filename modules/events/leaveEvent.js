@@ -7,7 +7,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, Users, Threads, client }) {
-	let name, msg, formPush
+	let msg, formPush
 	const { createReadStream, existsSync, mkdirSync } = require("fs-extra");;
 	let settings = client.threadSetting.get(event.threadID) || {};//(await Threads.getData(event.threadID)).settings;
 	let name = (await Users.getData(event.logMessageData.leftParticipantFbId)).name || (await api.getUserInfo(event.logMessageData.leftParticipantFbId))[event.logMessageData.leftParticipantFbId].name

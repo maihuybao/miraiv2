@@ -44,6 +44,6 @@ module.exports.event = function({ api, event, client, __GLOBAL }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event, args, client, __GLOBAL, permssion }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }

@@ -1,16 +1,16 @@
 const Sequelize = require("sequelize");
-const path = require("path");
-let pathConfig = "";
-//check argv
-const argv = process.argv.slice(2);
-if (argv.length !== 0) pathConfig = argv[0];
-else pathConfig = "config.json";
-let config = require(`../../${pathConfig}`);
+const { join, resolve } = require("path");
+var argv = require('minimist')(process.argv.slice(2));
+var dirConfig;
+if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][0]);
+else dirConfig = join(process.cwd(), "config.json");
+var config = require(dirConfig);
+
 let dialect = "sqlite";
 module.exports = {
 	sequelize: new Sequelize({
 		dialect,
-		storage: path.resolve(__dirname, `../${config.DATABASE[dialect].storage}`),
+		storage: resolve(__dirname, `../${config.DATABASE[dialect].storage}`),
 		pool: {
 			max: 20,
 			min: 0,
@@ -39,6 +39,5 @@ module.exports = {
 			force: false
 		},
 	}),
-	Sequelize,
-	Op: Sequelize.Op
+	Sequelize
 }
