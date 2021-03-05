@@ -67,9 +67,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
             await new Promise(resolve => setTimeout(resolve, time * 1000));
             if (client.sortword.some(e => e.user == event.senderID)) {
                 var index = client.sortword.findIndex(e => e.user == event.senderID);
-                api.sendMessage("Đã hết thời gian quy định!", event.threadID, () => {
-                    client.sortword.splice(index, 1);
-                }, event.messageID);
+                api.sendMessage("Đã hết thời gian quy định!", event.threadID, () => client.sortword.splice(index, 1), event.messageID);
             }
         });
     }, event.messageID);

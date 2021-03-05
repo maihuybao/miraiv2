@@ -29,7 +29,7 @@ module.exports.event = async function({ api, event, args, client, __GLOBAL }) {
     let { body: content, threadID, messageID } = event;
     if (__GLOBAL.linkword.has(threadID)) {
         if (content && content.split(" ").length == 2) {
-            var data = (await axios.get("https://api.simsimi.tk/api/linkword?ask=" + encodeURIComponent(content))).data;
+            var data = (await axios.get("http://simsimi.miraiproject.tk/api/linkword?ask=" + encodeURIComponent(content))).data;
             return api.sendMessage(data.text, threadID, messageID);
         }
     }

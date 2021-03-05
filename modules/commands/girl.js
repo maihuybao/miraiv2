@@ -3,13 +3,13 @@ const request = require('request');
 const fs = require('fs')
 
 module.exports.config = {
-  name: "duckbo",
+  name: "gaixinh",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "BerVer",
-  description: "duckbo",
+  description: "Ngắm gái",
   commandCategory: "random-img",
-  usages: "duckbo",
+  usages: "gaixinh",
   cooldowns: 5,
   dependencies: ["axios","fs","request"]
 };
@@ -19,7 +19,7 @@ module.exports.run = function({api,event,args,client,__GLOBAL
   	var request = require("request");
 var options = {
   'method': 'GET',
-  'url': 'https://api.berver.tech/duckbo',
+  'url': 'https://api.berver.tech/gai2k',
   'headers': {
   }
 }
@@ -29,7 +29,7 @@ request(options, function (error, response) {
     var callback = () => api.sendMessage({
       attachment: fs.createReadStream(__dirname + "/src/1.png")
     }, event.threadID, () => fs.unlinkSync(__dirname + "/src/1.png"));
-    return request(`${a}`).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
+    return request(encodeURI(`${a}`)).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
     console.log(rq)
   });
 }
