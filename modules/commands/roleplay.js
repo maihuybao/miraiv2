@@ -11,6 +11,7 @@ module.exports.config = {
 };
 
 module.exports.event = ({ event, api, client }) => {
+    if (event.type == "message_unsend") return;
     const request = require("request");
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
     let settings = client.threadSetting.get(event.threadID) || {};

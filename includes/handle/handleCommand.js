@@ -1,8 +1,7 @@
-const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const logger = require("../../utils/log.js");
-const stringSimilarity = require('string-similarity');
-
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
+	const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const logger = require("../../utils/log.js");
+	const stringSimilarity = require('string-similarity');
 	return async function({ event }) {
 		var timeStart = Date.now();
 		let { body: contentMessage, senderID, threadID, messageID } = event;
@@ -22,7 +21,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		if (!command) {
 			var allCommandName = [];
 			var commandValues = client.commands.values();
-			for (let cmd of commandValues) allCommandName.push(cmd.config.name);
+			for (const cmd of commandValues) allCommandName.push(cmd.config.name);
 			var checker = stringSimilarity.findBestMatch(commandName, allCommandName);
 			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
 			else return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
@@ -33,23 +32,20 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		var permssion;
 		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 		else permssion = 2;
-		let threadAdmins = await Threads.getInfo(threadID);
-		let find = threadAdmins.adminIDs.find(el => el.id == senderID);
+		const threadAdmins = await Threads.getInfo(threadID);
+		const find = threadAdmins.adminIDs.find(el => el.id == senderID);
 		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
 		else permssion = 1;
 
 		//=========Check cooldown=========//
 
 		if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
-		let now = Date.now();
-		let timestamps = client.cooldowns.get(command.config.name);
-		let cooldownAmount = (command.config.cooldowns || 1) * 1000;
+		const now = Date.now();
+		const timestamps = client.cooldowns.get(command.config.name);
+		const cooldownAmount = (command.config.cooldowns || 1) * 1000;
 		if (timestamps.has(senderID)) {
-			let expirationTime = timestamps.get(senderID) + cooldownAmount;
-			if (now < expirationTime) {
-				let timeLeft = (expirationTime - now) / 1000;
-				return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
-			}
+			const expirationTime = timestamps.get(senderID) + cooldownAmount;
+			if (now < expirationTime) return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 		}
 		timestamps.set(senderID, now);
 		setTimeout(() => timestamps.delete(senderID), cooldownAmount)
@@ -59,7 +55,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils, permssion });
 		}
 		catch (error) {
-			logger(error + " tại lệnh: " + command.config.name, 2);
+			logger(error + " tại lệnh: " + command.config.name, "error");
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
 		if (__GLOBAL.settings.DeveloperMode == true) {

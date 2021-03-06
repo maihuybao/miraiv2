@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "kick",
 	version: "1.0.0", 
-	hasPermssion: 0,
+	hasPermssion: 1,
 	credits: "Thọ",
 	description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
 	commandCategory: "other", 

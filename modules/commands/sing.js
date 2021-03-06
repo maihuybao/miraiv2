@@ -28,8 +28,14 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
 	ffmpeg.setFfmpegPath(ffmpegPath);
 	const ytdl = require("ytdl-core");
 	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
-	api.sendMessage("Đang xử lý request của bạn!", event.threadID,event.messageID)
-	ffmpeg().input(ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`)).toFormat("mp3").pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)).on("close", () => api.sendMessage({attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`), event.messageID));
+	api.sendMessage("Đang xử lý request của bạn!", event.threadID,event.messageID);
+	try {
+		ffmpeg().input(ytdl(`https://www.youtube.com/watch?v=${handleReply.link[event.body - 1]}`)).toFormat("mp3").pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)).on("close", () => api.sendMessage({attachment: createReadStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`)}, event.threadID, () => unlinkSync(__dirname + `/cache/${handleReply.link[event.body - 1]}.mp3`), event.messageID));
+	}
+	catch {
+		api.sendMessage("Không thể xử lý yêu cầu của bạn!", event.threadID, event.messageID);
+	}
+	return api.unsendMessage(handleReply.messageID);
 }
 
 module.exports.run = async function({ api, event, args, __GLOBAL, client }) {

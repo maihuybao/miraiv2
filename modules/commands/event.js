@@ -1,13 +1,13 @@
 module.exports.config = {
 	name: "event",
-	version: "1.0.0",
+	version: "1.0.1",
 	credits: "CatalizCS",
 	hasPermssion: 2,
 	description: "Quản lý module event",
 	commandCategory: "system",
 	usages: "event [exec] args",
-	dependencies: ["fs"],
 	cooldowns: 5,
+	dependencies: ["fs-extra"],
 	info: [
 		{
 			key: 'exec',
@@ -18,75 +18,144 @@ module.exports.config = {
 	]
 };
 
-//need recode :D
+const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
+	const logger = require(process.cwd() + "/utils/log.js"),
+			{ join } = require("path"),
+			{ execSync } = require("child_process"),
+			{ writeFileSync } = require("fs-extra");
+	
+	var configValue = require(client.dirConfig);
 
-//Reload module
-async function loadModule({ nameOfModule, event, api, client, __GLOBAL }) {
-	const { join } = require("path");
-	const { execSync } = require('child_process');
-	const { writeFileSync } = require("fs");
-	let config = require(`../../${client.globalConfig}`);
-	try{ client.events.delete(nameOfModule) } catch(e) { return api.sendMessage(`Không thể reload module của bạn, lỗi: ${e}`, event.threadID) };
-	delete require.cache[require.resolve(`../events/${nameOfModule}.js`)];
-	const command = require(join(__dirname, `../events/${nameOfModule}`));
 	try {
-		if (client.events.has(command)) throw new Error('Bị trùng!');
-		if (!command.config || !command.run) throw new Error(`Sai format!`);
-		if (command.config.dependencies) {
+		require.resolve(__dirname + `/../events/${name}.js`)
+	}
+	catch {
+		return api.sendMessage(`Không tìm thấy module: ${name}.js`, event.threadID, event.messageID);
+	}
+
+	client.events.delete(name);
+	delete require.cache[require.resolve(__dirname + `/../events/${name}.js`)];
+	
+	try {
+		const events = require(join(__dirname, "/../events/", `${name}`));
+		if (!events.config || !events.run || !events.config.commandCategory) throw new Error(`Sai format!`);
+		if (client.events.has(command.events.name)) throw new Error('Bị trùng!');
+		if (events.config.dependencies) {
 			try {
-				for (let i of command.config.dependencies) require.resolve(i);
+				for (const i of events.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
-				execSync('npm install -s ' + command.config.dependencies.join(" "));
-				api.sendMessage(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`, event.threadID);
+				logger.loader(`Không tìm thấy gói phụ trợ cho module ${events.config.name}, tiến hành cài đặt: ${events.config.dependencies.join(", ")}!`, "warm");
+				execSync('npm install -s ' + events.config.dependencies.join(" "));
+				delete require.cache[require.resolve(`../events/${file}`)];
+				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${events.config.name}`);
 			}
 		}
-		if (command.config.envConfig) {
-            try {
-                for (const [key, value] of Object.entries(command.config.envConfig)) {
-                    if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
-                    if (typeof config[command.config.name] == "undefined") config[command.config.name] = new Object();
-                    if (typeof config[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = config[command.config.name][key]
-                    else __GLOBAL[command.config.name][key] = value || "";
-                    if (typeof config[command.config.name][key] == "undefined") config[command.config.name][key] = value || "";
-                }
-                logger(`Loaded config event module ${event.config.name}`, "[ LOADER ]")
-            } catch (error) {
-                logger(`Không thể tải config event module ${event.config.name}`, "[ LOADER ]");
-            }
-        }s
-		client.events.set(command.config.name, command);
-		writeFileSync(`../../${client.globalConfig}`, JSON.stringify(config, null, 4));
-		return api.sendMessage(`Loaded evenr ${command.config.name}!`, event.threadID);
+		if (events.config.envConfig) {
+			try {
+				for (const [key, value] of Object.entries(events.config.envConfig)) {
+					if (typeof __GLOBAL[events.config.name] == "undefined") __GLOBAL[events.config.name] = new Object();
+					if (typeof configValue[events.config.name] == "undefined") configValue[events.config.name] = new Object();
+					if (typeof configValue[events.config.name][key] !== "undefined") __GLOBAL[events.config.name][key] = configValue[events.config.name][key]
+					else __GLOBAL[events.config.name][key] = value || "";
+					if (typeof configValue[events.config.name][key] == "undefined") configValue[events.config.name][key] = value || "";
+				}
+				logger.loader(`Loaded config module ${events.config.name}`)
+			} catch (error) {
+				console.log(error);
+				logger.loader(`Không thể tải config module ${events.config.name}`, "error");
+			}
+		}
+		if (events.onLoad) try {
+			events.onLoad({ __GLOBAL, client, configValue });
+		}
+		catch (error) {
+			logger.loader(`Không thể chạy setup module: ${events} với lỗi: ${error.name} - ${error.message}`, "error");
+		}
+		client.events.set(events.config.name, events);
+		writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));
+		logger.loader(`Loaded module ${events.config.name}`);
+		if (loadAll) return
+		else return api.sendMessage(`Loaded event ${events.config.name}!`, event.threadID);
 	}
 	catch (error) {
-		return api.sendMessage(`Không thể load module event ${nameOfModule} với lỗi: ${error.message}`, event.threadID);
+		logger.loader(`Không thể load module event ${name} với lỗi: ${error.name}:${error.message}`, "error");
+		if (loadAll) return
+		else return api.sendMessage(`Không thể load module event ${name} với lỗi: ${error.name}:${error.message}`, event.threadID);
 	}
 }
 
-function unloadModule({ nameOfModule, event, api, client }) {
-	try{
-		client.events.delete(nameOfModule);
-		return api.sendMessage(`Unloaded command ${nameOfModule}!`, event.threadID);
+const unload = async ({ name, event, api, client }) => {
+	client.events.delete(name);
+	return api.sendMessage(`Đã unload event: ${name}`, event.threadID, event.messageID);
+}
+
+const reloadConfig = ({ __GLOBAL, event, api, client }) => {
+	delete require.cache[require.resolve(client.dirConfig)];
+	const config = require(client.dirConfig);
+	try {
+		for (let [name, value] of Object.entries(config)) __GLOBAL.settings[name] = value;
+		return api.sendMessage("Config Reloaded!", event.threadID, event.messageID);
 	}
-	catch(e) {
-		return api.sendMessage(`Cant unload module command ${nameOfModule} with error: ${error}`, event.threadID);
+	catch (error) {
+		return api.sendMessage(`Không thể reload config với lỗi: ${error.name}: ${error.message}`, event.threadID, event.messageID);
 	}
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL, utils }) {
-	if (args[0] == "all") {
-		let commands = client.events.values();
-		let infoCommand = "";
-		for (const cmd of commands) {
-			if (cmd.config.name && cmd.config.version && cmd.config.credits) {
-				infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
-			};
+module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
+	const { readdirSync } = require("fs-extra");
+	let content = args.slice(1, args.length);
+
+	const log = api.sendMessage;
+	switch (args[0]) {
+		case "all": {
+			let commands = client.commands.values();
+			let infoCommand = "";
+			for (const cmd of commands) {
+				if (cmd.config.name && cmd.config.version && cmd.config.credits) {
+					infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
+				};
+			}
+			api.sendMessage("Hiện tại đang có " + client.events.size + " event module có thể sử dụng!" + infoCommand, event.threadID, event.messageID);
 		}
-		return api.sendMessage("Hiện tại đang có " + client.events.size + " module có thể sử dụng!" + infoCommand, event.threadID, event.messageID);
+		break;
+		case "load": {
+			const events = content;
+			if (events.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
+			for (const name of events) {
+				load({ name, event, api, client, __GLOBAL });
+				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
+			}
+		}
+		break;
+		case "loadAll": {
+			const eventFiles = readdirSync(__dirname).filter((file) => file.endsWith(".js") && !file.includes('example')).map((nameModule) => nameModule.replace(/.js/gi, ""));;
+			client.events.clear();
+			for (const name of eventFiles) {
+				load({ name, event, api, client, __GLOBAL, loadAll: true });
+				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+			api.sendMessage("loadAll success", event.threadID, event.messageID);
+		}
+		break;
+		case "unload": {
+			const events = content;
+			if (events.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
+			for (const name of events) {
+				unload({ name, event, api, client, __GLOBAL });
+				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
+
+			}
+		}
+		break;
+		case "unloadAll": {
+			client.events.clear();
+			load({ name: "event", event, api, client, __GLOBAL, loadAll: true });
+			api.sendMessage("unloadAll success", event.threadID, event.messageID);
+		}
+		break;
+		default:
+			utils.throwError("event", event.threadID, event.messageID);
+			break;
 	}
-	else if (args[0] == "load") loadModule({ nameOfModule: args[1], event, api, client, __GLOBAL });
-	else if (args[0] == "unload") unloadModule({ nameOfModule: args[1], event, api, client, args });
-	else if (args[0] == "reloadconfig") reloadConfig({ event, api, client, __GLOBAL });
-	else return utils.throwError("event", event.threadID, event.messageID);
 }

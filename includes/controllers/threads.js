@@ -18,7 +18,7 @@ module.exports = function ({ models, api }) {
 			return (await Threads.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return [];
 		}
 	}
@@ -36,7 +36,7 @@ module.exports = function ({ models, api }) {
 			return true;
 		}
 		catch (e) {
-			logger(e, 2);
+			logger(e, "error");
 			return false;
 		}
 	}
@@ -52,7 +52,7 @@ module.exports = function ({ models, api }) {
 			return true;
 		}
 		catch (e) {
-			logger(e, 2);
+			logger(e, "error");
 			return false;
 		}
 	}

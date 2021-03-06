@@ -13,7 +13,7 @@ const fs = require("fs-extra");
 if (!fs.existsSync(__dirname + "/cache/shortcut.json")) fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
 
 module.exports.event = function({ api, event }) {
-	if (event.body.length !== -1) {
+	if (event.type !== "message_unsend" && event.body.length !== -1) {
 		let shortcut = JSON.parse(fs.readFileSync(__dirname + "/cache/shortcut.json"));
 		if (shortcut.some(item => item.id == event.threadID)) {
 			let getThread = shortcut.find(item => item.id == event.threadID).shorts;

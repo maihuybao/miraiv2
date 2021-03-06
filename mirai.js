@@ -1,11 +1,10 @@
 //=========Call Variable =========//
 
-const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, createWriteStream } = require("fs-extra");
+const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, unlinkSync } = require("fs-extra");
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
 const login = require("fca-unofficial");
-const request = require("request");
 var appStateFile;
 var timeStart = Date.now();
 
@@ -18,7 +17,7 @@ const client = new Object({
 	userBanned: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
-	globalConfig: ""
+	dirConfig: ""
 });
 
 const __GLOBAL = new Object({
@@ -28,17 +27,21 @@ const __GLOBAL = new Object({
 //check argv
 
 var argv = require('minimist')(process.argv.slice(2));
-var dirConfig, configValue;
+var configValue;
 
-if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][0]);
-else dirConfig = join(process.cwd(), "config.json");
+if (argv["_"].length != 0) client.dirConfig = join(process.cwd(), argv["_"][0]);
+else client.dirConfig = join(process.cwd(), "config.json");
 
 try {
-	configValue = require(dirConfig);
-	logger.loader(`Đã tìm thấy file config: ${argv["_"][0]}`);
+	configValue = require(client.dirConfig);
+	logger.loader(`Đã tìm thấy file config: ${argv["_"][0] || "config.json"}`);
 }
 catch {
-	logger.loader(`Không tìm thấy file config: ${argv["_"][0]}`, "error");
+	if (existsSync(client.dirConfig + ".temp")) {
+		configValue = require(client.dirConfig + ".temp");
+		logger.loader(`Đã tìm thấy file config: ${argv["_"][0] || "config.json"}`);
+	}
+	else logger.loader(`Không tìm thấy file config: ${argv["_"][0] || "config.json"}`, "error");
 }
 
 try {
@@ -51,13 +54,16 @@ catch (error) {
 	return logger.loader("Không thể load config!", "error");
 }
 
+writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
+
+
 //=========Login =========//
 
 try {
 	appStateFile = resolve(join(process.cwd(), __GLOBAL.settings["APPSTATEPATH"]));
 }
 catch (e) {
-	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, 2);
+	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
 }
 
 require("npmlog").emitLog = () => {};
@@ -70,7 +76,7 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(readFileSync('./package.json')).version;
 	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
-	else logger('Bạn đang sử dụng bản mới nhất!', "[CHECK UPDATE ]");
+	else logger('Bạn đang sử dụng bản mới nhất!', "[ CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
@@ -113,6 +119,12 @@ for (const file of commandFiles) {
                 logger.loader(`Không thể tải config module ${command.config.name}`, "error");
             }
         }
+		if (command.onLoad) try {
+			command.onLoad({ __GLOBAL, client, configValue });
+		}
+		catch (error) {
+			logger.loader(`Không thể onLoad module: ${command} với lỗi: ${error.name} - ${error.message}`, "error");
+		}
 		client.commands.set(command.config.name, command);
 		logger.loader(`Loaded command ${command.config.name}!`);
 	}
@@ -160,6 +172,12 @@ for (const file of eventFiles) {
                 logger.loader(`Không thể tải config event module ${event.config.name}`, "error");
             }
         }
+		if (event.onLoad) try {
+			event.onLoad({ __GLOBAL, client, configValue });
+		}
+		catch (error) {
+			logger.loader(`Không thể chạy setup module: ${event} với lỗi: ${error.name} - ${error.message}`, "error");
+		}
 		client.events.set(event.config.name, event);
 		logger.loader(`Loaded event ${event.config.name}!`);
 	}
@@ -169,11 +187,12 @@ for (const file of eventFiles) {
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
-writeFileSync(dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
+writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
+unlinkSync(client.dirConfig + ".temp");
 
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
-		if (err) return logger(JSON.stringify(err));
+		if (err) return logger(JSON.stringify(err), "error");
 
 		const listen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
 		const onListen = () => api.listenMqtt(listen);
@@ -204,29 +223,45 @@ function onBot({ models }) {
 }
 
 const { Sequelize, sequelize } = require("./includes/database");
+
 (async () => {
-	let migrations = readdirSync(`./includes/database/migrations`);
-	let completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
-	for (let name in completedMigrations) {
+	var migrations = readdirSync(`./includes/database/migrations`);
+	var completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
+	for (const name in completedMigrations) {
 		if (completedMigrations.hasOwnProperty(name)) {
-			let index = migrations.indexOf(completedMigrations[name].name);
+			const index = migrations.indexOf(completedMigrations[name].name);
 			if (index !== -1) migrations.splice(index, 1);
 		}
 	}
 
-	for (let i = 0, c = migrations.length; i < c; i++) {
+	for (const migration of migrations) {
+		var migrationRequire = require(`./includes/database/migrations/` + migration);
+		migrationRequire.up(sequelize.queryInterface, Sequelize);
+		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migration } });
+	}
+	/*for (let i = 0, c = migrations.length; i < c; i++) {
 		let migration = require(`./includes/database/migrations/` + migrations[i]);
 		migration.up(sequelize.queryInterface, Sequelize);
 		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migrations[i] } });
 	}
-})();
+	*/
 
-sequelize.authenticate().then(
+	try {
+		await sequelize.authenticate();
+		logger("Kết nối cơ sở dữ liệu thành công", "[ DATABASE ]")
+		const models = require("./includes/database/model");
+		onBot({ models });
+	}
+	catch (error) {
+		() => logger(`Kết nối cơ sở dữ liệu thất bại, Lỗi: ${error.name}: ${error.message}`, "[ DATABASE ]");
+	}
+})();
+/*sequelize.authenticate().then(
 	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),
 	() => logger("Kết nối cơ sở dữ liệu thất bại!", "[ DATABASE ]")
 ).then(() => {
-	let models = require("./includes/database/model")({ Sequelize, sequelize });
+	let models = require("./includes/database/model");
 	onBot({ models });
 }).catch(e => logger(`${e.stack}`, 2));
-
+*/
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

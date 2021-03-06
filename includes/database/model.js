@@ -1,4 +1,4 @@
-module.exports = function ({ Sequelize, sequelize }) {
+/*module.exports = function ({ Sequelize, sequelize }) {
 	const { Users, Threads, Currencies } = require("./models");
 	return {
 		model: {
@@ -11,3 +11,13 @@ module.exports = function ({ Sequelize, sequelize }) {
 		}
 	}
 }
+*/
+const { Users, Threads, Currencies } = require("./models");
+
+module.exports.model = {
+	Users,
+	Threads,
+	Currencies
+}
+
+module.exports.use = (modelName) => this.model[`${modelName}`];

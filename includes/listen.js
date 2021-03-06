@@ -35,35 +35,35 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 
 	return (error, event) => {
-		if (error) logger(JSON.stringify(error), 2);
-		if (client.event && client.event == event || ["presence","typ","read_receipt"].some(type => type == event.type)) "";
-		else {
-			client.event = event;
-			try {
+		try	{
+			if (error) throw new Error(event.error);
+			if (client.messageID && client.messageID == event.messageID || ["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) "";
+			else {
+				client.messageID = event.messageID;
 				switch (event.type) {
-					case "message":
-					case "message_reply":
-					case "message_unsend":
-						handleCommand({ event })
-						handleReply({ event })
-						handleCommandEvent({ event })
-						handleChangeName({ event })
-						handleCreateDatabase({ event })
-						break;
-					case "event":
-						handleEvent({ event })
-						break;
-					case "message_reaction":
-						handleReaction({ event })
-						break;
-					default:
-						break;
+						case "message":
+						case "message_reply":
+						case "message_unsend":
+							handleCommand({ event })
+							handleReply({ event })
+							handleCommandEvent({ event })
+							handleChangeName({ event })
+							handleCreateDatabase({ event })
+							break;
+						case "event":
+							handleEvent({ event })
+							break;
+						case "message_reaction":
+							handleReaction({ event })
+							break;
+						default:
+							break;
 				}
 				if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 			}
-			catch (e) {
-				""
-			}
+		}
+		catch {
+			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error");
 		}
 	}
 }
