@@ -1,13 +1,13 @@
 module.exports.config = {
-	name: "roleplay",
-	version: "1.0.0",
-	hasPermssion: 0,
-	credits: "CatalizCS",
-	description: "Hun, ôm, ... đủ thứ trò in here!",
-	commandCategory: "random-img",
-	usages: "roleplay on/off",
-	cooldowns: 1,
-	dependencies: ['request', 'fs-extra']
+    name: "roleplay",
+    version: "1.0.0",
+    hasPermssion: 0,
+    credits: "CatalizCS",
+    description: "Hun, ôm, ... đủ thứ trò in here!",
+    commandCategory: "random-img",
+    usages: "roleplay on/off",
+    cooldowns: 1,
+    dependencies: ['request', 'fs-extra']
 };
 
 module.exports.event = ({ event, api, client }) => {
@@ -21,8 +21,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["hug"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", I wanna hug you ❤️", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }
@@ -32,8 +32,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["kiss"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", I wanna kiss you ❤️", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }
@@ -43,8 +43,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["feed"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", say 'Ahhh'", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }
@@ -54,8 +54,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["pat"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", ...", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }
@@ -65,8 +65,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["slap"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", take my slap, b*tch", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }
@@ -76,8 +76,8 @@ module.exports.event = ({ event, api, client }) => {
         for (const id of mention) {
             request(animeData["poke"], (error, response, body) => {
                 let picData = JSON.parse(body);
-				let getURL = picData.data.response.url;
-				let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+                let getURL = picData.data.response.url;
+                let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
                 request(getURL).pipe(createWriteStream(__dirname + `/cache/${id}.${ext}`)).on("close", () => api.sendMessage({ body: event.mentions[id] + ", HEHEHE", mentions: [{ tag: event.mentions[id], id: id }], attachment: createReadStream(__dirname + `/cache/${id}.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/${id}.${ext}`), event.messageID));
             })
         }

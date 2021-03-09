@@ -1,6 +1,6 @@
 const logger = require("../utils/log.js");
 
-module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
+module.exports = function({ api, client, __GLOBAL, models }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
 				Currencies = require("./controllers/currencies")({ models });
@@ -33,36 +33,34 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models });
 
 	return (error, event) => {
-		try	{
-			if (error) throw new Error(event.error);
-			if (client.event && client.event == event || ["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) "";
-			else {
-				client.event = event;
+		if (error) logger(JSON.stringify(error), 2);
+		if (client.event && JSON.stringify(event) == JSON.stringify(client.event) || typeof event.type == "undefined") "";
+		else {
+			client.event = event;
+			try {
 				switch (event.type) {
-						case "message":
-						case "message_reply":
-						case "message_unsend":
-							handleCommand({ event })
-							handleReply({ event })
-							handleCommandEvent({ event })
-							handleChangeName({ event })
-							handleCreateDatabase({ event })
-							break;
-						case "event":
-							handleEvent({ event })
-							break;
-						case "message_reaction":
-							handleReaction({ event })
-							break;
-						default:
-							break;
+					case "message":
+					case "message_reply": 
+						handleCommand({ event })
+						handleReply({ event })
+						handleCommandEvent({ event })
+						handleChangeName({ event })
+						handleCreateDatabase({ event })
+						break;
+					case "event":
+						handleEvent({ event })
+						break;
+					case "message_reaction":
+						handleReaction({ event })
+						break;
+					default:
+						break;
 				}
-				if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 			}
-		}
-		catch {
-			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error");
+			catch (e) {
+				""
+			}
+			if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 		}
 	}
 }
-//THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
