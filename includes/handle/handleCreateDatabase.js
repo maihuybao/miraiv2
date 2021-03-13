@@ -7,8 +7,8 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies }) {
 			var settings = {};
 
 			if (!(await Threads.getData(threadID))) {
-				const name = (await api.getThreadInfo(threadID)).name;
-				await Threads.createData(threadID, { name, settings });
+				const threadInfo = await api.getThreadInfo(threadID);
+				await Threads.createData(threadID, { name: threadInfo.name, settings, threadInfo });
 				logger(`New Thread: ${threadID}`, "[ DATABASE ]")
 			}
 			if (!(await Users.getData(senderID)) ) {
@@ -19,6 +19,7 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies }) {
 				logger(`New Currency: ${senderID}`, "[ DATABASE ]")
 			}
 		}
+
 		catch(e) {
 			console.log(e);
 		}

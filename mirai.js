@@ -5,8 +5,7 @@ const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
 const login = require("fca-unofficial");
-var appStateFile;
-var timeStart = Date.now();
+const timeStart = Date.now();
 
 const client = new Object({
 	commands: new Map(),
@@ -17,7 +16,9 @@ const client = new Object({
 	userBanned: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
-	dirConfig: ""
+	commandRegister: new Map(),
+	dirConfig: "",
+	dirMain: process.cwd()
 });
 
 const __GLOBAL = new Object({
@@ -29,8 +30,8 @@ const __GLOBAL = new Object({
 var argv = require('minimist')(process.argv.slice(2));
 var configValue;
 
-if (argv["_"].length != 0) client.dirConfig = join(process.cwd(), argv["_"][0]);
-else client.dirConfig = join(process.cwd(), "config.json");
+if (argv["_"].length != 0) client.dirConfig = join(client.dirMain, argv["_"][0]);
+else client.dirConfig = join(client.dirMain, "config.json");
 
 try {
 	configValue = require(client.dirConfig);
@@ -55,16 +56,6 @@ catch (error) {
 }
 
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
-
-
-//=========Login =========//
-
-try {
-	appStateFile = resolve(join(process.cwd(), __GLOBAL.settings["APPSTATEPATH"]));
-}
-catch (e) {
-	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
-}
 
 require("npmlog").emitLog = () => {};
 
@@ -91,8 +82,8 @@ for (const file of commandFiles) {
 	}
 	
 	try {
-		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
-		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
+		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
+		if (client.commands.has(command.config.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (command.config.dependencies) {
 			try {
 				for (const i of command.config.dependencies) require.resolve(i);
@@ -119,11 +110,18 @@ for (const file of commandFiles) {
                 logger.loader(`Không thể tải config module ${command.config.name}`, "error");
             }
         }
-		if (command.onLoad) try {
-			command.onLoad({ __GLOBAL, client, configValue });
-		}
-		catch (error) {
-			logger.loader(`Không thể onLoad module: ${command} với lỗi: ${error.name} - ${error.message}`, "error");
+		if (command.onLoad) 
+			try {
+				command.onLoad({ __GLOBAL, client, configValue });
+			
+			}
+			catch (error) {
+				logger.loader(`Không thể onLoad module: ${command} với lỗi: ${error.name} - ${error.message}`, "error");
+			}
+		if (command.event) {
+			var registerCommand = client.commandRegister.get("event") || [];
+			registerCommand.push(command.config.name);
+			client.commandRegister.set("event", registerCommand);
 		}
 		client.commands.set(command.config.name, command);
 		logger.loader(`Loaded command ${command.config.name}!`);
@@ -190,25 +188,33 @@ logger.loader(`Load thành công: ${client.commands.size} module commands | ${cl
 writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 unlinkSync(client.dirConfig + ".temp");
 
-function onBot({ models }) {
+var appStateFile;
+try {
+	appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"]));
+}
+catch (e) {
+	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
+}
+
+function onBot({ models }) {	
 	login({ appState: require(appStateFile) }, (err, api) => {
 		if (err) return logger(JSON.stringify(err), "error");
+		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
 
-		const listen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
-		const onListen = () => api.listenMqtt(listen);
-
-		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		api.setOptions({
 			forceLogin: true,
 			listenEvents: true,
 			logLevel: "silent",
-			selfListen: false
+			selfListen: false,
+			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
 		});
+		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
+
 		try {
-			onListen();
+			api.listenMqtt(handleListen);
 			setInterval(() => {
 				api.listenMqtt().stopListening();
-				setTimeout(() => onListen(), 2000);
+				setTimeout(() => api.listenMqtt(handleListen), 2000);
 				if (__GLOBAL.settings.DeveloperMode == true) {
 					const moment = require("moment");
 					var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
@@ -239,12 +245,6 @@ const { Sequelize, sequelize } = require("./includes/database");
 		migrationRequire.up(sequelize.queryInterface, Sequelize);
 		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migration } });
 	}
-	/*for (let i = 0, c = migrations.length; i < c; i++) {
-		let migration = require(`./includes/database/migrations/` + migrations[i]);
-		migration.up(sequelize.queryInterface, Sequelize);
-		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migrations[i] } });
-	}
-	*/
 
 	try {
 		await sequelize.authenticate();
@@ -256,12 +256,5 @@ const { Sequelize, sequelize } = require("./includes/database");
 		() => logger(`Kết nối cơ sở dữ liệu thất bại, Lỗi: ${error.name}: ${error.message}`, "[ DATABASE ]");
 	}
 })();
-/*sequelize.authenticate().then(
-	() => logger("Kết nối cơ sở dữ liệu thành công!", "[ DATABASE ]"),
-	() => logger("Kết nối cơ sở dữ liệu thất bại!", "[ DATABASE ]")
-).then(() => {
-	let models = require("./includes/database/model");
-	onBot({ models });
-}).catch(e => logger(`${e.stack}`, 2));
-*/
+
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

@@ -38,8 +38,8 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 	
 	try {
 		const command = require(join(__dirname, `${name}`));
-		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Sai format!`);
-		if (client.commands.has(command.config.name)) throw new Error('Bị trùng!');
+		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
+		if (client.commands.has(command.config.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (command.config.dependencies) {
 			try {
 				for (const i of command.config.dependencies) require.resolve(i);
@@ -70,7 +70,7 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 			command.onLoad({ __GLOBAL, client, configValue });
 		}
 		catch (error) {
-			logger.loader(`Không thể chạy setup module: ${command} với lỗi: ${error.name} - ${error.message}`, "error");
+			logger.loader(`Không thể chạy setup module: ${command} với lỗi: ${error.message}`, "error");
 		}
 		client.commands.set(command.config.name, command);
 		writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));

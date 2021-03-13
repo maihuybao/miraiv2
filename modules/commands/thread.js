@@ -33,17 +33,17 @@ module.exports.handleReaction = async ({ event, api, Threads, client, handleReac
 	if (parseInt(event.userID) !== parseInt(handleReaction.author)) return;
 	switch (handleReaction.type) {
 		case "ban": {
-			await Threads.setData(handleReaction.target, options = { banned: 1 });
+			await Threads.setData(handleReaction.target, { banned: 1 });
 			let dataThread = client.threadBanned.get(handleReaction.target.toString()) || {};
 			dataThread["banned"] = 1;
 			client.threadBanned.set(handleReaction.target, dataThread);
-			api.sendMessage(`[${handleReaction.target}] Đã ban thành công!`, event.threadID);
+			api.sendMessage(`[${handleReaction.target}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		case "unban": {
-			await Threads.setData(handleReaction.target, options = { banned: 0 });
+			await Threads.setData(handleReaction.target, { banned: 0 });
 			client.threadBanned.delete(handleReaction.target.toString());
-			api.sendMessage(`[${handleReaction.target}] Đã unban thành công!`, event.threadID);
+			api.sendMessage(`[${handleReaction.target}] Đã unban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		default:

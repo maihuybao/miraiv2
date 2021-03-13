@@ -9,7 +9,7 @@ module.exports.config = {
 	cooldowns: 5
 };
 
-let AIMove;
+var AIMove;
 
 function startBoard({isX, data}) {
 	data.board = new Array(3);

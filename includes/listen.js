@@ -11,11 +11,11 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 		var userBanned = (await Users.getAll({ banned: true }));
 		var threadSetting = (await Threads.getAll(['threadID', 'settings']));
 		for (const info of threadBanned) client.threadBanned.set(info.threadID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
-		logger("Loaded thread banned!", "[ DATABASE ]")
+		logger.loader("Đã tải xong biến môi trường nhóm!")
 		for (const info of userBanned) client.userBanned.set(info.userID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
-		logger("Loaded user banned!", "[ DATABASE ]")
+		logger.loader("Đã tải xong biến môi trường người dùng!")
 		for (const info of threadSetting) client.threadSetting.set(info.threadID.toString(), info.settings);
-		logger("Loaded thread setting", "[ DATABASE ]")
+		logger.loader("Đã tải xong biến môi trường cài đặt nhóm!")
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
 

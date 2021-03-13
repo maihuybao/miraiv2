@@ -38,8 +38,8 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 	
 	try {
 		const events = require(join(__dirname, "/../events/", `${name}`));
-		if (!events.config || !events.run || !events.config.commandCategory) throw new Error(`Sai format!`);
-		if (client.events.has(command.events.name)) throw new Error('Bị trùng!');
+		if (!events.config || !events.run || !events.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
+		if (client.events.has(command.events.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (events.config.dependencies) {
 			try {
 				for (const i of events.config.dependencies) require.resolve(i);

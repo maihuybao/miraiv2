@@ -10,19 +10,6 @@ module.exports.config = {
 	dependencies: ["fs-extra","axios","path","canvas","jimp", "request"]
 };
 
-const fs = require("fs-extra");
-const request = require("request");
-let dirMaterial = __dirname + `/cache/rank/`;
-
-if (!fs.existsSync(dirMaterial)) fs.mkdirSync(dirMaterial, { recursive: true });
-if (!fs.existsSync(dirMaterial + "fonts")) fs.mkdirSync(dirMaterial + "fonts", { recursive: true });
-if (!fs.existsSync(dirMaterial + "rank_card")) fs.mkdirSync(dirMaterial + "rank_card", { recursive: true });
-
-if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/regular-font.ttf"));
-if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
-if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png").pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));
-
-
 async function makeRankCard(data) {
     
     /*
@@ -132,6 +119,20 @@ async function getInfo(uid, Currencies) {
 	const expCurrent = point - levelToExp(level);
 	const expNextLevel = levelToExp(level + 1) - levelToExp(level);
 	return { level, expCurrent, expNextLevel };
+}
+
+module.exports.onLoad = () => {
+	const fs = require("fs-extra");
+	const request = require("request");
+	let dirMaterial = __dirname + `/cache/rank/`;
+	
+	if (!fs.existsSync(dirMaterial)) fs.mkdirSync(dirMaterial, { recursive: true });
+	if (!fs.existsSync(dirMaterial + "fonts")) fs.mkdirSync(dirMaterial + "fonts", { recursive: true });
+	if (!fs.existsSync(dirMaterial + "rank_card")) fs.mkdirSync(dirMaterial + "rank_card", { recursive: true });
+	
+	if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/regular-font.ttf"));
+	if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
+	if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png").pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));	
 }
 
 module.exports.run = async ({ event, api, args, Currencies, Users }) => {

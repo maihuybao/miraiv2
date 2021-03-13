@@ -24,11 +24,13 @@ module.exports.config = {
 	],
 };
 
-const { existsSync, createWriteStream } = require("fs-extra");
-const request = require("request");
+module.exports.onLoad = () => {
+    const { existsSync, createWriteStream } = require("fs-extra");
+    const request = require("request");
 
-if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
-.pipe(createWriteStream(__dirname + "/cache/anime.json"));
+    if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
+    .pipe(createWriteStream(__dirname + "/cache/anime.json"));
+}
 
 module.exports.run = ({ event, api, args }) => {
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");

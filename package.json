@@ -7,8 +7,8 @@
 		"node": "12.18.2"
 	},
 	"scripts": {
-		"start": "node --trace-warnings mirai",
-		"pm2": "pm2 start pm2_apps.json --no-daemon"
+		"start": "node mirai",
+		"test": "node --trace-warnings mirai"
 	},
 	"repository": {
 		"type": "git",
@@ -30,7 +30,6 @@
 	},
 	"homepage": "https://github.com/catalizcs/miraiv2#readme",
 	"dependencies": {
-		"axios": "",
 		"body-parser": "",
 		"canvas": "",
 		"chalk": "",
@@ -38,14 +37,12 @@
 		"fca-unofficial": "",
 		"figlet": "",
 		"minimist": "",
-		"fs-extra": "",
 		"moment": "",
 		"ms": "",
 		"npmlog": "",
-		"pm2": "",
 		"readline": "",
 		"semver": "",
-		"sequelize": "",
+		"sequelize": "^6.5.0",
 		"sqlite3": "",
 		"string-similarity": "",
 		"totp-generator": ""

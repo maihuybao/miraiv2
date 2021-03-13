@@ -10,3 +10,4 @@ package-lock.json
 node_modules/
 logs/
 includes/data.sqlite
+fbstate.json

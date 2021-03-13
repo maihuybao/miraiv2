@@ -32,6 +32,10 @@ module.exports.config = {
 	}
 };
 
+module.exports.onLoad = function ({ __GLOBAL, client, configValue }) {
+		//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
 module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
