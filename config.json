@@ -1,14 +1,14 @@
 {
-    "DeveloperMode": true,
+    "DeveloperMode": false,
     "AutoChangeName": false,
     "autoCreateDB": true,
     "allowInbox": true,
-    "EMAIL": "linhle133a@gmail.com",
-    "PASSWORD": "0152029399a",
-    "OTPKEY": "NL4Z H6X4 ICVE 5UUL GOPG BMQG PZ4B 2GXB",
+    "EMAIL": "",
+    "PASSWORD": "",
+    "OTPKEY": "",
     "BOTNAME": "",
     "PREFIX": "!",
-    "ADMINBOT": "100027477920916",
+    "ADMINBOT": "",
     "DATABASE": {
         "sqlite": {
             "storage": "data.sqlite"
