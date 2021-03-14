@@ -113,7 +113,7 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
 1. Sử dụng google play và tải termux
 2. Mở termux và nhập
     ```sh
-    termux-setup-storage && apt update && apt upgrade && pkg install wget -y && wget https://raw.githubusercontent.com/catalizcs/storage-data/master/install.sh && bash install.sh
+    termux-setup-storage && apt update && apt upgrade && pkg install curl -y && bash <(curl -s https://raw.githubusercontent.com/catalizcs/storage-data/master/install.sh)
     ```
 3. Đợi mọi package, lib cài đặt thành công là có thể sử dụng
 4. về cách sử dụng, edit, vận hành
@@ -121,7 +121,7 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
       ```sh
       manager
       ```
-      2. Để vận hành bot, bạn chỉ cần nhập lệnh
+      2. Để vận hành bot, bạn chỉ cần nhập vào termux
       ```sh
       cd miraiv2 && npm start
       ```
