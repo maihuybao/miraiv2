@@ -105,7 +105,9 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
     3. Nếu trên cmd/terminal hiện ```Đã ghi xong appstate``` tức là appstate của bạn đã được lưu lại, còn nếu ra dòng có chữ error thì appstate của bạn chưa được lưu lại, bạn cần phải kiểm tra lại thông tin tài khoản, và kiểm tra xem tài khoản của bạn có phải bị checkpoint hay không.
 7. Chạy bot và tận hưởng
     1. Nhập
-    termux-setup-storage
+    ```sh
+      npm start
+      ```
     2. Đợi source code load file và tận hưởng!
 
   #### Android
@@ -125,6 +127,39 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
       ```sh
       cd miraiv2 && npm start
       ```
+  #### Linux/ubuntu
+1. Cài đặt node và git bằng cách nhập vào terminal
+      ```sh
+      sudo apt update && apt install node git -y
+      ```
+2. Clone source code của bot bằng cách nhập vào terminal
+    ```sh
+    git clone https://github.com/catalizcs/miraiv2.git miraiv2
+    ```
+3. Cài đặt các package cần thiết
+    1. Mở cmd/terminal ở thư mục bot, LƯU Ý thư mục đó phải có file package.json
+    2. Nhập
+    ```sh
+    npm install
+    ``` 
+4. Chỉnh sửa file config
+    1. Mở file config.json thông qua notepad++ hoặc sublime text 3 đã cài đặt
+    2. tùy chỉnh mail, password, tên bot, ...
+    3. Sao lưu và đóng lại
+5. Lấy appstate
+    - Bạn có thể sử dụng fbstate của c3c bot, nhưng cần đổi tên lại thành appstate.json hoặc đổi lại tên trong phần config.json như bước ở trên
+    1. Nhập
+    ```sh
+    node login
+    ```
+    2. Nhập mã xác thực hai lớp
+    3. Nếu trên cmd/terminal hiện ```Đã ghi xong appstate``` tức là appstate của bạn đã được lưu lại, còn nếu ra dòng có chữ error thì appstate của bạn chưa được lưu lại, bạn cần phải kiểm tra lại thông tin tài khoản, và kiểm tra xem tài khoản của bạn có phải bị checkpoint hay không.
+6. Chạy bot và tận hưởng
+    1. Nhập
+    ```sh
+      npm start
+      ```
+    2. Đợi source code load file và tận hưởng!
 
 #### Video hướng dẫn cài đặt
 
