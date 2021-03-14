@@ -38,8 +38,8 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 	
 	try {
 		const events = require(join(__dirname, "/../events/", `${name}`));
-		if (!events.config || !events.run || !events.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
-		if (client.events.has(command.events.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
+		if (!events.config || !events.run || typeof events.run !== "function") throw new Error(`Module không đúng định dạng!`);
+		if (client.events.has(events.config.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (events.config.dependencies) {
 			try {
 				for (const i of events.config.dependencies) require.resolve(i);
@@ -104,32 +104,30 @@ const reloadConfig = ({ __GLOBAL, event, api, client }) => {
 
 module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 	const { readdirSync } = require("fs-extra");
-	let content = args.slice(1, args.length);
+	const content = args.slice(1, args.length);
 
-	const log = api.sendMessage;
 	switch (args[0]) {
 		case "all": {
-			let commands = client.commands.values();
-			let infoCommand = "";
-			for (const cmd of commands) {
+			const events = client.events.values();
+			var infoEvents = "";
+			for (const cmd of events) {
 				if (cmd.config.name && cmd.config.version && cmd.config.credits) {
-					infoCommand += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
+					infoEvents += `\n - ${cmd.config.name} version ${cmd.config.version} by ${cmd.config.credits}`;
 				};
 			}
-			api.sendMessage("Hiện tại đang có " + client.events.size + " event module có thể sử dụng!" + infoCommand, event.threadID, event.messageID);
+			api.sendMessage("Hiện tại đang có " + client.events.size + " event module có thể sử dụng!" + infoEvents, event.threadID, event.messageID);
 		}
 		break;
 		case "load": {
-			const events = content;
-			if (events.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
-			for (const name of events) {
+			if (content.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
+			for (const name of content) {
 				load({ name, event, api, client, __GLOBAL });
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
 			}
 		}
 		break;
 		case "loadAll": {
-			const eventFiles = readdirSync(__dirname).filter((file) => file.endsWith(".js") && !file.includes('example')).map((nameModule) => nameModule.replace(/.js/gi, ""));;
+			const eventFiles = readdirSync(__dirname + `/../events/`).filter((file) => file.endsWith(".js") && !file.includes('example')).map((nameModule) => nameModule.replace(/.js/gi, ""));;
 			client.events.clear();
 			for (const name of eventFiles) {
 				load({ name, event, api, client, __GLOBAL, loadAll: true });
@@ -139,9 +137,8 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		}
 		break;
 		case "unload": {
-			const events = content;
-			if (events.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
-			for (const name of events) {
+			if (content.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
+			for (const name of content) {
 				unload({ name, event, api, client, __GLOBAL });
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
 
@@ -150,7 +147,6 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		break;
 		case "unloadAll": {
 			client.events.clear();
-			load({ name: "event", event, api, client, __GLOBAL, loadAll: true });
 			api.sendMessage("unloadAll success", event.threadID, event.messageID);
 		}
 		break;

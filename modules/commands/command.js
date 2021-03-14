@@ -38,7 +38,7 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 	
 	try {
 		const command = require(join(__dirname, `${name}`));
-		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
+		if (!command.config || !command.run || !command.config.commandCategory || typeof command.run !== "function") throw new Error(`Module không đúng định dạng!`);
 		if (client.commands.has(command.config.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (command.config.dependencies) {
 			try {
