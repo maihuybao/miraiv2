@@ -68,15 +68,16 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
 ### Cài Đặt
 
  #### Windows
- 1. Tải về [Nodejs](https://nodejs.org/en/) và [git](https://git-scm.com/) sau đó cài đặt
- 2. Cài đặt windows-build-tools:
+1. Tải về [Nodejs](https://nodejs.org/en/) và [git](https://git-scm.com/) sau đó cài đặt
+    1. Nếu bạn window 7 trở xuống và không thể cài đặt nodejs thì có thể tải file cài đặt nodejs [tại đây(win 64bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x64.msi) hoặc [tại đây(win 64bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x86.msi)
+2. Cài đặt windows-build-tools:
     1. Mở powershell với quyền adminstrator thông qua startMenu
     2. Nhập 
      ```sh
      npm install windows-build-tools
      ```
     3. Đợi trong vòng 5-10 phút
- 3. Clone source code của bot
+3. Clone source code của bot
     1. chuột phải ở folder cần cài đặt source code nhấn vào git bash
     2. nhập
     ```sh
@@ -104,14 +105,32 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
     3. Nếu trên cmd/terminal hiện ```Đã ghi xong appstate``` tức là appstate của bạn đã được lưu lại, còn nếu ra dòng có chữ error thì appstate của bạn chưa được lưu lại, bạn cần phải kiểm tra lại thông tin tài khoản, và kiểm tra xem tài khoản của bạn có phải bị checkpoint hay không.
 7. Chạy bot và tận hưởng
     1. Nhập
-    ```sh
-    npm start
-    ```
+    termux-setup-storage
     2. Đợi source code load file và tận hưởng!
+
+  #### Android
+
+1. Sử dụng google play và tải termux
+2. Mở termux và nhập
+    ```sh
+    termux-setup-storage && apt update && apt upgrade && pkg install wget -y && wget https://raw.githubusercontent.com/catalizcs/storage-data/master/install.sh && bash install.sh
+    ```
+3. Đợi mọi package, lib cài đặt thành công là có thể sử dụng
+4. về cách sử dụng, edit, vận hành
+      1. Để bật được file manager bạn chỉ cần nhập vào termux
+      ```sh
+      manager
+      ```
+      2. Để vận hành bot, bạn chỉ cần nhập lệnh
+      ```sh
+      cd miraiv2 && npm start
+      ```
 
 #### Video hướng dẫn cài đặt
 
-[![Tutorial for Window 10(WIP)]()]()
+1. Windows: [Tutorial install for win 10(WIP)]()
+2. Linux: [Tutorial install for linux/ubuntu(WIP)]()
+3. Android: [Tutorial install for android using termux(WIP)]()
 
 
 <!-- CONTRIBUTING -->
