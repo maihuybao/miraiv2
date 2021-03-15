@@ -130,7 +130,7 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
   #### Linux/ubuntu
 1. Cài đặt node và git bằng cách nhập vào terminal
       ```sh
-      sudo apt update && apt install nodejs git -y
+      sudo apt install nodejs git -y
       ```
 2. Clone source code của bot bằng cách nhập vào terminal
     ```sh
