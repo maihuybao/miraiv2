@@ -9,12 +9,14 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
 		var threadBanned = (await Threads.getAll({ banned: true }));
 		var userBanned = (await Users.getAll({ banned: true }));
+		var threadInfo = (await Threads.getAll(["threadID","threadInfo"]));
 		var threadSetting = (await Threads.getAll(['threadID', 'settings']));
 		for (const info of threadBanned) client.threadBanned.set(info.threadID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
 		logger.loader("Đã tải xong biến môi trường nhóm!")
 		for (const info of userBanned) client.userBanned.set(info.userID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
 		logger.loader("Đã tải xong biến môi trường người dùng!")
 		for (const info of threadSetting) client.threadSetting.set(info.threadID.toString(), info.settings);
+		for (const info of threadInfo) client.threadInfo.set(info.threadID.toString(), info.threadInfo);
 		logger.loader("Đã tải xong biến môi trường cài đặt nhóm!")
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
@@ -36,7 +38,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 
 	return (error, event) => {
 		try	{
-			if (error) throw new Error(event.error);
+			if (error) throw new Error(error.error);
 			if (client.messageID && client.messageID == event.messageID || ["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) "";
 			else {
 				client.messageID = event.messageID;

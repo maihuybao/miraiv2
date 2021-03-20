@@ -16,6 +16,7 @@ const client = new Object({
 	userBanned: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
+	threadInfo: new Map(),
 	commandRegister: new Map(),
 	dirConfig: "",
 	dirMain: process.cwd()
@@ -51,13 +52,13 @@ try {
 	}
 	logger.loader("Config Loaded!");
 }
-catch (error) {
+catch {
 	return logger.loader("Không thể load config!", "error");
 }
 
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
 
-require("npmlog").emitLog = () => {};
+//require("npmlog").emitLog = () => {};
 
 if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
 
@@ -188,15 +189,14 @@ logger.loader(`Load thành công: ${client.commands.size} module commands | ${cl
 writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 unlinkSync(client.dirConfig + ".temp");
 
-var appStateFile;
 try {
-	appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"]));
+	var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"]));
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
 }
 
-function onBot({ models }) {	
+function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
 		if (err) return logger(JSON.stringify(err), "error");
 		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });

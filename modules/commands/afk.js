@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Bật tắt chế độ afk!",
 	commandCategory: "other",
-	usages: "afk reason",
+	usages: "afk on reason",
     cooldowns: 5,
     info: [
 		{
@@ -32,8 +32,8 @@ module.exports.event = ({ event, api, client }) => {
     }
     for (const id of mention) {
         if (client.afkList.has(id)) {
-            const reason = client.afkList.get(id.toString()) || "";
-            return api.sendMessage(`Hiện tại người dùng ${mention[id]} đang bận ${(reason !== null) ? `với lý do: ${reason}` : ""}`, event.threadID, event.messageID);
+            const reason = client.afkList.get(id.toString());
+            return api.sendMessage(`Hiện tại người dùng ${event.mentions[id]} đang bận ${(typeof reason == "string") ? `với lý do: ${reason}` : ""}`, event.threadID, event.messageID);
         }
     }
 }
@@ -47,7 +47,7 @@ module.exports.run = ({ event, api, client, args, utils }) => {
             return api.sendMessage(`[ ${event.senderID} ] Đã bật chế độ afk`, event.threadID, event.messageID);
         }
         default:
-            utils,throwError("afk", event.threadID, event.messageID);
+            utils.throwError("afk", event.threadID, event.messageID);
             break;
     }
 }

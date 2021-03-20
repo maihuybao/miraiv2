@@ -4,7 +4,12 @@ module.exports = function ({ models, api }) {
 	const Threads = models.use('Threads');
 
 	async function getInfo(threadID) {
-		return await api.getThreadInfo(threadID);
+		try {
+			return await api.getThreadInfo(threadID);
+		}
+		catch (e) {
+			logger(e, "error");
+		}
 	}
 
 	async function getAll(...data) {

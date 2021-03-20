@@ -10,9 +10,11 @@ module.exports.config = {
 	dependencies: ["request","fs-extra"]
 };
 
-const request = require("request");
-const fs = require("fs-extra");
-if (!fs.existsSync(__dirname + '/cache/pornList.txt')) request('https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt').pipe(fs.createWriteStream(__dirname + "/cache/pornList.txt"));
+module.exports.onLoad = () => {
+    const request = require("request");
+    const fs = require("fs-extra");
+    if (!fs.existsSync(__dirname + '/cache/pornList.txt')) request('https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt').pipe(fs.createWriteStream(__dirname + "/cache/pornList.txt"));
+}
 
 module.exports.run = ({ event, api, args, client }) => {
     const request = require("request");
