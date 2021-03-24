@@ -19,11 +19,11 @@ module.exports.config = {
 
 module.exports.run = function({ api, event, args, client, __GLOBAL }) {
 	const command = client.commands.get(args[0]);
-	let threadSetting = client.threadSetting.get(event.threadID.toString()) || {};
+	const threadSetting = client.threadSetting.get(event.threadID.toString()) || {};
 	
 	if (!command) {
-		let commands = client.commands.values();
-		let cmdCount = 0, group = [], msg = "";
+		const commands = client.commands.values();
+		var group = [], msg = "";
 		for (const commandConfig of commands) {
 			if (!group.some(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase())) group.push({ group: commandConfig.config.commandCategory.toLowerCase(), cmds: [commandConfig.config.name] });
 			else group.find(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase()).cmds.push(commandConfig.config.name);

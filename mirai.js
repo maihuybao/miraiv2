@@ -28,22 +28,27 @@ const __GLOBAL = new Object({
 
 //check argv
 
-var argv = require('minimist')(process.argv.slice(2));
+
+var argv = require('minimist')(process.argv.slice(2)); 
 var configValue;
 
-if (argv["_"].length != 0) client.dirConfig = join(client.dirMain, argv["_"][0]);
+console.log(argv);
+
+
+var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
+if (argv["_"].length != 0) client.dirConfig = join(client.dirMain, argv["_"][indexConfig]);
 else client.dirConfig = join(client.dirMain, "config.json");
 
 try {
 	configValue = require(client.dirConfig);
-	logger.loader(`Đã tìm thấy file config: ${argv["_"][0] || "config.json"}`);
+	logger.loader(`Đã tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`);
 }
 catch {
 	if (existsSync(client.dirConfig + ".temp")) {
 		configValue = require(client.dirConfig + ".temp");
-		logger.loader(`Đã tìm thấy file config: ${argv["_"][0] || "config.json"}`);
+		logger.loader(`Đã tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`);
 	}
-	else logger.loader(`Không tìm thấy file config: ${argv["_"][0] || "config.json"}`, "error");
+	else logger.loader(`Không tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`, "error");
 }
 
 try {
@@ -117,7 +122,7 @@ for (const file of commandFiles) {
 			
 			}
 			catch (error) {
-				logger.loader(`Không thể onLoad module: ${command} với lỗi: ${error.name} - ${error.message}`, "error");
+				logger.loader(`Không thể onLoad module: ${command.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
 			}
 		if (command.event) {
 			var registerCommand = client.commandRegister.get("event") || [];
@@ -175,7 +180,7 @@ for (const file of eventFiles) {
 			event.onLoad({ __GLOBAL, client, configValue });
 		}
 		catch (error) {
-			logger.loader(`Không thể chạy setup module: ${event} với lỗi: ${error.name} - ${error.message}`, "error");
+			logger.loader(`Không thể chạy setup module: ${event.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
 		}
 		client.events.set(event.config.name, event);
 		logger.loader(`Loaded event ${event.config.name}!`);
@@ -196,6 +201,8 @@ catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
 }
 
+logger.loader(`=== ${Date.now() - timeStart}ms ===`);
+
 function onBot({ models }) {
 	login({ appState: require(appStateFile) }, (err, api) => {
 		if (err) return logger(JSON.stringify(err), "error");
@@ -206,7 +213,7 @@ function onBot({ models }) {
 			listenEvents: true,
 			logLevel: "silent",
 			selfListen: false,
-			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
 		});
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 

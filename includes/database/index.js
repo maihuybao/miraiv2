@@ -2,7 +2,8 @@ const Sequelize = require("sequelize");
 const { join, resolve } = require("path");
 var argv = require('minimist')(process.argv.slice(2));
 var dirConfig;
-if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][0]);
+var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
+if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][indexConfig]);
 else dirConfig = join(process.cwd(), "config.json");
 var config = require(dirConfig);
 

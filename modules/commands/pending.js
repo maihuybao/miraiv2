@@ -26,8 +26,13 @@ module.exports.handleReaction = async function({ api, event, client, __GLOBAL, h
 }
 
 module.exports.run = async function({ api, event, client }) {
-	let spam = await api.getThreadList(100, null, ["SPAM", "unsend"]);
-	let pending = await api.getThreadList(100, null, ["PENDING", "unsend"]);
+	try {
+		var spam = await api.getThreadList(100, null, ["SPAM"]);
+		var pending = await api.getThreadList(100, null, ["PENDING"]);
+	}
+	catch (e) {
+		console.log(e)
+	}
 	let list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
 	return api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, () => {
 		for (groupInfo of list) {

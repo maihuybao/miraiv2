@@ -29,12 +29,6 @@ function runCommand(command) {
     })
 }
 
-module.exports.onLoad = async function () {
-    const logger = require(process.cwd() + "/utils/log");
-    const pingStatus = await runCommand("ping facebook.com -c 1");
-    logger.loader(pingStatus);
-}
-
 module.exports.run = async function({ api, event, args }) {
     try {
         const pingStatus = await runCommand(`ping ${args[0]} -c 1`);

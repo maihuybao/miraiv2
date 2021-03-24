@@ -7,7 +7,7 @@
 		"node": "12.18.2"
 	},
 	"scripts": {
-		"start": "node mirai",
+		"start": "pm2 start pm2.config.js --no-daemon",
 		"test": "node --trace-warnings mirai"
 	},
 	"repository": {
@@ -32,7 +32,6 @@
 	"dependencies": {
 		"axios": "",
 		"body-parser": "",
-		"canvas": "",
 		"chalk": "",
 		"child_process": "",
 		"fca-unofficial": "",
@@ -41,7 +40,7 @@
 		"minimist": "",
 		"moment": "",
 		"ms": "",
-		"npmlog": "",
+		"npmlog": "",	
 		"readline": "",
 		"semver": "",
 		"sequelize": "^6.5.0",

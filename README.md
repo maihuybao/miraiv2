@@ -69,7 +69,7 @@ Sau đây là các bước cơ bản để có thể cài đặt và vận hành
 
  #### Windows
 1. Tải về [Nodejs](https://nodejs.org/en/) và [git](https://git-scm.com/) sau đó cài đặt
-    1. Nếu bạn window 7 trở xuống và không thể cài đặt nodejs thì có thể tải file cài đặt nodejs [tại đây(win 64bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x64.msi) hoặc [tại đây(win 64bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x86.msi)
+    1. Nếu bạn window 7 trở xuống và không thể cài đặt nodejs thì có thể tải file cài đặt nodejs [tại đây(win 64bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x64.msi) hoặc [tại đây(win 32bit)](https://nodejs.org/download/release/v13.14.0/node-v13.14.0-x86.msi)
 2. Cài đặt windows-build-tools:
     1. Mở powershell với quyền adminstrator thông qua startMenu
     2. Nhập 

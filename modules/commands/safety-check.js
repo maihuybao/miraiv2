@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "safety-check",
 	version: "1.0.0",
 	credits: "CatalizCS",
-	hasPermssion: 2,
+	hasPermssion: 1,
 	description: "Kiểm tra/báo cáo trang web bạn hoặc ai đó không an toàn!",
 	commandCategory: "safety",
 	usages: "safety-check args",
