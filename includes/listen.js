@@ -65,8 +65,8 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 			}
 		}
 		catch {
-			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error");
-			else logger("Handle listen đã gặp sự cố: " + error.Error, "eror");
+			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error")
+			logger("Handle listen đã gặp sự cố: " + error.Error, "error");
 		}
 	}
 }

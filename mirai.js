@@ -28,7 +28,6 @@ const __GLOBAL = new Object({
 
 //check argv
 
-
 var argv = require('minimist')(process.argv.slice(2)); 
 var configValue;
 
@@ -196,6 +195,7 @@ unlinkSync(client.dirConfig + ".temp");
 
 try {
 	var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"]));
+	var appState = require(appStateFile);
 }
 catch (e) {
 	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
@@ -204,7 +204,7 @@ catch (e) {
 logger.loader(`=== ${Date.now() - timeStart}ms ===`);
 
 function onBot({ models }) {
-	login({ appState: require(appStateFile) }, (err, api) => {
+	login({ appState }, (err, api) => {
 		if (err) return logger(JSON.stringify(err), "error");
 		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
 
