@@ -19,7 +19,7 @@ module.exports.config = {
 };
 
 module.exports.run = function({ api, event, args, __GLOBAL }) {
-	let { senderID, threadID, messageID } = event;
+	let { threadID, messageID } = event;
 	const moment = require("moment-timezone");
 	var wakeTime = [];
 	let content = args.join(" ")
