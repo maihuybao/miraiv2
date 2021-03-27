@@ -6,18 +6,17 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 				Currencies = require("./controllers/currencies")({ models });
 
 	(async () => {
-		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		var threadBanned = (await Threads.getAll({ banned: true }));
-		var userBanned = (await Users.getAll({ banned: true }));
-		var threadInfo = (await Threads.getAll(["threadID","threadInfo"]));
-		var threadSetting = (await Threads.getAll(['threadID', 'settings']));
-		for (const info of threadBanned) client.threadBanned.set(info.threadID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
+		logger("Khởi tạo biến môi trường", "[ DATABASE ]")
+		var threads = (await Threads.getAll());
+		for (const info of threads) {
+			client.allThread.push(info.threadID);
+			client.threadSetting.set(info.threadID.toString(), info.settings || {});
+			client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
+		}
 		logger.loader("Đã tải xong biến môi trường nhóm!")
-		for (const info of userBanned) client.userBanned.set(info.userID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
+		var users = (await Users.getAll(["userID"]));
+		for (const info of users) client.allUser.push(info.userID);
 		logger.loader("Đã tải xong biến môi trường người dùng!")
-		for (const info of threadSetting) client.threadSetting.set(info.threadID.toString(), info.settings);
-		for (const info of threadInfo) client.threadInfo.set(info.threadID.toString(), info.threadInfo);
-		logger.loader("Đã tải xong biến môi trường cài đặt nhóm!")
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
 
@@ -32,7 +31,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 

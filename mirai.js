@@ -6,6 +6,15 @@ const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
 const login = require("fca-unofficial");
 const timeStart = Date.now();
+const readline = require("readline");
+
+var rl = readline.createInterface({
+	input: process.stdin
+});
+
+rl.on("line", line => {
+
+})
 
 const client = new Object({
 	commands: new Map(),
@@ -16,8 +25,11 @@ const client = new Object({
 	userBanned: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
+	commandBanned: new Map(),
 	threadInfo: new Map(),
 	commandRegister: new Map(),
+	allUser: new Array(),
+	allThread: new Array(),
 	dirConfig: "",
 	dirMain: process.cwd()
 });
@@ -30,8 +42,6 @@ const __GLOBAL = new Object({
 
 var argv = require('minimist')(process.argv.slice(2)); 
 var configValue;
-
-console.log(argv);
 
 
 var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;

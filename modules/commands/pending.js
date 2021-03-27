@@ -36,12 +36,12 @@ module.exports.run = async function({ api, event, client }) {
 	let list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
 	return api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, () => {
 		for (groupInfo of list) {
-			api.sendMessage('Tên nhóm: ' + any.name + '\nID: ' + any.threadID, event.threadID, (error, info) => {
+			api.sendMessage('Tên nhóm: ' + groupInfo.name + '\nID: ' + any.threadID, event.threadID, (error, info) => {
 				client.handleReaction.push({
 					name: "pending",
 					messageID: info.messageID,
 					author: event.senderID,
-					pending: any.threadID
+					pending: groupInfo.threadID
 				})
 			})
 	

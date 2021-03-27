@@ -17,6 +17,8 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		var [matchedPrefix] = contentMessage.match(prefixRegex);
 		var args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
 		var commandName = args.shift().toLowerCase();
+		const commandBanned = client.commandBanned.get(senderID) || [];
+		if (commandBanned.includes(commandName)) return;
 		var command = client.commands.get(commandName);
 		if (!command) {
 			var allCommandName = [];

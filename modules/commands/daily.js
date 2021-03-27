@@ -21,7 +21,7 @@ module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
     let data = (await Currencies.getData(event.senderID)).dailyTime;
     if (typeof data !== "undefined" && cooldown - (Date.now() - data) > 0) {
         let time = ms(cooldown - (Date.now() - data));
-		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${time.hours}:${time.minutes}:${time.seconds}!`, event.threadID);
+		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${time.hours} giờ ${time.minutes} phút ${time.seconds} giây!`, event.threadID);
     }
     else return api.sendMessage(`Bạn đã nhận ${coinReward} coins, để có thể tiếp tục nhận, vui lòng quay lại sau 12 tiếng`, event.threadID, async () => {
         await Currencies.increaseMoney(event.senderID, coinReward);
