@@ -39,6 +39,12 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
         defaultValue: 0
+      },
+      inventory: {
+        type: Sequelize.JSON
+      },
+      status: {
+        type: Sequelize.JSON
       }
     });
   },

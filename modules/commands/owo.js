@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Just owo",
-	commandCategory: "general",
+	commandCategory: "other",
 	usages: "",
 	cooldowns: 5
 };

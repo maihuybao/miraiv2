@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "MewMew",
 	description: "Comment trên pỏnhub ( ͡° ͜ʖ ͡°)",
-	commandCategory: "NSFW",
+	commandCategory: "edit-img",
 	usages: "phub [text]",
 	cooldowns: 10,
 	dependencies: ["canvas", "axios"]

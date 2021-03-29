@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Khiến bot trả về file âm thanh của chị google thông qua văn bản",
-	commandCategory: "Media",
+	commandCategory: "media",
 	usages: "say [Lang] [Text]",
 	cooldowns: 5,
 	info: [

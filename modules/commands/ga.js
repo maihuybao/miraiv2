@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Give away dành cho nhóm chat, bao xịn xò xD",
-	commandCategory: "Group",
+	commandCategory: "group",
 	usages: "ga [args]",
 	cooldowns: 5,
 	info: [

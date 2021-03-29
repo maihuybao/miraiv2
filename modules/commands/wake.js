@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Tính thời gian đi ngủ hoàn hảo cho bạn",
-	commandCategory: "Timer",
+	commandCategory: "health",
 	usages: "wake [Time]",
 	cooldowns: 5,
 	dependencies: ["moment-timezone"],
@@ -19,7 +19,7 @@ module.exports.config = {
 };
 
 module.exports.run = function({ api, event, args, __GLOBAL }) {
-	let { senderID, threadID, messageID } = event;
+	let { threadID, messageID } = event;
 	const moment = require("moment-timezone");
 	var wakeTime = [];
 	let content = args.join(" ")

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "CatalizCS",
 	description: "Đặt lại prefix của nhóm",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "setprefix [prefix]",
 	cooldowns: 5,
 	info: [
@@ -18,7 +18,8 @@ module.exports.config = {
 };
 
 module.exports.handleReaction = async function({ api, event, client, Threads, handleReaction }) {
-	let { threadID, messageID } = event;;
+	if (senderID !== handleReaction.author) return;
+	let { threadID, messageID } = event;
 	let data = (await Threads.getData(threadID)).settings;
 	data["PREFIX"] = handleReaction.PREFIX;
 	await Threads.setData( threadID, { settings: data } );

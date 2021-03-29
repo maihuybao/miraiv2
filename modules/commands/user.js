@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 2,
 	credits: "CatalizCS",
 	description: "Cấm hoặc gỡ cấm người dùng",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "user args input",
 	cooldowns: 5,
 	info: [
@@ -33,31 +33,19 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 	if (parseInt(event.userID) !== parseInt(handleReaction.author)) return;
 	switch (handleReaction.type) {
 		case "ban": {
-            var name;
-            try {
-                name = (await Users.getData(handleReaction.target)).name;
-            }
-            catch {
-                name = (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
-            }
-            await Users.setData(handleReaction.target, options = { banned: 1 });
+            var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
+            await Users.setData(handleReaction.target, { banned: 1 });
 			let dataUser = client.userBanned.get(handleReaction.target.toString()) || {};
 			dataUser["banned"] = 1;
 			client.userBanned.set(handleReaction.target, dataUser);
-			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID);
+			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		case "unban": {
-            var name;
-            try {
-                name = (await Users.getData(handleReaction.target)).name;
-            }
-            catch {
-                name = (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
-            }
-			await Users.setData(handleReaction.target, options = { banned: 0 });
+			var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
+			await Users.setData(handleReaction.target, { banned: 0 });
 			client.userBanned.delete(handleReaction.target.toString());
-			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID);
+			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		default:

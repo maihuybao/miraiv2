@@ -1,21 +1,22 @@
 const logger = require("../utils/log.js");
 
-module.exports = function({ api, client, __GLOBAL, models }) {
+module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
 				Currencies = require("./controllers/currencies")({ models });
 
 	(async () => {
-		logger("Khởi tạo biến môi trường", "[ DATABASE ]");
-		var threadBanned = (await Threads.getAll({ banned: true }));
-		var userBanned = (await Users.getAll({ banned: true }));
-		var threadSetting = (await Threads.getAll(['threadID', 'settings']));
-		for (const info of threadBanned) client.threadBanned.set(info.threadID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
-		logger("Loaded thread banned!", "[ DATABASE ]")
-		for (const info of userBanned) client.userBanned.set(info.userID.toString(), { reason: info.reasonban, time2unban: info.time2unban });
-		logger("Loaded user banned!", "[ DATABASE ]")
-		for (const info of threadSetting) client.threadSetting.set(info.threadID.toString(), info.settings);
-		logger("Loaded thread setting", "[ DATABASE ]")
+		logger("Khởi tạo biến môi trường", "[ DATABASE ]")
+		var threads = (await Threads.getAll());
+		for (const info of threads) {
+			client.allThread.push(info.threadID);
+			client.threadSetting.set(info.threadID.toString(), info.settings || {});
+			client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
+		}
+		logger.loader("Đã tải xong biến môi trường nhóm!")
+		var users = (await Users.getAll(["userID"]));
+		for (const info of users) client.allUser.push(info.userID);
+		logger.loader("Đã tải xong biến môi trường người dùng!")
 		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 	})();
 
@@ -30,38 +31,41 @@ module.exports = function({ api, client, __GLOBAL, models }) {
 	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
+
+	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 
 	return (error, event) => {
-		if (error) logger(JSON.stringify(error), 2);
-		if (client.event && JSON.stringify(client.event) == JSON.stringify(event) || event.messageID && client.messageID == event.messageID || typeof event.messageID == "undefined") ""
-		else {
-			client.event = event;
-			client.messageID = event.messageID;
-			try {
+		try	{
+			if (error) throw new Error(error.error);
+			if (client.messageID && client.messageID == event.messageID || ["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) "";
+			else {
+				client.messageID = event.messageID;
 				switch (event.type) {
-					case "message":
-					case "message_reply": 
-						handleCommand({ event })
-						handleReply({ event })
-						handleCommandEvent({ event })
-						handleChangeName({ event })
-						handleCreateDatabase({ event })
-						break;
-					case "event":
-						handleEvent({ event })
-						break;
-					case "message_reaction":
-						handleReaction({ event })
-						break;
-					default:
-						break;
+						case "message":
+						case "message_reply":
+						case "message_unsend":
+							handleCommand({ event })
+							handleReply({ event })
+							handleCommandEvent({ event })
+							handleChangeName({ event })
+							handleCreateDatabase({ event })
+							break;
+						case "event":
+							handleEvent({ event })
+							break;
+						case "message_reaction":
+							handleReaction({ event })
+							break;
+						default:
+							break;
 				}
+				if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
 			}
-			catch (e) {
-				""
-			}
-			if (__GLOBAL.settings.DEVELOP_MODE == true) console.log(event);
+		}
+		catch {
+			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error")
+			logger("Handle listen đã gặp sự cố: " + error.error, "error");
 		}
 	}
 }

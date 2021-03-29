@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Sunii",
 	description: "Tạo twitter Trum",
-	commandCategory: "General",
+	commandCategory: "edit-img",
 	usages: "fact [text]",
 	cooldowns: 10,
 	dependencies: ["canvas", "axios"]

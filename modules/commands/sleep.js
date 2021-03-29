@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Tính thời gian thức dậy hoàn hảo cho bạn",
-	commandCategory: "Timer",
+	commandCategory: "health",
 	usages: "sleep [Time]",
 	cooldowns: 5,
 	dependencies: ["moment-timezone"],

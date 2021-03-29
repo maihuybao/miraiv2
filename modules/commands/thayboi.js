@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Kiểm tra số tiền của bản thân hoặc người được tag",
-	commandCategory: "Economy",
+	commandCategory: "other",
 	usages: "balance [Tag]",
 	cooldowns: 5,
 	dependencies: ["request"],

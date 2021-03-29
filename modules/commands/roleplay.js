@@ -11,12 +11,14 @@ module.exports.config = {
 };
 
 module.exports.event = ({ event, api, client }) => {
+    if (event.type == "message_unsend") return;
     const request = require("request");
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
-    let settings = client.threadSetting.get(event.threadID);
+    let settings = client.threadSetting.get(event.threadID) || {};
     let mention = Object.keys(event.mentions);
     if (!settings["roleplay"] || !settings || mention.length == 0) return;
     let animeData = JSON.parse(readFileSync(__dirname + "/cache/anime.json"));
+    
     if (event.body.indexOf("hug") == 0 || event.body.indexOf("ôm") == 0) {
         for (const id of mention) {
             request(animeData["hug"], (error, response, body) => {

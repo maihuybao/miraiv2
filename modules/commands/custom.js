@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "CatalizCS",
 	description: "Custom toàn bộ mọi thứ ở tại lệnh này :D",
-	commandCategory: "System",
+	commandCategory: "system",
     usages: "custom args input",
     dependencies: ["request", "fs-extra"],
 	cooldowns: 5,
