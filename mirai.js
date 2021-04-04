@@ -13,12 +13,29 @@ var rl = readline.createInterface({
 });
 
 rl.on("line", line => {
-
+	switch (line) {
+		case "uptime": {
+			const time = process.uptime(),
+				hours = Math.floor(time / (60 * 60)),
+				minutes = Math.floor((time % (60 * 60)) / 60),
+				seconds = Math.floor(time % 60);
+			return logger(`Bot đã hoạt động được ${hours} giờ ${minutes} phút ${seconds} giây.`, '[ UPTIME ]');
+		}
+		case "restart": {
+			return process.exit(0)
+		}
+		case "shutdown": {
+			
+		}
+		default:
+			break;
+	}
 })
 
 const client = new Object({
 	commands: new Map(),
 	events: new Map(),
+	event: new Map(),
 	cooldowns: new Map(),
 	handleReply: new Array(),
 	handleReaction: new Array(),
@@ -28,10 +45,12 @@ const client = new Object({
 	commandBanned: new Map(),
 	threadInfo: new Map(),
 	commandRegister: new Map(),
+	inProcess: false,
 	allUser: new Array(),
 	allThread: new Array(),
 	dirConfig: "",
-	dirMain: process.cwd()
+	dirMain: process.cwd(),
+	timeLoadModule: ""
 });
 
 const __GLOBAL = new Object({
@@ -87,8 +106,9 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 
 //========= Get all command files =========//
 
-const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example'));
+const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
 for (const file of commandFiles) {
+	const timeStartLoad = Date.now();
 	try {
 		var command = require(join(__dirname, "/modules/commands", `${file}`));
 	}
@@ -98,7 +118,7 @@ for (const file of commandFiles) {
 	
 	try {
 		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
-		if (client.commands.has(command.config.name)) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
+		if (client.commands.has(command.config.name || "")) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (command.config.dependencies) {
 			try {
 				for (const i of command.config.dependencies) require.resolve(i);
@@ -144,12 +164,14 @@ for (const file of commandFiles) {
 	catch (error) {
 		logger.loader(`Không thể load module command ${file} với lỗi: ${error.message}`, "error");
 	}
+	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${command.config.name} - ${Date.now() - timeStartLoad}ms\n` : "";
 }
 
 //========= Get all event files =========//
 
-const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js"));
+const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
 for (const file of eventFiles) {
+	const timeStartLoad = Date.now();
 	try {
 		var event = require(join(__dirname, "/modules/events", `${file}`));
 	}
@@ -158,8 +180,8 @@ for (const file of eventFiles) {
 	}
 
 	try {
-		if (!event.config || !event.run) throw new Error(`Sai format!`);
-		if (client.events.has(event.config.name)) throw new Error('Bị trùng!');
+		if (!event.config || !event.run) throw new Error(`Module không đúng định dạng!`);
+		if (client.events.has(event.config.name)) throw new Error('Tên module bị trùng với một module mang cùng tên khác!');
 		if (event.config.dependencies) {
 			try {
 				for (let i of event.config.dependencies) require.resolve(i);
@@ -197,9 +219,11 @@ for (const file of eventFiles) {
 	catch (error) {
 		logger.loader(`Không thể load module event ${file} với lỗi: ${error.message}`, "error");
 	}
+	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${event.config.name} - ${Date.now() - timeStartLoad}ms\n` : "";
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
+if (__GLOBAL.settings.DeveloperMode == true) logger.loader(client.timeLoadModule, "warn");
 writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 unlinkSync(client.dirConfig + ".temp");
 
@@ -227,43 +251,33 @@ function onBot({ models }) {
 		});
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 
-		try {
-			api.listenMqtt(handleListen);
-			setInterval(() => {
-				api.listenMqtt().stopListening();
-				setTimeout(() => api.listenMqtt(handleListen), 2000);
-				if (__GLOBAL.settings.DeveloperMode == true) {
-					const moment = require("moment");
-					var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
-					logger(`[ ${time} ] Listen restarted`, "[ DEV MODE ]");
-				}
-			}, 1800000);
-		}
-		catch(e) {
-			logger(`${e.name}: ${e.message}`, "[ LISTEN ]")
-		}
+		var listenEmitter = api.listenMqtt((error, event) => {
+			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
+			if (!["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type) && !client.event.has(event.messageID) && typeof event.messageID != "undefined") client.event.set(event.messageID, event);
+			handleListen(client.event.get(event.messageID))
+			if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
+		})
 	});
 }
 
 const { Sequelize, sequelize } = require("./includes/database");
-
 (async () => {
-	var migrations = readdirSync(`./includes/database/migrations`);
-	var completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
-	for (const name in completedMigrations) {
-		if (completedMigrations.hasOwnProperty(name)) {
-			const index = migrations.indexOf(completedMigrations[name].name);
-			if (index !== -1) migrations.splice(index, 1);
-		}
-	}
-
-	for (const migration of migrations) {
-		var migrationRequire = require(`./includes/database/migrations/` + migration);
-		migrationRequire.up(sequelize.queryInterface, Sequelize);
-		await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migration } });
-	}
-
 	try {
+		var migrations = readdirSync(`./includes/database/migrations`);
+		var completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
+		for (const name in completedMigrations) {
+			if (completedMigrations.hasOwnProperty(name)) {
+				const index = migrations.indexOf(completedMigrations[name].name);
+				if (index !== -1) migrations.splice(index, 1);
+			}
+		}
+
+		for (const migration of migrations) {
+			var migrationRequire = require(`./includes/database/migrations/` + migration);
+			migrationRequire.up(sequelize.queryInterface, Sequelize);
+			await sequelize.query("INSERT INTO `SequelizeMeta` VALUES(:name)", { type: Sequelize.QueryTypes.INSERT, replacements: { name: migration } });
+		}
+
 		await sequelize.authenticate();
 		logger("Kết nối cơ sở dữ liệu thành công", "[ DATABASE ]")
 		const models = require("./includes/database/model");

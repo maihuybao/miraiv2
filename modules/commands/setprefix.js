@@ -18,7 +18,7 @@ module.exports.config = {
 };
 
 module.exports.handleReaction = async function({ api, event, client, Threads, handleReaction }) {
-	if (senderID !== handleReaction.author) return;
+	if (event.senderID !== handleReaction.author) return;
 	let { threadID, messageID } = event;
 	let data = (await Threads.getData(threadID)).settings;
 	data["PREFIX"] = handleReaction.PREFIX;

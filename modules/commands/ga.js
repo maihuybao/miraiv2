@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Give away dành cho nhóm chat, bao xịn xò xD",
-	commandCategory: "group",
+	commandCategory: "other",
 	usages: "ga [args]",
 	cooldowns: 5,
 	info: [
@@ -62,7 +62,7 @@ module.exports.run = async ({ client, api, event, args, utils, Users }) => {
 				}
 				client.GA.set(randomNumber, dataGA);
 				client.handleReaction.push({
-					name: "ga",
+					name: this.config.name,
 					messageID: info.messageID,
 					author: event.senderID,
 					ID: randomNumber

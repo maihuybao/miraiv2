@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Just ttt",
-	commandCategory: "general",
+	commandCategory: "game-sp",
 	usages: "",
 	cooldowns: 5
 };
@@ -200,6 +200,18 @@ module.exports.run = ({ event, api, args, client }) => {
 				AIStart(newData);
 				api.sendMessage("AI go first, O", threadID, messageID);
 			break;
+			default:
+				if(Math.random() > 0.5) {
+					newData = startBoard({isX: true, client, data, threadID});
+					api.sendMessage("you go first, X", threadID, messageID);
+					api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
+				  }
+				  else {
+					  newData = startBoard({isX: false, client, data, threadID});
+					  AIStart(newData);
+					  api.sendMessage("AI go first, O", threadID, messageID);
+				  }
+			  break;
 	   }
 	   newData.player = senderID;
 	   client.tictactoe.set(threadID, newData);

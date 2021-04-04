@@ -6,7 +6,7 @@ module.exports.config = {
 	description: "Quản lý module command",
 	commandCategory: "system",
 	usages: "command [exec] args",
-	cooldowns: 5,
+	cooldowns: 0,
 	dependencies: ["fs-extra"],
 	info: [
 		{
@@ -23,7 +23,8 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 			{ join } = require("path"),
 			{ execSync } = require("child_process"),
 			{ writeFileSync } = require("fs-extra");
-	
+
+	delete require.cache[require.resolve(client.dirConfig)];
 	var configValue = require(client.dirConfig);
 
 	try {
@@ -72,21 +73,36 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 		catch (error) {
 			logger.loader(`Không thể chạy setup module: ${command} với lỗi: ${error.message}`, "error");
 		}
+		if (command.event) {
+			var registerCommand = client.commandRegister.get("event") || [];
+			registerCommand.push(command.config.name);
+			client.commandRegister.set("event", registerCommand);
+		}
 		client.commands.set(command.config.name, command);
+		if (__GLOBAL.settings["commandDisabled"].includes(`${name}.js`) || configValue["commandDisabled"].includes(`${name}.js`)) {
+			configValue["commandDisabled"].splice(configValue["commandDisabled"].indexOf(`${name}.js`), 1);
+			__GLOBAL.settings["commandDisabled"].splice(__GLOBAL.settings["commandDisabled"].indexOf(`${name}.js`), 1);
+		}
 		writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));
 		logger.loader(`Loaded module ${command.config.name}`);
-		if (loadAll) return
+		if (loadAll == true) return
 		else return api.sendMessage(`Loaded command ${command.config.name}!`, event.threadID);
 	}
 	catch (error) {
 		logger.loader(`Không thể load module command ${name} với lỗi: ${error.name}:${error.message}`, "error");
-		if (loadAll) return
+		if (loadAll == true) return
 		else return api.sendMessage(`Không thể load module command ${name} với lỗi: ${error.name}:${error.message}`, event.threadID);
 	}
 }
 
-const unload = async ({ name, event, api, client }) => {
+const unload = async ({ name, event, api, client, __GLOBAL }) => {
+	const { writeFileSync } = require("fs-extra");
+	delete require.cache[require.resolve(client.dirConfig)];
+	var configValue = require(client.dirConfig);
 	client.commands.delete(name);
+	configValue["commandDisabled"].push(`${name}.js`);
+	__GLOBAL.settings["commandDisabled"].push(`${name}.js`);
+	writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));
 	return api.sendMessage(`Đã unload lệnh: ${name}`, event.threadID, event.messageID);
 }
 
@@ -104,9 +120,7 @@ const reloadConfig = ({ __GLOBAL, event, api, client }) => {
 
 module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 	const { readdirSync } = require("fs-extra");
-	let content = args.slice(1, args.length);
-
-	const log = api.sendMessage;
+	const content = args.slice(1, args.length);
 	switch (args[0]) {
 		case "all": {
 			let commands = client.commands.values();
@@ -141,11 +155,13 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		case "unload": {
 			const commands = content;
 			if (commands.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
+			var count = 0;
 			for (const name of commands) {
 				unload({ name, event, api, client, __GLOBAL });
+				count++
+				console.log(count);
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
-
-			}
+			}	
 		}
 		break;
 		case "unloadAll": {
@@ -156,6 +172,6 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		break;
 		default:
 			utils.throwError("command", event.threadID, event.messageID);
-			break;
+		break;
 	}
 }

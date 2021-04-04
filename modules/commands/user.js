@@ -66,7 +66,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 				if (dataUser.banned) return api.sendMessage(`[${idUser}] Người dùng đã bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idUser}] Bạn muốn ban người dùng này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "user",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "ban",
@@ -86,7 +86,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 				if (!dataUser.banned) return api.sendMessage(`[${idUser}] người dùng không bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idUser}] Bạn muốn unban người dùng này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "user",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "unban",

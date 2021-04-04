@@ -1,5 +1,5 @@
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
-	return async function({ event }) {
+	return function(event) {
 		if (!event.messageReply) return;
 		const { handleReply } = client;
 		if (handleReply.length !== 0) {

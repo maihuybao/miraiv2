@@ -9,10 +9,14 @@ module.exports.config = {
 	cooldowns: 5,
 	dependencies: ["fs-extra"]
 }
-const fs = require("fs-extra");
-if (!fs.existsSync(__dirname + "/cache/shortcut.json")) fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
+
+module.exports.onLoad = () => {
+	const fs = require("fs-extra");
+	if (!fs.existsSync(__dirname + "/cache/shortcut.json")) fs.writeFileSync(__dirname + "/cache/shortcut.json", JSON.stringify([]), 'utf-8');
+}
 
 module.exports.event = function({ api, event }) {
+	const fs = require("fs-extra"); 
 	if (event.type !== "message_unsend" && event.body.length !== -1) {
 		let shortcut = JSON.parse(fs.readFileSync(__dirname + "/cache/shortcut.json"));
 		if (shortcut.some(item => item.id == event.threadID)) {
@@ -30,6 +34,7 @@ module.exports.event = function({ api, event }) {
 }
 
 module.exports.run = function({ api, event, args }) {
+	const fs = require("fs-extra");
 	var { threadID, messageID } = event;
 	var content = args.join(" ");
 	if (!content) return api.sendMessage("Sai Format", threadID, messageID);
