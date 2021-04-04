@@ -3,6 +3,8 @@
     "AutoChangeName": false,
     "autoCreateDB": true,
     "allowInbox": true,
+    "commandDisabled": [],
+    "eventDisabled": [],
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",

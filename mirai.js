@@ -106,7 +106,7 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 
 //========= Get all command files =========//
 
-const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
+const commandFiles = readdirSync(join(__dirname, "/modules/commands")) || [].filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
 for (const file of commandFiles) {
 	const timeStartLoad = Date.now();
 	try {
@@ -169,7 +169,7 @@ for (const file of commandFiles) {
 
 //========= Get all event files =========//
 
-const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
+const eventFiles = readdirSync(join(__dirname, "/modules/events")) || [].filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
 for (const file of eventFiles) {
 	const timeStartLoad = Date.now();
 	try {
