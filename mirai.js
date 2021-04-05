@@ -106,7 +106,7 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 
 //========= Get all command files =========//
 
-const commandFiles = readdirSync(join(__dirname, "/modules/commands")) || [].filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
+const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
 for (const file of commandFiles) {
 	const timeStartLoad = Date.now();
 	try {
@@ -169,7 +169,7 @@ for (const file of commandFiles) {
 
 //========= Get all event files =========//
 
-const eventFiles = readdirSync(join(__dirname, "/modules/events")) || [].filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
+const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
 for (const file of eventFiles) {
 	const timeStartLoad = Date.now();
 	try {
@@ -253,9 +253,12 @@ function onBot({ models }) {
 
 		var listenEmitter = api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
-			if (!["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type) && !client.event.has(event.messageID) && typeof event.messageID != "undefined") client.event.set(event.messageID, event);
-			handleListen(client.event.get(event.messageID))
-			if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
+			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) && !client.event.has(event.messageID)) {
+				client.event.set(event.messageID, event);
+				handleListen(client.event.get(event.messageID))
+				if (__GLOBAL.settings.DeveloperMode == true) console.log(client.event.get(event.messageID))
+				client.event.delete(event.messageID);
+			}
 		})
 	});
 }

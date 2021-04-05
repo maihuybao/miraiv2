@@ -3,7 +3,7 @@ const logger = require("../../utils/log.js");
 
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
 	const stringSimilarity = require('string-similarity');
-	return async function(event) {
+	return async function({ event }) {
 		var timeStart = Date.now();
 		var { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);

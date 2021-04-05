@@ -1,7 +1,7 @@
 const logger = require("../../utils/log.js");
 
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
-	return function(event) {
+	return function({ event }) {
 		const timeStart = Date.now();
 		var { senderID, threadID } = event;
 		senderID = parseInt(senderID);

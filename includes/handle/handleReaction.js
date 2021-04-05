@@ -1,5 +1,5 @@
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
-	return function(event) {
+	return function({ event }) {
 		const { handleReaction } = client;
 		if (handleReaction.length !== 0) {
 			const indexOfHandle = handleReaction.findIndex(e => e.messageID == event.messageID);
