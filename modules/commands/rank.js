@@ -151,27 +151,26 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
 		let name = Users.getData(event.senderID).name || (await api.getUserInfo(event.senderID))[event.senderID].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-		else this.getInfo(event.senderID, Currencies)
-		.then(point => makeRankCard({ id: event.senderID, name, rank, ...point }))
-		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+		const point = await this.getInfo(event.senderID, Currencies);
+		const pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
+		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 	}
 	if (mention.length == 1) {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
 		let name = Users.getData(mention[0]).name || (await api.getUserInfo(mention[0]))[mention[0]].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-		else this.getInfo(mention[0], Currencies)
-		.then(point => this.makeRankCard({ id: mention[0], name, rank, ...point }))
-		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+		const point = await this.getInfo(mention[0], Currencies);
+		const pathRankCard = await this.makeRankCard({ id: mention[0], name, rank, ...point })
+		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 	}
 	if (mention.length > 1) {
 		for (const userID of mention) {
 			let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
 			let name = Users.getData(userID).name || (await api.getUserInfo(userID))[userID].name;
 			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-			else this.getInfo(userID, Currencies)
-			.then(point => this.makeRankCard({ id: userID, name, rank, ...point }))
-			.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
-	
+			const point = await this.getInfo(userID, Currencies);
+			const pathRankCard = await this.makeRankCard({ id: userID, name, rank, ...point })
+			return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 		}
 	}
 }

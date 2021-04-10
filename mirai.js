@@ -251,7 +251,7 @@ function onBot({ models }) {
 		});
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 
-		var listenEmitter = api.listenMqtt((error, event) => {
+		api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
 			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) && !client.event.has(event.messageID)) {
 				client.event.set(event.messageID, event);

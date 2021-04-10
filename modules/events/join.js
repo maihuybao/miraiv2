@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: "joinEvents",
+	name: "join",
 	eventType: ["log:subscribe"],
 	version: "1.0.0",
 	credits: "SpermLord",

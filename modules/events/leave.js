@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: "leaveEvents",
+	name: "leave",
 	eventType: ["log:unsubscribe"],
 	version: "1.0.0",
 	credits: "SpermLord",
