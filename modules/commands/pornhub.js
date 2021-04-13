@@ -10,7 +10,7 @@ module.exports.config = {
 	dependencies: ["canvas", "axios"]
 };
 
-function wrapText(ctx, text, maxWidth) {
+module.exports.wrapText = (ctx, text, maxWidth) => {
 	return new Promise(resolve => {
 		if (ctx.measureText(text).width < maxWidth) return resolve([text]);
 		if (ctx.measureText('W').width > maxWidth) return resolve(null);
@@ -72,7 +72,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
 		fontSize--;
 		ctx.font = `400 ${fontSize}px Arial, sans-serif`;
 	}
-	const lines = await wrapText(ctx, text, 1160);
+	const lines = await this.wrapText(ctx, text, 1160);
 	ctx.fillText(lines.join('\n'), 30,430);
 	ctx.beginPath();
 	const imageBuffer = canvas.toBuffer();

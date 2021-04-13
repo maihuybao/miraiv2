@@ -75,7 +75,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 				link.push(value.id);
 				msg += (`${num+=1}. ${value.title}\n`);
 			}
-			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: "video", messageID: info.messageID, author: event.senderID, link }), event.messageID);
+			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
 		}
 		catch (error) {
 			api.sendMessage("Không thể xử lý request do dã phát sinh lỗi: " + error.message, event.threadID, event.messageID);

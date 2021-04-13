@@ -10,6 +10,14 @@ module.exports.config = {
 	dependencies: ['request', 'fs-extra']
 };
 
+module.exports.onLoad = () => {
+    const { existsSync, createWriteStream } = require("fs-extra");
+    const request = require("request");
+
+    if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
+    .pipe(createWriteStream(__dirname + "/cache/anime.json"));
+}
+
 module.exports.event = ({ event, api, client }) => {
     if (event.type == "message_unsend") return;
     const request = require("request");

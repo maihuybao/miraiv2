@@ -10,18 +10,6 @@ module.exports.config = {
 };
 
 module.exports.handleReaction = async function({ api, event, client, __GLOBAL, handleReaction }) {
-	let events = client.events.get("joinEvents");
-	let json = {
-		logMessageData: {
-			addedParticipants: [
-				{
-					userFbId: api.getCurrentUserID()
-				}
-			]
-		},
-		threadID: handleReaction.pending
-	}
-	await events.run({ event: json, client, __GLOBAL, api });
 	return api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
 }
 
@@ -33,12 +21,12 @@ module.exports.run = async function({ api, event, client }) {
 	catch (e) {
 		console.log(e)
 	}
-	let list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
+	let list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup == true);
 	return api.sendMessage(`Đang có tổng: ${list.length} nhóm đang trong tin nhắn chờ cần bạn duyệt, hãy reactions tin nhắn bên dưới để duyệt!`, event.threadID, () => {
 		for (groupInfo of list) {
-			api.sendMessage('Tên nhóm: ' + groupInfo.name + '\nID: ' + any.threadID, event.threadID, (error, info) => {
+			api.sendMessage('Tên nhóm: ' + groupInfo.name + '\nID: ' + groupInfo.threadID, event.threadID, (error, info) => {
 				client.handleReaction.push({
-					name: "pending",
+					name: this.config.name,
 					messageID: info.messageID,
 					author: event.senderID,
 					pending: groupInfo.threadID

@@ -1,10 +1,11 @@
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const logger = require("../../utils/log.js");
+
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
-	const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const logger = require("../../utils/log.js");
 	const stringSimilarity = require('string-similarity');
 	return async function({ event }) {
 		var timeStart = Date.now();
-		let { body: contentMessage, senderID, threadID, messageID } = event;
+		var { body: contentMessage, senderID, threadID, messageID } = event;
 		senderID = parseInt(senderID);
 		threadID = parseInt(threadID);
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || __GLOBAL.settings.allowInbox == false && senderID == threadID) return;
@@ -49,12 +50,12 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			const expirationTime = timestamps.get(senderID) + cooldownAmount;
 			if (now < expirationTime) return api.setMessageReaction('⏱', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 		}
-		timestamps.set(senderID, now);
 		setTimeout(() => timestamps.delete(senderID), cooldownAmount)
 
 		//========= Run command =========//
 		try {
 			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils, permssion });
+			timestamps.set(senderID, now);
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, "error");
@@ -62,7 +63,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		}
 		if (__GLOBAL.settings.DeveloperMode == true) {
 			const moment = require("moment");
-			var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+			const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 			logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}

@@ -6,18 +6,23 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 				Currencies = require("./controllers/currencies")({ models });
 
 	(async () => {
-		logger("Khởi tạo biến môi trường", "[ DATABASE ]")
-		var threads = (await Threads.getAll());
-		for (const info of threads) {
-			client.allThread.push(info.threadID);
-			client.threadSetting.set(info.threadID.toString(), info.settings || {});
-			client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
+		try {
+			logger("Khởi tạo biến môi trường", "[ DATABASE ]")
+			var threads = (await Threads.getAll());
+			for (const info of threads) {
+				client.allThread.push(info.threadID);
+				client.threadSetting.set(info.threadID.toString(), info.settings || {});
+				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
+			}
+			logger.loader("Đã tải xong biến môi trường nhóm!")
+			var users = (await Users.getAll(["userID"]));
+			for (const info of users) client.allUser.push(info.userID);
+			logger.loader("Đã tải xong biến môi trường người dùng!")
+			logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 		}
-		logger.loader("Đã tải xong biến môi trường nhóm!")
-		var users = (await Users.getAll(["userID"]));
-		for (const info of users) client.allUser.push(info.userID);
-		logger.loader("Đã tải xong biến môi trường người dùng!")
-		logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
+		catch (error) {
+			return logger.loader("Khởi tạo biến môi trường không thành công, Lỗi: " + error, "error");
+		} 
 	})();
 
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
@@ -35,38 +40,27 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 
-	return (error, event) => {
-		try	{
-			if (error) throw new Error(error.error);
-			if (client.messageID && client.messageID == event.messageID || ["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) "";
-			else {
-				client.messageID = event.messageID;
-				switch (event.type) {
-						case "message":
-						case "message_reply":
-						case "message_unsend":
-							handleCommand({ event })
-							handleReply({ event })
-							handleCommandEvent({ event })
-							handleChangeName({ event })
-							handleCreateDatabase({ event })
-							break;
-						case "event":
-							handleEvent({ event })
-							break;
-						case "message_reaction":
-							handleReaction({ event })
-							break;
-						default:
-							break;
-				}
-				if (__GLOBAL.settings.DeveloperMode == true) console.log(event);
-			}
-		}
-		catch {
-			if (__GLOBAL.settings.DeveloperMode == true) logger(JSON.stringify(error), "error")
-			logger("Handle listen đã gặp sự cố: " + error.error, "error");
+	return (event) => {
+		switch (event.type) {
+				case "message":
+				case "message_reply":
+				case "message_unsend":
+					handleCommand({ event })
+					handleReply({ event })
+					handleCommandEvent({ event })
+					handleChangeName({ event })
+					handleCreateDatabase({ event })
+					break;
+				case "event":
+					handleEvent({ event })
+					break;
+				case "message_reaction":
+					handleReaction({ event })
+					break;
+				default:
+					break;
 		}
 	}
 }
+
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

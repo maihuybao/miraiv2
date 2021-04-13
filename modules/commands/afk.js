@@ -41,13 +41,11 @@ module.exports.event = ({ event, api, client }) => {
 module.exports.run = ({ event, api, client, args, utils }) => {
     if (!client.afkList) client.afkList = new Map();
     const content = args.slice(1, args.length);
-    switch (args[0]) {
-        case "on": {
-            client.afkList.set(event.senderID.toString(), content.join(" ") || null);
-            return api.sendMessage(`[ ${event.senderID} ] Đã bật chế độ afk`, event.threadID, event.messageID);
-        }
-        default:
-            utils.throwError("afk", event.threadID, event.messageID);
-            break;
+    if (args[0] == "on") {
+        client.afkList.set(event.senderID.toString(), content.join(" ") || null);
+        return api.sendMessage(`[ ${event.senderID} ] Đã bật chế độ afk`, event.threadID, event.messageID);
     }
+    else return utils.throwError("afk", event.threadID, event.messageID);
+       
 }
+

@@ -18,7 +18,7 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async ({ api, event, args }) => {
+module.exports.run = async ({ api, event, args, __GLOBAL }) => {
 	const request = require("request");
 	var content = args.join(" ");
 	if (content.length == 0 && event.type != "message_reply") return api.sendMessage(`Bạn chưa nhập thông tin, vui lòng đọc ${__GLOBAL.settings.PREFIX}help để biết thêm chi tiết!`, event.threadID,event.messageID);

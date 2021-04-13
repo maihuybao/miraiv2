@@ -27,18 +27,18 @@ module.exports.run = async ({ api, event,__GLOBAL }) => {
 	if (event.messageReply.attachments.length > 1) return api.sendMessage(`Vui lòng reply chỉ một ảnh!`, event.threadID, event.messageID);
 	if (event.messageReply.attachments[0].type == 'photo') {
 		return search(event.messageReply.attachments[0].url).then(response => {
-			let data = response[0];
-			let results = {
-				similarity: data.similarity,
-				material: data.raw.data.material || 'Không có',
-				characters: data.raw.data.characters || 'Original',
-				creator: data.raw.data.creator || 'Không biết',
-				site: data.site,
-				url: data.url
-			};
-			const minSimilarity = 50;
+			const data = response[0],
+				results = {
+					similarity: data.similarity,
+					material: data.raw.data.material || 'Không có',
+					characters: data.raw.data.characters || 'Original',
+					creator: data.raw.data.creator || 'Không biết',
+					site: data.site,
+					url: data.url
+				},
+				minSimilarity = 50;
 			if (minSimilarity <= ~~results.similarity) {
-				api.sendMessage(
+				return api.sendMessage(
 					'Đây là kết quả tìm kiếm được\n' +
 					'-------------------------\n' +
 					'- Độ tương tự: ' + results.similarity + '%\n' +
@@ -49,7 +49,7 @@ module.exports.run = async ({ api, event,__GLOBAL }) => {
 					event.threadID, event.messageID
 				);
 			}
-			else api.sendMessage(`Không thấy kết quả nào trùng với ảnh bạn đang tìm kiếm :'(`, event.threadID, event.messageID);
+			else return api.sendMessage(`Không thấy kết quả nào trùng với ảnh bạn đang tìm kiếm :'(`, event.threadID, event.messageID);
 		});
 	}
 }

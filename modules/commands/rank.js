@@ -10,8 +10,7 @@ module.exports.config = {
 	dependencies: ["fs-extra","axios","path","canvas","jimp", "request"]
 };
 
-async function makeRankCard(data) {
-    
+module.exports.makeRankCard = async (data) => {    
     /*
     * 
     * Remake from Canvacord
@@ -48,7 +47,7 @@ async function makeRankCard(data) {
 	const ctx = canvas.getContext("2d");
 
 	ctx.drawImage(rankCard, 0, 0, canvas.width, canvas.height);
-	ctx.drawImage(await Canvas.loadImage(await circle(avatar)), 45, 50, 180, 180);
+	ctx.drawImage(await Canvas.loadImage(await this.circle(avatar)), 45, 50, 180, 180);
 
 	ctx.font = `bold 36px Manrope`;
 	ctx.fillStyle = "#FFFFFF";
@@ -96,28 +95,28 @@ async function makeRankCard(data) {
 	return pathImg;
 }
 
-async function circle(image) {
+module.exports.circle = async (image) => {
     const jimp = require('jimp');
 	image = await jimp.read(image);
 	image.circle();
 	return await image.getBufferAsync("image/png");
 }
 
-function expToLevel(point) {
+module.exports.expToLevel = (point) => {
 	if (point < 0) return 0;
 	return Math.floor((Math.sqrt(1 + (4 * point) / 3) + 1) / 2);
 }
 
-function levelToExp(level) {
+module.exports.levelToExp = (level) => {
 	if (level <= 0) return 0;
 	return 3 * level * (level - 1);
 }
 
-async function getInfo(uid, Currencies) {
+module.exports.getInfo = async (uid, Currencies) => {
 	const point = (await Currencies.getData(uid)).exp;
-	const level = expToLevel(point);
-	const expCurrent = point - levelToExp(level);
-	const expNextLevel = levelToExp(level + 1) - levelToExp(level);
+	const level = this.expToLevel(point);
+	const expCurrent = point - this.levelToExp(level);
+	const expNextLevel = this.levelToExp(level + 1) - this.levelToExp(level);
 	return { level, expCurrent, expNextLevel };
 }
 
@@ -152,27 +151,26 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
 		let name = Users.getData(event.senderID).name || (await api.getUserInfo(event.senderID))[event.senderID].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-		else getInfo(event.senderID, Currencies)
-		.then(point => makeRankCard({ id: event.senderID, name, rank, ...point }))
-		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+		const point = await this.getInfo(event.senderID, Currencies);
+		const pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
+		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 	}
 	if (mention.length == 1) {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
 		let name = Users.getData(mention[0]).name || (await api.getUserInfo(mention[0]))[mention[0]].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-		else getInfo(mention[0], Currencies)
-		.then(point => makeRankCard({ id: mention[0], name, rank, ...point }))
-		.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
+		const point = await this.getInfo(mention[0], Currencies);
+		const pathRankCard = await this.makeRankCard({ id: mention[0], name, rank, ...point })
+		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 	}
 	if (mention.length > 1) {
 		for (const userID of mention) {
 			let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
 			let name = Users.getData(userID).name || (await api.getUserInfo(userID))[userID].name;
 			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
-			else getInfo(userID, Currencies)
-			.then(point => makeRankCard({ id: userID, name, rank, ...point }))
-			.then(path => api.sendMessage({ attachment: fs.createReadStream(path) }, event.threadID, () => fs.unlinkSync(path), event.messageID));
-	
+			const point = await this.getInfo(userID, Currencies);
+			const pathRankCard = await this.makeRankCard({ id: userID, name, rank, ...point })
+			return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 		}
 	}
 }

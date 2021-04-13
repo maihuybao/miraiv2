@@ -6,7 +6,7 @@ name: "hi",
 	description: "Chào",
 	commandCategory: "general",
 	usages: "hi",
-	cooldowns: 0,
+	cooldowns: 5,
 };
 module.exports.event = function({ api, event, client, __GLOBAL }) {
 	var { threadID, messageID } = event;

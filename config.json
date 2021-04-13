@@ -7,7 +7,7 @@
     "PASSWORD": "",
     "OTPKEY": "",
     "BOTNAME": "BerBot",
-    "PREFIX": "B!",
+    "PREFIX": "!",
     "ADMINBOT": "100048944291189",
     "DATABASE": {
         "sqlite": {

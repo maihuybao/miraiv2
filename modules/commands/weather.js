@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Xem thông tin thời tiết tại khu vực",
-	commandCategory: "General",
+	commandCategory: "other",
 	usages: "weather [Location]",
 	cooldowns: 5,
 	dependencies: ["moment-timezone","request"],

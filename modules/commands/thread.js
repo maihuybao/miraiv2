@@ -64,7 +64,7 @@ module.exports.run = async ({ event, api, args, Threads, client }) => {
 				if (dataThread.banned) return api.sendMessage(`[${idThread}] Đã bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idThread}] Bạn muốn ban thread này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "thread",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "ban",
@@ -84,7 +84,7 @@ module.exports.run = async ({ event, api, args, Threads, client }) => {
 				if (!dataThread.banned) return api.sendMessage(`[${idThread}] Không bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idThread}] Bạn muốn unban thread này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "thread",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "unban",

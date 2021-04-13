@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Game bài cào dành cho nhóm",
-	commandCategory: "games",
+	commandCategory: "game-mp",
 	usages: "baicao [args]",
 	cooldowns: 1,
 	info: [
