@@ -8,14 +8,14 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	(async () => {
 		try {
 			logger("Khởi tạo biến môi trường", "[ DATABASE ]")
-			var threads = (await Threads.getAll());
+			const threads = (await Threads.getAll());
 			for (const info of threads) {
 				client.allThread.push(info.threadID);
 				client.threadSetting.set(info.threadID.toString(), info.settings || {});
 				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
 			}
 			logger.loader("Đã tải xong biến môi trường nhóm!")
-			var users = (await Users.getAll(["userID"]));
+			const users = (await Users.getAll(["userID"]));
 			for (const info of users) client.allUser.push(info.userID);
 			logger.loader("Đã tải xong biến môi trường người dùng!")
 			logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
@@ -27,16 +27,15 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
-	logger("Connected to Messenger\nThis source code was made by Catalizcs(roxtigger2003) and SpermLord, please do not delete this credits!", "[ SYSTEM ]");
 	
-	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
-	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
-	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
-	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
+	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client }),
+			handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }),
+			handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }),
+			handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
+			handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
+			handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
+			handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client }),
+			handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 

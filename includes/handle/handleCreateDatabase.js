@@ -2,8 +2,7 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client })
 	const logger = require("../../utils/log.js");
 	return async function({ event }) {
 		try {
-
-			if (__GLOBAL.settings.autoCreateDB == false || client.inProcess == true) return;
+			if (__GLOBAL.settings.autoCreateDB == false || client.inProcess == true) return
 			const { senderID, threadID } = event;
 			var settings = {};
 

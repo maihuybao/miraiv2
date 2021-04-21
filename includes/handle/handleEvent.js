@@ -17,6 +17,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 						const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 						logger(`[ ${time} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}
+					return;
 				}
 				catch (error) {
 					logger(error + " at event: " + eventRun.config.name , 2);

@@ -9,9 +9,8 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, Users, Threads, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
     if (__GLOBAL[this.config.name].enable != true) return;
-    console.log((__GLOBAL[this.config.name].enable == false))
     var formReport =  "=== Bot Notification ===" +
                         "\n\n» Thread mang ID: " + event.threadID +
                         "\n» Hành động: {task}" +
@@ -38,8 +37,6 @@ module.exports.run = async function({ api, event, Users, Threads, client, __GLOB
 
     formReport = formReport
     .replace(/\{task}/g, task);
-
-    console.log(formReport);
 
     return api.sendMessage(formReport, __GLOBAL.settings.ADMINBOT.split(" ")[0]);
 }

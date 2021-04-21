@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: "rank",
-	version: "1.0.0",
+	version: "1.0.1",
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Lấy rank hiện tại của bạn trên hệ thống bot, remake rank_card from canvacord",
@@ -120,18 +120,33 @@ module.exports.getInfo = async (uid, Currencies) => {
 	return { level, expCurrent, expNextLevel };
 }
 
-module.exports.onLoad = () => {
+module.exports.onLoad = async () => {
 	const fs = require("fs-extra");
-	const request = require("request");
+	const axios = require("axios");
 	let dirMaterial = __dirname + `/cache/rank/`;
 	
 	if (!fs.existsSync(dirMaterial)) fs.mkdirSync(dirMaterial, { recursive: true });
 	if (!fs.existsSync(dirMaterial + "fonts")) fs.mkdirSync(dirMaterial + "fonts", { recursive: true });
 	if (!fs.existsSync(dirMaterial + "rank_card")) fs.mkdirSync(dirMaterial + "rank_card", { recursive: true });
 	
-	if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/regular-font.ttf"));
-	if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
-	if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png").pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));	
+	if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) (await axios({
+			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf",
+			method: 'GET',
+			responseType: 'stream'
+		})).data.pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
+	
+	if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) (await axios({
+			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf",
+			method: 'GET',
+			responseType: 'stream'
+		})).data.pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
+
+	if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) (await axios({
+			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png",
+			method: 'GET',
+			responseType: 'stream'
+		})).data.pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));
+	return;
 }
 
 module.exports.run = async ({ event, api, args, Currencies, Users }) => {
@@ -149,7 +164,7 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 
 	if (args.length == 0) {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
-		let name = Users.getData(event.senderID).name || (await api.getUserInfo(event.senderID))[event.senderID].name;
+		let name = (await Users.getData(event.senderID).name) || (await api.getUserInfo(event.senderID))[event.senderID].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 		const point = await this.getInfo(event.senderID, Currencies);
 		const pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
@@ -157,7 +172,7 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	}
 	if (mention.length == 1) {
 		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
-		let name = Users.getData(mention[0]).name || (await api.getUserInfo(mention[0]))[mention[0]].name;
+		let name = (await Users.getData(mention[0]).name) || (await api.getUserInfo(mention[0]))[mention[0]].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 		const point = await this.getInfo(mention[0], Currencies);
 		const pathRankCard = await this.makeRankCard({ id: mention[0], name, rank, ...point })
@@ -166,7 +181,7 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	if (mention.length > 1) {
 		for (const userID of mention) {
 			let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
-			let name = Users.getData(userID).name || (await api.getUserInfo(userID))[userID].name;
+			let name = (await Users.getData(userID).name) || (await api.getUserInfo(userID))[userID].name;
 			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 			const point = await this.getInfo(userID, Currencies);
 			const pathRankCard = await this.makeRankCard({ id: userID, name, rank, ...point })

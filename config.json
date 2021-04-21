@@ -3,6 +3,7 @@
     "AutoChangeName": false,
     "autoCreateDB": true,
     "allowInbox": true,
+    "selfListen": false,
     "commandDisabled": [],
     "eventDisabled": [],
     "EMAIL": "",

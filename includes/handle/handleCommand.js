@@ -29,7 +29,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
 			else return api.setMessageReaction('❌', event.messageID, (err) => (err) ? logger('Đã có lỗi xảy ra khi thực thi setMessageReaction', 2) : '', true);
 		}
-
+		
 		//========= Check permssion =========//
 		
 		var permssion;
@@ -56,15 +56,17 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		try {
 			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils, permssion });
 			timestamps.set(senderID, now);
+			
+			if (__GLOBAL.settings.DeveloperMode == true) {
+				const moment = require("moment");
+				const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+				logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
+			}
+			return;
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, "error");
 			api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
-		}
-		if (__GLOBAL.settings.DeveloperMode == true) {
-			const moment = require("moment");
-			const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
-			logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 		}
 	}
 }

@@ -6,31 +6,8 @@ const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
 const login = require("fca-unofficial");
 const timeStart = Date.now();
-const readline = require("readline");
-
-var rl = readline.createInterface({
-	input: process.stdin
-});
-
-rl.on("line", line => {
-	switch (line) {
-		case "uptime": {
-			const time = process.uptime(),
-				hours = Math.floor(time / (60 * 60)),
-				minutes = Math.floor((time % (60 * 60)) / 60),
-				seconds = Math.floor(time % 60);
-			return logger(`Bot đã hoạt động được ${hours} giờ ${minutes} phút ${seconds} giây.`, '[ UPTIME ]');
-		}
-		case "restart": {
-			return process.exit(0)
-		}
-		case "shutdown": {
-			
-		}
-		default:
-			break;
-	}
-})
+const semver = require('semver');
+const axios = require("axios");
 
 const client = new Object({
 	commands: new Map(),
@@ -51,30 +28,28 @@ const client = new Object({
 	dirConfig: "",
 	dirMain: process.cwd(),
 	timeLoadModule: ""
-});
-
-const __GLOBAL = new Object({
+}),
+__GLOBAL = new Object({
 	settings: new Array()
-})
+});
 
 //check argv
 
 var argv = require('minimist')(process.argv.slice(2)); 
 var configValue;
 
-
 var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
 if (argv["_"].length != 0) client.dirConfig = join(client.dirMain, argv["_"][indexConfig]);
 else client.dirConfig = join(client.dirMain, "config.json");
-
 try {
 	configValue = require(client.dirConfig);
 	logger.loader(`Đã tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`);
 }
 catch {
-	if (existsSync(client.dirConfig + ".temp")) {
-		configValue = require(client.dirConfig + ".temp");
-		logger.loader(`Đã tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`);
+	if (existsSync(client.dirConfig.replace(/\.json/g,"") + ".temp")) {
+		configValue = readFileSync(client.dirConfig.replace(/\.json/g,"") + ".temp");
+		configValue = JSON.parse(configValue);
+		logger.loader(`Đã tìm thấy file config: ${client.dirConfig.replace(/\.json/g,"") + ".temp"}`);
 	}
 	else logger.loader(`Không tìm thấy file config: ${argv["_"][indexConfig] || "config.json"}`, "error");
 }
@@ -91,12 +66,6 @@ catch {
 
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
 
-//require("npmlog").emitLog = () => {};
-
-if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
-
-const semver = require('semver');
-const axios = require("axios");
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(readFileSync('./package.json')).version;
@@ -130,6 +99,7 @@ for (const file of commandFiles) {
 				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`);
 			}
 		}
+		
         if (command.config.envConfig) {
             try {
                 for (const [key, value] of Object.entries(command.config.envConfig)) {
@@ -145,7 +115,8 @@ for (const file of commandFiles) {
                 logger.loader(`Không thể tải config module ${command.config.name}`, "error");
             }
         }
-		if (command.onLoad) 
+
+		if (command.onLoad) {
 			try {
 				command.onLoad({ __GLOBAL, client, configValue });
 			
@@ -153,6 +124,8 @@ for (const file of commandFiles) {
 			catch (error) {
 				logger.loader(`Không thể onLoad module: ${command.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
 			}
+		}
+
 		if (command.event) {
 			var registerCommand = client.commandRegister.get("event") || [];
 			registerCommand.push(command.config.name);
@@ -181,10 +154,10 @@ for (const file of eventFiles) {
 
 	try {
 		if (!event.config || !event.run) throw new Error(`Module không đúng định dạng!`);
-		if (client.events.has(event.config.name)) throw new Error('Tên module bị trùng với một module mang cùng tên khác!');
+		if (client.events.has(event.config.name) || "") throw new Error('Tên module bị trùng với một module mang cùng tên khác!');
 		if (event.config.dependencies) {
 			try {
-				for (let i of event.config.dependencies) require.resolve(i);
+				for (const i of event.config.dependencies) require.resolve(i);
 			}
 			catch (e) {
 				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "warm");
@@ -198,7 +171,7 @@ for (const file of eventFiles) {
                 for (const [key, value] of Object.entries(event.config.envConfig)) {
                     if (typeof __GLOBAL[event.config.name] == "undefined") __GLOBAL[event.config.name] = new Object();
                     if (typeof configValue[event.config.name] == "undefined") configValue[event.config.name] = new Object();
-                    if (typeof configValue[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = config[event.config.name][key]
+                    if (typeof configValue[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = configValue[event.config.name][key]
                     else __GLOBAL[event.config.name][key] = value || "";
                     if (typeof configValue[event.config.name][key] == "undefined") configValue[event.config.name][key] = value || "";
                 }
@@ -246,26 +219,29 @@ function onBot({ models }) {
 			forceLogin: true,
 			listenEvents: true,
 			logLevel: "silent",
-			selfListen: false,
-			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
+			selfListen: __GLOBAL.settings.selfListen || false,
+			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36"
 		});
-		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 
-		api.listenMqtt((error, event) => {
+		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
+		
+		//need recode thiz thing
+		const listenHanlde = api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
 			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) && !client.event.has(event.messageID)) {
 				client.event.set(event.messageID, event);
-				handleListen(client.event.get(event.messageID))
-				if (__GLOBAL.settings.DeveloperMode == true) console.log(client.event.get(event.messageID))
+				handleListen(client.event.get(event.messageID));
+				(__GLOBAL.settings.DeveloperMode == true) ? console.log(client.event.get(event.messageID)) : "";
 				client.event.delete(event.messageID);
 			}
-		})
+		});
 	});
 }
 
 const { Sequelize, sequelize } = require("./includes/database");
 (async () => {
 	try {
+		if (existsSync(resolve('./includes', 'skeleton_data.sqlite')) && !existsSync(resolve('./includes', 'data.sqlite'))) copySync(resolve('./includes', 'skeleton_data.sqlite'), resolve('./includes', 'data.sqlite'));
 		var migrations = readdirSync(`./includes/database/migrations`);
 		var completedMigrations = await sequelize.query("SELECT * FROM `SequelizeMeta`", { type: Sequelize.QueryTypes.SELECT });
 		for (const name in completedMigrations) {
@@ -284,7 +260,7 @@ const { Sequelize, sequelize } = require("./includes/database");
 		await sequelize.authenticate();
 		logger("Kết nối cơ sở dữ liệu thành công", "[ DATABASE ]")
 		const models = require("./includes/database/model");
-		onBot({ models });
+		return onBot({ models });
 	}
 	catch (error) {
 		() => logger(`Kết nối cơ sở dữ liệu thất bại, Lỗi: ${error.name}: ${error.message}`, "[ DATABASE ]");

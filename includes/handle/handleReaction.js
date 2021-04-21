@@ -8,7 +8,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			const handleNeedExec = client.commands.get(indexOfMessage.name);
 			if (!handleNeedExec) return api.sendMessage("Thiếu dữ kiện để thực thi phản hồi lại câu trả lời của bạn!", event.threadID, event.messageID);
 			try {
-				handleNeedExec.handleReaction({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReaction: indexOfMessage, models });
+				return handleNeedExec.handleReaction({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReaction: indexOfMessage, models });
 			}
 			catch (e) {
 				console.log(e);

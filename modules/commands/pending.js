@@ -9,7 +9,8 @@ module.exports.config = {
 	cooldowns: 5
 };
 
-module.exports.handleReaction = async function({ api, event, client, __GLOBAL, handleReaction }) {
+module.exports.handleReaction = async function({ api, event, handleReaction }) {
+	api.sendMessage("Testing...", handleReaction.pending);
 	return api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
 }
 
