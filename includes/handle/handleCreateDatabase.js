@@ -15,7 +15,6 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client })
 			}
 
 			if (!client.allUser.includes(parseInt(senderID))) {
-				console.log(event);
 				client.inProcess = true;
 				const name = (await api.getUserInfo(senderID))[senderID].name;
 				await Users.createData(senderID, { name });
