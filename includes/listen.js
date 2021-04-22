@@ -28,14 +28,14 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	logger(__GLOBAL.settings.PREFIX || "[none]", "[ PREFIX ]");
 	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
 	
-	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client }),
-			handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }),
-			handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }),
-			handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
-			handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
-			handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies }),
-			handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client }),
-			handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
+	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
+	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
+	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
+	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 

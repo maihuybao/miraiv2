@@ -1,5 +1,5 @@
 {
-    "DeveloperMode": false,
+    "DeveloperMode": true,
     "AutoChangeName": false,
     "autoCreateDB": true,
     "allowInbox": true,

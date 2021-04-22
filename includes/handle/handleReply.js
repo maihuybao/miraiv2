@@ -9,7 +9,8 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			const handleNeedExec = client.commands.get(indexOfMessage.name);
 			if (!handleNeedExec) return api.sendMessage("Thiếu dữ kiện để thực thi phản hồi lại câu trả lời của bạn!", event.threadID, event.messageID);
 			try {
-				return handleNeedExec.handleReply({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReply: indexOfMessage, models });
+				handleNeedExec.handleReply({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReply: indexOfMessage, models });
+				return;
 			}
 			catch (e) {
 				return api.sendMessage("Đã có lỗi xảy ra khi đang thực thi trả lời câu hỏi của bạn!", event.threadID, event.messageID);
