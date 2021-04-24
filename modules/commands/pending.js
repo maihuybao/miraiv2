@@ -10,6 +10,7 @@ module.exports.config = {
 };
 
 module.exports.handleReaction = async function({ api, event, handleReaction }) {
+	if (event.userID != handleReaction.author) return;
 	api.sendMessage("Testing...", handleReaction.pending);
 	return api.sendMessage('Đã duyệt thành công nhóm có ID: ' + handleReaction.pending, event.threadID);
 }

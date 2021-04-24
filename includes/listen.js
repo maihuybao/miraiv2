@@ -13,10 +13,16 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 				client.allThread.push(info.threadID);
 				client.threadSetting.set(info.threadID.toString(), info.settings || {});
 				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
+				if (info.banned == 1) client.threadBanned.set(info.threadID.toString(), 1);
+				
 			}
 			logger.loader("Đã tải xong biến môi trường nhóm!")
-			const users = (await Users.getAll(["userID"]));
-			for (const info of users) client.allUser.push(info.userID);
+			const users = (await Users.getAll(["userID", "banned"]));
+			for (const info of users) {
+				client.allUser.push(info.userID);
+				if (info.banned == 1) client.userBanned.set(info.userID.toString(), 1); 
+			}
+
 			logger.loader("Đã tải xong biến môi trường người dùng!")
 			logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
 		}

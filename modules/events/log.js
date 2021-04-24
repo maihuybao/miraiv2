@@ -10,6 +10,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
+    const logger = require("../../utils/log");
     if (__GLOBAL[this.config.name].enable != true) return;
     var formReport =  "=== Bot Notification ===" +
                         "\n\n» Thread mang ID: " + event.threadID +
@@ -33,10 +34,16 @@ module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
             if (event.logMessageData.leftParticipantFbId== api.getCurrentUserID()) task = "Người dùng đã kick bot ra khỏi nhóm!"
             break;
         }
+        default: 
+            break;
     }
+
+    if (task.length == 0) return;
 
     formReport = formReport
     .replace(/\{task}/g, task);
 
-    return api.sendMessage(formReport, __GLOBAL.settings.ADMINBOT.split(" ")[0]);
+    return api.sendMessage(formReport, __GLOBAL.settings.ADMINBOT.split(" ")[0], (error, info) => {
+        if (error) return logger(formReport, "[ Logging Event ]");
+    });
 }

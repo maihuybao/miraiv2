@@ -19,7 +19,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 					}
 				}
 				catch (error) {
-					logger(error + " at event: " + eventRun.config.name , 2);
+					logger(JSON.stringify(error) + " at event: " + eventRun.config.name , "error");
 				}
 			};
 		}

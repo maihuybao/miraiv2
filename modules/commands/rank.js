@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Lấy rank hiện tại của bạn trên hệ thống bot, remake rank_card from canvacord",
-	commandCategory: "System",
+	commandCategory: "system",
 	usages: "rank",
 	cooldowns: 20,
 	dependencies: ["fs-extra","axios","path","canvas","jimp", "request"]
