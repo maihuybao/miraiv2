@@ -2,12 +2,15 @@
     "DeveloperMode": false,
     "AutoChangeName": false,
     "autoCreateDB": true,
-    "allowInbox": true,
+    "allowInbox": false,
+    "selfListen": true,
+    "commandDisabled": [],
+    "eventDisabled": [],
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",
     "BOTNAME": "BerBot",
-    "PREFIX": "!",
+    "PREFIX": "gei.",
     "ADMINBOT": "100048944291189",
     "DATABASE": {
         "sqlite": {
@@ -15,8 +18,15 @@
         }
     },
     "APPSTATEPATH": "fbstate.json",
+    "caesar": {
+        "caeserPassword": "266303"
+    },
     "checktt": {
         "maxColumn": 10
+    },
+    "cung": {
+        "cooldownTime": 43200000,
+        "rewardCoin": 200
     },
     "daily": {
         "cooldownTime": 43200000,
@@ -27,6 +37,9 @@
     },
     "math": {
         "WOLFRAM": "T8J8YV-H265UQ762K"
+    },
+    "rankup": {
+        "unsendMessageAfter": 5
     },
     "rname": {
         "APIKEY": "mi451266190"
@@ -50,14 +63,7 @@
     "work": {
         "cooldownTime": 1200000
     },
-    "caesar": {
-        "caeserPassword": "266303"
-    },
-    "rankup": {
-        "unsendMessageAfter": 5
-    },
-    "cung": {
-        "cooldownTime": 43200000,
-        "rewardCoin": 200
+    "log": {
+        "enable": true
     }
 }

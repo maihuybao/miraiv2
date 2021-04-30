@@ -37,9 +37,7 @@ module.exports.run = async ({ args, api, event, Currencies }) => {
     const data = await api.getThreadInfo(event.threadID);
     if (args[0] == "all") {
         let number = 0, msg = "", storage = [], exp = [];
-        for (const value of data.userInfo) {
-            storage.push({"id" : value.id, "name": value.name});
-        }
+        for (const value of data.userInfo) storage.push({"id" : value.id, "name": value.name});
         for (const user of storage) {
             const countMess = await Currencies.getData(user.id);
             exp.push({"name" : user.name, "exp": (typeof countMess.exp == "undefined") ? 0 : countMess.exp});
@@ -56,10 +54,8 @@ module.exports.run = async ({ args, api, event, Currencies }) => {
     }
     else if (mention[0]) {
         let storage = [], exp = [];
-        for (const value of data.userInfo) {
-            storage.push({"id" : value.id, "name": value.name});
-            //console.log(value.id);
-        }
+        for (const value of data.userInfo) storage.push({"id" : value.id, "name": value.name});
+
         for (const user of storage) {
             const countMess = await Currencies.getData(user.id);
             exp.push({"name" : user.name, "exp": (typeof countMess.exp == "undefined") ? 0 : countMess.exp, "uid": user.id});

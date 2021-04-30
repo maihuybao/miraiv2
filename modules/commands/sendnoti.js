@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "sendnoti",
 	version: "1.0.0",
 	hasPermssion: 2,
-	credits: "SpermLord",
+	credits: "CatalizCS",
 	description: "Gửi tin nhắn tới các nhóm!",
 	commandCategory: "system",
 	usages: "sendnoti [Text]",
@@ -17,8 +17,19 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async ({ api, event, args }) => api.getThreadList(100, null, ["INBOX"], (err, list) => {
-	if (err) throw err;
-	list.forEach(item => (item.isGroup == true && item.threadID != event.threadID) ? api.sendMessage(args.join(" "), item.threadID) : '');
-	api.sendMessage('🛠 | Đã gửi đến toàn bộ nhóm thành công', event.threadID);
-});
+module.exports.run = async ({ api, event, args, client }) => {
+	var allThread = client.allThread || [];
+	var count = 1,
+		cantSend = [];
+	for (const idThread of allThread) {
+		if (isNaN(parseInt(idThread)) || idThread == event.threadID) ""
+		else {
+			api.sendMessage("» Notification «\n\n" + args.join(" ") , idThread, (error, info) => {
+				if (error) cantSend.push(idThread);
+			});
+			count++;
+			await new Promise(resolve => setTimeout(resolve, 500));
+		}
+	}
+	return api.sendMessage(`Đã gửi tin nhắn đến ${count} nhóm!`, event.threadID, () => api.sendMessage(`[!] Không thể gửi thông báo tới ${cantSend.length} nhóm`, event.threadID, event.messageID), event.messageID);
+}

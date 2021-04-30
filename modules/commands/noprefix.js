@@ -11,8 +11,8 @@ name: "hi",
 module.exports.event = function({ api, event, client, __GLOBAL }) {
 	var { threadID, messageID } = event;
 	var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
-	if (event.body.indexOf("hi")==0 || (event.body.indexOf("Hi")==0)) {
-		return out("This is BerBot")
+	if (event.body=="hi" || (event.body=="Hi")) {
+		return out("Xin chào, \n Chúc bạn ngày mới tốt lành \n\rBerBot")
 	}
 }
 	module.exports.run = function({ api, event, client, __GLOBAL }) {

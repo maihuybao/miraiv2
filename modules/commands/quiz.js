@@ -18,7 +18,6 @@ module.exports.config = {
 };
 
 module.exports.handleReaction = ({ api, event, handleReaction, client }) => {
-	
 	if (!event.userID == handleReaction.author) return;
 	let response = "";
 	if (event.reaction == "👍") response = "True"

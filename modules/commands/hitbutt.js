@@ -1,11 +1,11 @@
 module.exports.config = {
-    name: "slap",
+    name: "hitbutt",
     version: "1.0.0",
     hasPermssion: 0,
     credits: "MewMew",
     description: "",
     commandCategory: "general",
-    usages: "slap [tag]",
+    usages: "hitbutt [tag]",
     dependencies: ["path", "jimp"],
     cooldowns: 5
 };
@@ -15,18 +15,25 @@ module.exports.onLoad = () => {
     const request = require("request");
     const dirMaterial = __dirname + `/cache/canvas/`;
     if (!fs.existsSync(dirMaterial + "canvas")) fs.mkdirSync(dirMaterial, { recursive: true });
-    if (!fs.existsSync(dirMaterial + "slap.png")) request("https://i.imgur.com/PkyR7L2.png").pipe(fs.createWriteStream(dirMaterial + "slap.png"));
+    if (!fs.existsSync(dirMaterial + "hit_butt.png")) request("https://i.imgur.com/SnvJrte.png").pipe(fs.createWriteStream(dirMaterial + "hit_butt.png"));
 }
 
-async function makeImage({ one, two }) {    
+async function makeImage({ one, two }) {
+
+    /*
+     * 
+     * Remake from Canvacord
+     * 
+     */
+    
     const axios = require("axios");
     const fs = require("fs-extra");
     const path = require("path");
     const jimp = require("jimp");
     const __root = path.resolve(__dirname, "cache", "canvas");
 
-    let slap_image = await jimp.read(__root + "/slap.png");
-    let pathImg = __root + `/slap_${one}_${two}.png`;
+    let hit_butt_img = await jimp.read(__root + "/hit_butt.png");
+    let pathImg = __root + `/hit_butt_${one}_${two}.png`;
     let avatarOne = __root + `/avt_${one}.png`;
     let avatarTwo = __root + `/avt_${two}.png`;
     
@@ -38,9 +45,9 @@ async function makeImage({ one, two }) {
     
     let circleOne = await jimp.read(await circle(avatarOne));
     let circleTwo = await jimp.read(await circle(avatarTwo));
-    slap_image.composite(circleOne.resize(150, 150), 745, 25).composite(circleTwo.resize(140, 140), 180, 40);
+    hit_butt_img.resize(500, 500).composite(circleOne.resize(130, 130), 225, 5).composite(circleTwo.resize(120, 120), 352, 220);
     
-    let raw = await slap_image.getBufferAsync("image/png");
+    let raw = await hit_butt_img.getBufferAsync("image/png");
     
     fs.writeFileSync(pathImg, raw);
     fs.unlinkSync(avatarOne);
@@ -62,6 +69,6 @@ module.exports.run = async function ({ event, api, args, client }) {
     if (!mention) return api.sendMessage("Vui lòng tag 1 người", threadID, messageID);
     else {
         var one = senderID, two = mention[0];
-        return makeImage({ one, two }).then(path => api.sendMessage({ body: "Toang ALO nè", attachment: fs.createReadStream(path) }, threadID, () => fs.unlinkSync(path), messageID));
+        return makeImage({ one, two }).then(path => api.sendMessage({ body: "Hư nè.. " + event.mentions[mention[0]].replace(/@/g, ""), attachment: fs.createReadStream(path) }, threadID, () => fs.unlinkSync(path), messageID));
     }
 }

@@ -1,5 +1,5 @@
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
-	return function({ event }) {
+	return async function({ event }) {
 		const { handleReaction } = client;
 		if (handleReaction.length !== 0) {
 			const indexOfHandle = handleReaction.findIndex(e => e.messageID == event.messageID);
@@ -8,7 +8,8 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			const handleNeedExec = client.commands.get(indexOfMessage.name);
 			if (!handleNeedExec) return api.sendMessage("Thiếu dữ kiện để thực thi phản hồi lại câu trả lời của bạn!", event.threadID, event.messageID);
 			try {
-				handleNeedExec.handleReaction({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReaction: indexOfMessage, models });
+				await handleNeedExec.handleReaction({ api, __GLOBAL, client, event, models, Users, Threads, Currencies, handleReaction: indexOfMessage, models });
+				return;
 			}
 			catch (e) {
 				console.log(e);

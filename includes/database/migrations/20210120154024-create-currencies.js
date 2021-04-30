@@ -40,10 +40,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 0
       },
-      inventory: {
-        type: Sequelize.JSON
-      },
-      status: {
+      fishy: {
         type: Sequelize.JSON
       }
     });
