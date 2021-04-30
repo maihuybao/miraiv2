@@ -13,6 +13,7 @@ const client = new Object({
 	commands: new Map(),
 	events: new Map(),
 	event: new Map(),
+	schedule: new Array(),
 	cooldowns: new Map(),
 	handleReply: new Array(),
 	handleReaction: new Array(),
@@ -64,6 +65,24 @@ catch {
 	return logger.loader("Không thể load config!", "error");
 }
 
+//im working on it!
+if (process.env.API_SERVER_EXTERNAL !== 'https://api.glitch.com') {
+	(async () => {
+		const http = require("http");
+		const server = http.createServer((req, res) => {
+			res.writeHead(200, "OK", { "Content-Type": "text/plain" });
+			res.write("Hello there!");
+			res.end();
+		});
+		try {
+			await server.listen(process.env.PORT || 0, "127.0.0.1");
+		}
+		catch {
+			logger("Không thể mở server!", "[ HTTP SERVER ]");
+		}
+	})();
+}
+
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
@@ -74,9 +93,18 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
+var packageManager;
+
+try {
+	require.resolve("pnpm");
+	packageManager = "pnpm"
+}
+catch {
+	packageManager = "npm";
+}
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
-for (const file of commandFiles) {
+for (file of commandFiles) {
 	const timeStartLoad = Date.now();
 	try {
 		var command = require(join(__dirname, "/modules/commands", `${file}`));
@@ -94,7 +122,7 @@ for (const file of commandFiles) {
 			}
 			catch (e) {
 				logger.loader(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "warm");
-				execSync('npm install -s ' + command.config.dependencies.join(" "));
+				execSync(packageManager + ' install -s --prefer-offline --no-audit ' + command.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/commands/${file}`)];
 				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`);
 			}
@@ -143,7 +171,7 @@ for (const file of commandFiles) {
 //========= Get all event files =========//
 
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
-for (const file of eventFiles) {
+for (file of eventFiles) {
 	const timeStartLoad = Date.now();
 	try {
 		var event = require(join(__dirname, "/modules/events", `${file}`));
@@ -161,7 +189,7 @@ for (const file of eventFiles) {
 			}
 			catch (e) {
 				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "warm");
-				execSync('npm install -s ' + event.config.dependencies.join(" "));
+				execSync(packageManager + ' install -s --prefer-offline --no-audit ' + event.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/events/${file}`)];
 				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`);
 			}

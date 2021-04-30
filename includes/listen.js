@@ -42,6 +42,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 	const handleChangeName = require("./handle/handleChangeName")({ api, __GLOBAL, client });
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
+	const handleSchedule = require("./handle/handleSchedule")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 

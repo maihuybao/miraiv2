@@ -8,7 +8,7 @@
 	},
 	"scripts": {
 		"start": "pm2 start pm2.config.js --no-daemon",
-		"test": "node --trace-warnings mirai"
+		"test": "node --trace-warnings --use_strict --async-stack-traces mirai"
 	},
 	"repository": {
 		"type": "git",
@@ -30,17 +30,19 @@
 	},
 	"homepage": "https://github.com/catalizcs/miraiv2#readme",
 	"dependencies": {
-		"axios": "",
+		"axios": "^0.21.1",
 		"body-parser": "",
+		"canvas": "^2.7.0",
 		"chalk": "",
 		"child_process": "",
 		"fca-unofficial": "",
 		"figlet": "",
-		"fs-extra": "",
+		"fs-extra": "^9.1.0",
 		"minimist": "",
 		"moment": "",
 		"ms": "",
 		"npmlog": "",
+		"path": "^0.12.7",
 		"pm2": "^4.5.6",
 		"readline": "",
 		"semver": "",

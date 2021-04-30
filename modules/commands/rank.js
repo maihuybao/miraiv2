@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "system",
 	usages: "rank",
 	cooldowns: 20,
-	dependencies: ["fs-extra","axios","path","canvas","jimp", "request"]
+	dependencies: ["fs-extra","axios","path","canvas","jimp", "request", "node-superfetch"]
 };
 
 module.exports.makeRankCard = async (data) => {    
@@ -22,6 +22,8 @@ module.exports.makeRankCard = async (data) => {
     const path = require("path");
     const __root = path.resolve(__dirname, "cache", "rank");
     const Canvas = require("canvas");
+	const request = require('node-superfetch');
+	const PI = Math.PI;
 
     const { id, name, rank, level, expCurrent, expNextLevel } = data;
 
@@ -37,17 +39,20 @@ module.exports.makeRankCard = async (data) => {
 	});
 
 	let rankCard = await Canvas.loadImage(__root + "/rank_card/rankcard.png");
-	let pathImg = __root + `/rank_card/rank_${id}.png`;
+	const pathImg = __root + `/rank_card/rank_${id}.png`;
+	
+	var expWidth = (expCurrent * 615) / expNextLevel;
+	if (expWidth > 615 - 18.5) expWidth = 615 - 18.5;
+	
+	var avatar = await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=170918394587449|sONjQBBNs316xVD31T-yuL4jfyc`);
 
-	let avatar = __root + `/rank_card/avt_${id}.png`;
-	let getAvatar = (await axios.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=170918394587449|sONjQBBNs316xVD31T-yuL4jfyc`, { responseType: 'arraybuffer' })).data;
-	fs.writeFileSync(avatar, Buffer.from(getAvatar, 'utf-8'));
+	avatar = await this.circle(avatar.body);
 
 	const canvas = Canvas.createCanvas(934, 282);
 	const ctx = canvas.getContext("2d");
 
 	ctx.drawImage(rankCard, 0, 0, canvas.width, canvas.height);
-	ctx.drawImage(await Canvas.loadImage(await this.circle(avatar)), 45, 50, 180, 180);
+	ctx.drawImage(await Canvas.loadImage(avatar), 45, 50, 180, 180);
 
 	ctx.font = `bold 36px Manrope`;
 	ctx.fillStyle = "#FFFFFF";
@@ -78,20 +83,16 @@ module.exports.makeRankCard = async (data) => {
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillText(expCurrent, 710, 164);
 
-	let expWidth = (expCurrent * 615) / expNextLevel;
-	if (expWidth > 615 - 18.5) expWidth = 615 - 18.5;
-
 	ctx.beginPath();
 	ctx.fillStyle = "#4283FF";
-	ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * Math.PI, 0.5 * Math.PI, true);
+	ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * PI, 0.5 * PI, true);
 	ctx.fill();
 	ctx.fillRect(257 + 18.5, 147.5 + 36.25, expWidth, 37.5);
-	ctx.arc(257 + 18.5 + expWidth, 147.5 + 18.5 + 36.25, 18.75, 1.5 * Math.PI, 0.5 * Math.PI, false);
+	ctx.arc(257 + 18.5 + expWidth, 147.5 + 18.5 + 36.25, 18.75, 1.5 * PI, 0.5 * PI, false);
 	ctx.fill();
 
 	const imageBuffer = canvas.toBuffer();
 	fs.writeFileSync(pathImg, imageBuffer);
-	fs.removeSync(avatar);
 	return pathImg;
 }
 
@@ -152,8 +153,8 @@ module.exports.onLoad = async () => {
 module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	const fs = require("fs-extra");
 	
-	let dataAll = (await Currencies.getAll(["userID", "exp"]));
-	let mention = Object.keys(event.mentions);
+	var dataAll = (await Currencies.getAll(["userID", "exp"]));
+	const mention = Object.keys(event.mentions);
 
 	dataAll.sort((a, b) => {
 		if (a.exp > b.exp) return -1;
@@ -163,16 +164,17 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	});
 
 	if (args.length == 0) {
-		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
-		let name = (await Users.getData(event.senderID).name) || (await api.getUserInfo(event.senderID))[event.senderID].name;
+		const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
+		const name = (await Users.getData(event.senderID).name) || (await api.getUserInfo(event.senderID))[event.senderID].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 		const point = await this.getInfo(event.senderID, Currencies);
+		const timeStart = Date.now();
 		const pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
-		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
+		return api.sendMessage({body: `${Date.now() - timeStart}`, attachment: fs.createReadStream(pathRankCard, {'highWaterMark': 128 * 1024}) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
 	}
 	if (mention.length == 1) {
-		let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
-		let name = (await Users.getData(mention[0]).name) || (await api.getUserInfo(mention[0]))[mention[0]].name;
+		const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
+		const name = (await Users.getData(mention[0]).name) || (await api.getUserInfo(mention[0]))[mention[0]].name;
 		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 		const point = await this.getInfo(mention[0], Currencies);
 		const pathRankCard = await this.makeRankCard({ id: mention[0], name, rank, ...point })
@@ -180,8 +182,8 @@ module.exports.run = async ({ event, api, args, Currencies, Users }) => {
 	}
 	if (mention.length > 1) {
 		for (const userID of mention) {
-			let rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
-			let name = (await Users.getData(userID).name) || (await api.getUserInfo(userID))[userID].name;
+			const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
+			const name = (await Users.getData(userID).name) || (await api.getUserInfo(userID))[userID].name;
 			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
 			const point = await this.getInfo(userID, Currencies);
 			const pathRankCard = await this.makeRankCard({ id: userID, name, rank, ...point })
