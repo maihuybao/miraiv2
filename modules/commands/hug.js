@@ -36,9 +36,9 @@ module.exports.run = function({
           tag: tag,
           id: Object.keys(event.mentions)[0]
         }],
-        attachment: fs.createReadStream(__dirname + `/src/anime.${ext}`)
-      }, event.threadID, () => fs.unlinkSync(__dirname + `/src/anime.${ext}`), event.messageID);
+        attachment: fs.createReadStream(__dirname + `/cache/anime.${ext}`)
+      }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/anime.${ext}`), event.messageID);
     };
-    request(getURL).pipe(fs.createWriteStream(__dirname + `/src/anime.${ext}`)).on("close", callback);
+    request(getURL).pipe(fs.createWriteStream(__dirname + `/cache/anime.${ext}`)).on("close", callback);
   });
 }

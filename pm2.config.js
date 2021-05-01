@@ -5,7 +5,7 @@ module.exports = {
 			script: './mirai.js',
 			autorestart: true,
 			exec_mode: 'cluster',
-			pmx: false,
+			pmx: true,
 			vizion: false,
 			cwd: __dirname,
 			instances: 1,

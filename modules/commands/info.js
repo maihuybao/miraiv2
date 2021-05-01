@@ -31,6 +31,6 @@ module.exports.run = async({api,event,args,client,Users,__GLOBAL,Currencies}) =>
     var content = args.join(" ");
     var callback = () => api.sendMessage({
       body: `👀 Tên: ${name}\n🐒 UID: ${mentions}\n👤 Link FB: ${url}\n😘 Giới tính: ${gender}\n🐶 Username: ${sn}\n🥺 Tình trạng: ${b}\n🤑 Số tiền: ${k} đô. `,
-      attachment: fs.createReadStream(__dirname + "/src/1.png")
-    }, event.threadID, () => fs.unlinkSync(__dirname + "/src/1.png"));
-    return request(encodeURI(`https://api.miraiproject.tk/getavatar?ID=${mentions}`)).pipe(fs.createWriteStream(__dirname+'/src/1.png')).on('close',() => callback());}
+      attachment: fs.createReadStream(__dirname + "/cache/1.png")
+    }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/1.png"));
+    return request(encodeURI(`https://api.miraiproject.tk/getavatar?ID=${mentions}`)).pipe(fs.createWriteStream(__dirname+'/cache/1.png')).on('close',() => callback());}

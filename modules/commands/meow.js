@@ -25,9 +25,9 @@ module.exports.run = function({
     let ext = getURL.substring(getURL.lastIndexOf(".") + 1);
     let callback = function() {
       api.sendMessage({
-        attachment: fs.createReadStream(__dirname + `/src/meow.${ext}`)
-      }, event.threadID, () => fs.unlinkSync(__dirname + `/src/meow.${ext}`), event.messageID);
+        attachment: fs.createReadStream(__dirname + `/cache/meow.${ext}`)
+      }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/meow.${ext}`), event.messageID);
     };
-    request(getURL).pipe(fs.createWriteStream(__dirname + `/src/meow.${ext}`)).on("close", callback);
+    request(getURL).pipe(fs.createWriteStream(__dirname + `/cache/meow.${ext}`)).on("close", callback);
   });
 }

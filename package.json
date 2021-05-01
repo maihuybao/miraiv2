@@ -4,10 +4,11 @@
 	"description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord.",
 	"main": "mirai.js",
 	"engines": {
-		"node": "12.18.2"
+		"node": "14.x"
 	},
 	"scripts": {
 		"start": "pm2 start pm2.config.js --no-daemon",
+		"login": "node login",
 		"test": "node --trace-warnings --use_strict --async-stack-traces mirai"
 	},
 	"repository": {
@@ -30,46 +31,25 @@
 	},
 	"homepage": "https://github.com/catalizcs/miraiv2#readme",
 	"dependencies": {
-		"amlich": "0.0.2",
 		"axios": "^0.21.1",
-		"bitly": "^7.1.2",
 		"body-parser": "",
-		"caesar-salad": "^2.1.0",
 		"canvas": "^2.7.0",
 		"chalk": "",
-		"chem-eb": "^0.1.11",
 		"child_process": "",
-		"fast-speedtest-api": "^0.3.2",
 		"fca-unofficial": "",
 		"figlet": "",
 		"fs-extra": "^9.1.0",
-		"jimp": "^0.16.1",
-		"lyrics-finder": "^21.7.0",
 		"minimist": "",
 		"moment": "",
-		"morsify": "^2.4.0",
 		"ms": "",
-		"node-fetch": "^2.6.1",
-		"node-superfetch": "^0.2.2",
 		"npmlog": "",
-		"parse-ms": "^3.0.0",
 		"path": "^0.12.7",
 		"pm2": "^4.5.6",
-		"qrcode": "^1.4.4",
-		"random": "^3.0.6",
 		"readline": "",
-		"request": "^2.88.2",
-		"safe-browse-url-lookup": "^0.1.1",
-		"sagiri": "^3.1.1",
 		"semver": "",
 		"sequelize": "^6.5.0",
-		"simple-youtube-api": "^5.2.1",
-		"soundcloud-downloader": "^1.0.0",
 		"sqlite3": "",
 		"string-similarity": "",
-		"totp-generator": "",
-		"vm2": "^3.9.3",
-		"wikijs": "^6.2.0",
-		"ytdl-core": "^4.5.0"
+		"totp-generator": ""
 	}
 }

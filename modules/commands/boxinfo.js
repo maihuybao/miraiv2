@@ -33,8 +33,8 @@ module.exports.run = async function({
     +`+Số thành viên :${threadInfo.participantIDs.length}\n`
     +`+Số quản trị viên ${threadInfo.adminIDs.length}\n`
     +`+Tổng số tin nhắn: ${threadInfo.messageCount}\n`,
-    attachment: fs.createReadStream(__dirname + "/src/2.png")
-  }, event.threadID, () => fs.unlinkSync(__dirname + "/src/2.png"));
+    attachment: fs.createReadStream(__dirname + "/cache/2.png")
+  }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/2.png"));
   	if (ten = threadInfo.threadName == null){var ten = "Chưa đặt tên"}
   	if (emg = threadInfo.emoji == null){var emg = "(y)"}
     var callback2 = () => api.sendMessage({
@@ -45,14 +45,14 @@ module.exports.run = async function({
   if(avt = threadInfo.imageSrc == null)
   	{return callback2()}
   else
-  	{return request(encodeURI(`${threadInfo.imageSrc}`)).pipe(fs.createWriteStream(__dirname+'/src/2.png')).on('close',() => callback())}
+  	{return request(encodeURI(`${threadInfo.imageSrc}`)).pipe(fs.createWriteStream(__dirname+'/cache/2.png')).on('close',() => callback())}
 }
 if (input=="setname"){
 clone= args.join(" ");
   api.setTitle(clone.slice(7),event.threadID)
 }
-if (input=="image"){var cb = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/src/2.png")
-  }, event.threadID, () => fs.unlinkSync(__dirname + "/src/2.png"))
-  request(encodeURI(`${threadInfo.imageSrc}`)).pipe(fs.createWriteStream(__dirname+'/src/2.png')).on('close',() => cb())
+if (input=="image"){var cb = () => api.sendMessage({attachment: fs.createReadStream(__dirname + "/cache/2.png")
+  }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/2.png"))
+  request(encodeURI(`${threadInfo.imageSrc}`)).pipe(fs.createWriteStream(__dirname+'/cache/2.png')).on('close',() => cb())
 return cb()
 }}

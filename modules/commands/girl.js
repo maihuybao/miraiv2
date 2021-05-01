@@ -3,7 +3,7 @@ const request = require('request');
 const fs = require('fs')
 
 module.exports.config = {
-  name: "gaixinh",
+  name: "gai",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "BerVer",
@@ -27,9 +27,9 @@ request(options, function (error, response) {
 	if (error) throw new Error(error);
   var a =JSON.parse(response.body).data;
     var callback = () => api.sendMessage({
-      attachment: fs.createReadStream(__dirname + "/src/1.png")
-    }, event.threadID, () => fs.unlinkSync(__dirname + "/src/1.png"));
-    return request(encodeURI(`${a}`)).pipe(fs.createWriteStream(__dirname + '/src/1.png')).on('close', () => callback());
+      attachment: fs.createReadStream(__dirname + "/cache/1.png")
+    }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/1.png"));
+    return request(encodeURI(`${a}`)).pipe(fs.createWriteStream(__dirname + '/cache/1.png')).on('close', () => callback());
     console.log(rq)
   });
 }

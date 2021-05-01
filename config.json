@@ -1,6 +1,5 @@
 {
     "DeveloperMode": false,
-    "AutoChangeName": false,
     "autoCreateDB": true,
     "allowInbox": false,
     "selfListen": true,

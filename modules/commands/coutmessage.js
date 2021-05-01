@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "count", // Tên lệnh, được sử dụng trong việc gọi lệnh
 	version: "1.0.0", // phiên bản của module này
-	hasPermssion: 0/1/2, // Quyền hạn sử dụng, với 0 là toàn bộ thành viên, 1 là quản trị viên trở lên, 2 là admin/owner
+	hasPermssion: 0, // Quyền hạn sử dụng, với 0 là toàn bộ thành viên, 1 là quản trị viên trở lên, 2 là admin/owner
 	credits: "BerVer", // Công nhận module sở hữu là ai
 	description:"Đếm mọi thứ trong box chat", // Thông tin chi tiết về lệnh
 	commandCategory: "group", // Thuộc vào nhóm nào
