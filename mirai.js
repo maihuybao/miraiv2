@@ -65,24 +65,6 @@ catch {
 	return logger.loader("Không thể load config!", "error");
 }
 
-//im working on it!
-if (process.env.API_SERVER_EXTERNAL !== 'https://api.glitch.com') {
-	(async () => {
-		const http = require("http");
-		const server = http.createServer((req, res) => {
-			res.writeHead(200, "OK", { "Content-Type": "text/plain" });
-			res.write("Hello there!");
-			res.end();
-		});
-		try {
-			await server.listen(process.env.PORT || 0, "127.0.0.1");
-		}
-		catch {
-			logger("Không thể mở server!", "[ HTTP SERVER ]");
-		}
-	})();
-}
-
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
@@ -93,15 +75,6 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 //========= Get all command files =========//
-var packageManager;
-
-try {
-	require.resolve("pnpm");
-	packageManager = "pnpm"
-}
-catch {
-	packageManager = "npm";
-}
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
 for (file of commandFiles) {
@@ -122,7 +95,7 @@ for (file of commandFiles) {
 			}
 			catch (e) {
 				logger.loader(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "warm");
-				execSync(packageManager + ' install -s --prefer-offline --no-audit ' + command.config.dependencies.join(" "));
+				execSync('npm install -s --prefer-offline --no-audit ' + command.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/commands/${file}`)];
 				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`);
 			}
@@ -189,7 +162,7 @@ for (file of eventFiles) {
 			}
 			catch (e) {
 				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "warm");
-				execSync(packageManager + ' install -s --prefer-offline --no-audit ' + event.config.dependencies.join(" "));
+				execSync('npm install -s --prefer-offline --no-audit ' + event.config.dependencies.join(" "));
 				delete require.cache[require.resolve(`./modules/events/${file}`)];
 				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`);
 			}

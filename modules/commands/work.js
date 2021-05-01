@@ -7,7 +7,6 @@ module.exports.config = {
 	commandCategory: "Economy",
 	usages: "work",
     cooldowns: 5,
-    dependencies: ["parse-ms"],
     envConfig: {
         cooldownTime: 1200000
     }

@@ -1,7 +1,8 @@
-const moment = require("moment");
+const moment = require("moment-timezone");
+const logger = require("../../utils/log");
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
     setInterval(function () {
-        const time = new Date(moment.tz("Asia/Ho_Chi_minh").toISOString()).getTime();
+        const time = moment().utcOffset("+07:00").unix();
         var dataJob = client.schedule || [],
             spliced;
 
@@ -9,12 +10,14 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
             if (item.timestamp < time || item.passed) {
                 const command = client.commands.get(item.commandName);
                 try {
-                    command.schedule({ event: item.event, api, __GLOBAL, client, models, Users, Threads, Currencies });
+                    command.schedule({ event: item.event, api, __GLOBAL, client, models, Users, Threads, Currencies, schedule: item });
                     spliced = dataJob.filter(n => n.event.messageID !== item.event.messageID);
                     client.schedule = spliced;
                 }
                 catch (e) {
                     logger(e + " tại schedule: " + command.config.name, "error");
+                    spliced = dataJob.filter(n => n.event.messageID !== item.event.messageID);
+                    client.schedule = spliced;
                 }
             } else "";
         }
