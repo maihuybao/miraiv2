@@ -1,6 +1,7 @@
-const moment = require("moment-timezone");
-const logger = require("../../utils/log");
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
+    const moment = require("moment-timezone");
+    const logger = require("../../utils/log");
+    
     setInterval(function () {
         const time = moment().utcOffset("+07:00").unix();
         var dataJob = client.schedule || [],

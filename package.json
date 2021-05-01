@@ -4,10 +4,11 @@
 	"description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord.",
 	"main": "mirai.js",
 	"engines": {
-		"node": "12.18.2"
+		"node": "14.x"
 	},
 	"scripts": {
 		"start": "pm2 start pm2.config.js --no-daemon",
+		"login": "node login",
 		"test": "node --trace-warnings --use_strict --async-stack-traces mirai"
 	},
 	"repository": {

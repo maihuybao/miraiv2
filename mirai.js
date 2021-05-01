@@ -1,4 +1,6 @@
-//=========Call Variable =========//
+//////////////////////////////////////////////////////
+//========= Require all variable need use =========//
+/////////////////////////////////////////////////////
 
 const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, unlinkSync } = require("fs-extra");
 const { join, resolve } = require("path");
@@ -34,9 +36,11 @@ __GLOBAL = new Object({
 	settings: new Array()
 });
 
-//check argv
+//////////////////////////////////////////////////////////
+//========= Find and get variable from Config =========//
+/////////////////////////////////////////////////////////
 
-var argv = require('minimist')(process.argv.slice(2)); 
+const argv = require('minimist')(process.argv.slice(2)); 
 var configValue;
 
 var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
@@ -67,6 +71,10 @@ catch {
 
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
 
+////////////////////////////////////////////////
+//========= Check update from Github =========//
+///////////////////////////////////////////////
+
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
 	var local = JSON.parse(readFileSync('./package.json')).version;
@@ -74,7 +82,9 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 	else logger('Bạn đang sử dụng bản mới nhất!', "[ CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
-//========= Get all command files =========//
+////////////////////////////////////////////////
+//========= Import command to GLOBAL =========//
+////////////////////////////////////////////////
 
 const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
 for (file of commandFiles) {
@@ -141,7 +151,9 @@ for (file of commandFiles) {
 	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${command.config.name} - ${Date.now() - timeStartLoad}ms\n` : "";
 }
 
-//========= Get all event files =========//
+//////////////////////////////////////////////
+//========= Import event to GLOBAL =========//
+//////////////////////////////////////////////
 
 const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
 for (file of eventFiles) {
@@ -197,25 +209,28 @@ for (file of eventFiles) {
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
-if (__GLOBAL.settings.DeveloperMode == true) logger.loader(client.timeLoadModule, "warn");
+if (__GLOBAL.settings.DeveloperMode == true && client.timeLoadModule.length != 0) logger.loader(client.timeLoadModule, "warn");
 writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 unlinkSync(client.dirConfig + ".temp");
 
-try {
-	var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"]));
-	var appState = require(appStateFile);
-}
-catch (e) {
-	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
-}
-
 logger.loader(`=== ${Date.now() - timeStart}ms ===`);
 
-function onBot({ models }) {
-	login({ appState }, (err, api) => {
-		if (err) return logger(JSON.stringify(err), "error");
-		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
+async function onBot({ models }) {
+	try {
+		var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"] || "appstate.json"));
+		var appState = require(appStateFile);
+	}
+	catch (e) {
+		return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
+	}
 
+	login({ appState }, (error, api) => {
+		if (error) return logger(JSON.stringify(error), "error");
+
+		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
+
+		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
+		
 		api.setOptions({
 			forceLogin: true,
 			listenEvents: true,
@@ -223,21 +238,26 @@ function onBot({ models }) {
 			selfListen: __GLOBAL.settings.selfListen || false,
 			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36"
 		});
-
-		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 		
 		//need recode thiz thing
 		const listenHanlde = api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
-			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type)) && !client.event.has(event.messageID)) {
-				client.event.set(event.messageID, event);
+			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) { //& !client.event.has(event.messageID)) {
+				handleListen(event);
+				(__GLOBAL.settings.DeveloperMode == true) ? console.log(event) : "";
+				/*client.event.set(event.messageID, event);
 				handleListen(client.event.get(event.messageID));
 				(__GLOBAL.settings.DeveloperMode == true) ? console.log(client.event.get(event.messageID)) : "";
 				client.event.delete(event.messageID);
-			}
+				*/
+			} else "";
 		});
-	});
+	});	
 }
+
+//////////////////////////////////////////////
+//========= Connecting to Database =========//
+//////////////////////////////////////////////
 
 const { Sequelize, sequelize } = require("./includes/database");
 (async () => {

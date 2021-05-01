@@ -1,6 +1,7 @@
-const logger = require("../../utils/log.js");
+
 
 module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
+	const logger = require("../../utils/log.js");
 	return async function({ event }) {
 		const timeStart = Date.now();
 		var { senderID, threadID } = event;

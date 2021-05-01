@@ -30,7 +30,6 @@ module.exports.onLoad = async () => {
 			responseType: 'stream'
 		})).data.pipe(fs.createWriteStream(dirMaterial + "items.json"));
 
-    console.log(chalk.yellow(figlet.textSync('Fishing', { horizontalLayout: 'full' })));
 	return;
 }
 
