@@ -5,7 +5,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 	return async function({ event }) {
 		const dateNow = Date.now();
 		const { body: contentMessage, senderID, threadID, messageID } = event;
-		if (client.userBanned.has(senderID.toString()) || client.threadBanned.has(threadID.toString()) || __GLOBAL.settings.allowInbox == false && senderID == threadID) return;
+		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || __GLOBAL.settings.allowInbox == false && senderID == threadID) return;
 		var threadSetting = client.threadSetting.get(threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;

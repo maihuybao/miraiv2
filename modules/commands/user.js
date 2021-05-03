@@ -33,11 +33,11 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 	if (parseInt(event.userID) !== parseInt(handleReaction.author)) return;
 	switch (handleReaction.type) {
 		case "ban": {
-            var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
-            await Users.setData(handleReaction.target, { banned: 1 });
-			let dataUser = client.userBanned.get(handleReaction.target.toString()) || {};
+			var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
+			await Users.setData(handleReaction.target, { banned: 1 });
+			let dataUser = client.userBanned.get(handleReaction.target) || {};
 			dataUser["banned"] = 1;
-			client.userBanned.set(handleReaction.target, dataUser);
+			client.userBanned.set(handleReaction.target.toString(), dataUser);
 			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
@@ -54,7 +54,7 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 }
 
 module.exports.run = async ({ event, api, args, Users, client }) => {
-    let content = args.slice(1, args.length);
+	let content = args.slice(1, args.length);
 	switch (args[0]) {
 		case "ban": {
 			if (content.length == 0) return api.sendMessage("Bạn cần phải nhập ID người dùng cần ban!", event.threadID);
@@ -98,7 +98,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 		}
 		case "search": {
 			let contentJoin = content.join(" ");
-			let getUsers =  (await Users.getAll(['userID', 'name'])).filter(item => !!item.name);
+			let getUsers = (await Users.getAll(['userID', 'name'])).filter(item => !!item.name);
 			let matchUsers = [], a = '', b = 0;
 			getUsers.forEach(i => {
 				if (i.name.toLowerCase().includes(contentJoin.toLowerCase())) {
