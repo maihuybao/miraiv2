@@ -23,8 +23,7 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client })
 			if (!client.allUser.includes(parseInt(senderID))) {
 				try {
 					client.inProcess = true;
-					const name = (await api.getUserInfo(senderID))[senderID].name;
-					await Users.createData(senderID, { name });
+					await Users.createData(senderID, {});
 					logger(`New User: ${senderID}`, "[ DATABASE ]")
 					await Currencies.createData(senderID);
 					client.allUser.push(parseInt(senderID));

@@ -12,7 +12,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 		try {
 			logger("Khởi tạo biến môi trường", "[ DATABASE ]")
 			const threads = (await Threads.getAll());
-			const users = (await Users.getAll(["userID", "banned"]));
+			const users = (await Users.getAll(["userID", "banned", "name"]));
 
 			for (const info of threads) {
 				client.allThread.push(info.threadID);
@@ -24,6 +24,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 			logger.loader("Đã tải xong biến môi trường nhóm!");
 			for (const info of users) {
 				client.allUser.push(info.userID);
+				if (info.name) client.nameUser.set(info.userID.toString(), info.name);
 				if (info.banned == 1) client.userBanned.set(info.userID.toString(), 1); 
 			}
 			logger.loader("Đã tải xong biến môi trường người dùng!");

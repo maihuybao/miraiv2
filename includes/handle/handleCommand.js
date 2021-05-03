@@ -4,7 +4,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 	const logger = require("../../utils/log.js");
 	return async function({ event }) {
 		const dateNow = Date.now();
-		const { body: contentMessage, senderID, threadID, messageID } = event;
+		const { body: contentMessage, senderID, threadID } = event;
 		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || __GLOBAL.settings.allowInbox == false && senderID == threadID) return;
 		var threadSetting = client.threadSetting.get(threadID) || {};
 		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
@@ -24,7 +24,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			var allCommandName = [];
 			const commandValues = client.commands.values();
 			for (const cmd of commandValues) allCommandName.push(cmd.config.name);
-			const checker = stringSimilarity.findBestMatch(commandName, commandValues);
+			const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
 			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
 			else return api.sendMessage(`Lệnh bạn sử dụng không tồn tại, có phải là lệnh "${checker.bestMatch.target}" hay không?`, threadID);
 		}
@@ -45,20 +45,33 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			}
 		}
 
+		//////////////////////////////////////
+		//========= Check userInfo =========//
+		//////////////////////////////////////
+
+
+		console.log(client.nameUser.has(senderID));
+		if (!client.nameUser.has(senderID)) {
+			const name = (await api.getUserInfo(senderID))[senderID].name;
+			await Users.setData(senderID, { name });
+			client.nameUser.set(senderID, name);
+		}
+
 		////////////////////////////////////////
 		//========= Check permssion =========//
 		///////////////////////////////////////
 
 		var permssion = 0;
-		if (command.config.hasPermssion == 2 && !__GLOBAL.settings.ADMINBOT.includes(senderID)) return api.sendMessage(`❌ Bạn không đủ quyền hạn người điều hành bot đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
-		else permssion = 2;
 		const find = threadInfo.adminIDs.find(el => el.id == senderID);
-		if (command.config.hasPermssion == 1 && !__GLOBAL.settings.ADMINBOT.includes(senderID) && !find) return api.sendMessage(`❌ Bạn không đủ quyền hạn đề sử dụng lệnh ${command.config.name}`, threadID, messageID);
-		else permssion = 1;
+		
+		if (__GLOBAL.settings.ADMINBOT.includes(senderID)) permssion = 2;
+		else if (!__GLOBAL.settings.ADMINBOT.includes(senderID) && find) permssion = 1;
 
-		////////////////////////////////////
-		//=========Check cooldown=========//
-		////////////////////////////////////
+		if (command.config.hasPermssion > permssion) return api.sendMessage(`Bạn không đủ quyền hạn để có thể sử dụng lệnh "${command.config.name}"`, event.threadID, event.messageID);
+
+		//////////////////////////////////////
+		//========= Check cooldown =========//
+		//////////////////////////////////////
 
 		if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
 		const timestamps = client.cooldowns.get(command.config.name);

@@ -10,7 +10,10 @@
     "OTPKEY": "",
     "BOTNAME": "",
     "PREFIX": "!",
-    "ADMINBOT": "",
+    "ADMINBOT": [
+        "ID1",
+        "ID2"
+    ],
     "DATABASE": {
         "sqlite": {
             "storage": "data.sqlite"
