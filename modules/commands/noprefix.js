@@ -1,5 +1,5 @@
 module.exports.config = {
-name: "hi",
+name: "noprefix",
 	version: "1.0.1",
 	hasPermssion: 0,
 	credits: "BerVer",
@@ -13,6 +13,9 @@ module.exports.event = function({ api, event, client, __GLOBAL }) {
 	var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
 	if (event.body=="hi" || (event.body=="Hi")) {
 		return out("Xin chào, \n Chúc bạn ngày mới tốt lành \n\rBerBot")
+	}
+	if (event.body=="prefix" || (event.body=="Prefix")) {
+		return out(`Xin chào, \nPrefix của BerBot là : ${__GLOBAL.settings.BOTNAME}\n\rBerBot`)
 	}
 }
 	module.exports.run = function({ api, event, client, __GLOBAL }) {

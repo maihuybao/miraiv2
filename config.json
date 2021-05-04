@@ -2,7 +2,7 @@
     "DeveloperMode": false,
     "autoCreateDB": true,
     "allowInbox": false,
-    "selfListen": true,
+    "selfListen": false,
     "commandDisabled": [],
     "eventDisabled": [],
     "EMAIL": "",
@@ -10,13 +10,19 @@
     "OTPKEY": "",
     "BOTNAME": "BerBot",
     "PREFIX": "gei.",
-    "ADMINBOT": "100048944291189",
+    "ADMINBOT": [
+        "100048944291189",
+        "ID2",
+        [
+            "100023693990349"
+        ]
+    ],
     "DATABASE": {
         "sqlite": {
             "storage": "data.sqlite"
         }
     },
-    "APPSTATEPATH": "fbstate.json",
+    "APPSTATEPATH": "appstate.json",
     "caesar": {
         "caeserPassword": "266303"
     },
