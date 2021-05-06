@@ -11,8 +11,7 @@
     "BOTNAME": "",
     "PREFIX": "!",
     "ADMINBOT": [
-        "ID1",
-        "ID2"
+        "ID1"
     ],
     "DATABASE": {
         "sqlite": {

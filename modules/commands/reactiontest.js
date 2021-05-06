@@ -12,7 +12,6 @@ module.exports.config = {
 module.exports.event = async ({ event, api, client }) => {
     if (typeof client.imfastboii == "undefined") return;
     let data = client.imfastboii.find(item => item.threadID == event.threadID && item.userID == event.senderID) || {};
-    console.log(data.userID == event.senderID , event.body.toLowerCase() == data.word)
     if (data.userID == event.senderID && event.body.toLowerCase() == data.word) api.sendMessage(`${Date.now() - data.time}ms - ${(Date.now() - data.time) > 4000 ? "you too slow :/" : "wao, mày là hổ à??"}`, event.threadID, event.messageID);
     else return;
     let index = client.imfastboii.findIndex(item => item.threadID == event.threadID);

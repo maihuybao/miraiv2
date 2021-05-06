@@ -32,5 +32,4 @@ module.exports.run = async function({ api, event }) {
 	catch {
 		return api.sendMessage("Không thể speedtest ngay lúc này, hãy thử lại sau!", event.threadID, event.messageID);
 	}
-	
 }

@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Hun, ôm, ... đủ thứ trò in here!",
 	commandCategory: "random-img",
-	usages: "roleplay on/off",
+	usages: "roleplay",
 	cooldowns: 1,
 	dependencies: ['request', 'fs-extra']
 };
@@ -96,27 +96,12 @@ module.exports.event = ({ event, api, client }) => {
 }
 
 module.exports.run = async ({ event, api, args, Threads, client, utils }) => {
-    if (args.length == 0) return api.sendMessage("Input không được để trống", event.threadID, event.messageID);
     let settings = (await Threads.getData(event.threadID)).settings;
-    switch (args[0]) {
-        case "on": {
-            settings["roleplay"] = true;
-            await Threads.setData(event.threadID, options = { settings });
-            client.threadSetting.set(event.threadID, settings);
-            api.sendMessage("Đã bật roleplay!", event.threadID);
-            break;
-        }
-        case "off": {
-            settings["roleplay"] = false;
-            await Threads.setData(event.threadID, options = { settings });
-            client.threadSetting.set(event.threadID, settings);
-            api.sendMessage("Đã tắt roleplay!", event.threadID);
-            break;
-        }
-    
-        default: {
-            utils.throwError("roleplay", event.threadID, event.messageID);
-            break;
-        }
-    }
+    if (typeof settings["roleplay"] == "undefined" || settings["roleplay"] == false) settings["roleplay"] = true;
+	else settings["roleplay"] = false;
+	
+	await Threads.setData(event.threadID, options = { settings });
+	client.threadSetting.set(event.threadID, settings);
+	
+	return api.sendMessage(`Đã ${(settings["roleplay"] == true) ? "bật" : "tắt"} thành công roleplay!`, event.threadID);
 }

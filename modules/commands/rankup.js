@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Thông báo rankup cho từng nhóm, người dùng",
 	commandCategory: "system",
-	usages: "rankup on/off",
+	usages: "rankup",
 	dependencies: ["fs-extra"],
 	cooldowns: 5,
 	envConfig: {
@@ -17,9 +17,9 @@ module.exports.event = async function({ api, event, Currencies, Users, client })
 	const {threadID, senderID } = event;
 	const { createReadStream, existsSync, mkdirSync } = require("fs-extra");
 
-	const threadData = client.threadSetting.get(threadID) || {};
+	const threadData = client.threadSetting.get(threadID.toString()) || {};
 
-	if (typeof client["rankup"] != "undefined" && threadData["rankup"] == false) return;
+	if (typeof threadData["rankup"] != "undefined" && threadData["rankup"] == false) return;
 
 	var exp = parseInt((await Currencies.getData(senderID)).exp);
 	exp = exp += 1;
@@ -47,17 +47,13 @@ module.exports.event = async function({ api, event, Currencies, Users, client })
 	await Currencies.setData(senderID, { exp });
 	return;
 }
-module.exports.run = async function({ api, event, args, Threads, client, utils }) {
+module.exports.run = async function({ api, event, Threads, client }) {
 	let settings = (await Threads.getData(event.threadID)).settings;
-	switch (args[0]) {
-		case "off": settings["rankup"] = false;
-		break;
-		case "on": settings["rankup"] = true;
-		break;
-		default:
-		return utils.throwError("rankup", event.threadID, event.messageID);
-	}
+	if (typeof settings["rankup"] == "undefined" || settings["rankup"] == false) settings["rankup"] = true;
+	else settings["rankup"] = false;
+	
 	await Threads.setData(event.threadID, options = { settings });
 	client.threadSetting.set(event.threadID, settings);
+	
 	return api.sendMessage(`Đã ${(settings["rankup"] == true) ? "bật" : "tắt"} thành công thông báo rankup!`, event.threadID);
 }

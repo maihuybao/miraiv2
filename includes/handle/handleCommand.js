@@ -49,12 +49,23 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		//========= Check userInfo =========//
 		//////////////////////////////////////
 
-
-		console.log(client.nameUser.has(senderID));
 		if (!client.nameUser.has(senderID)) {
-			const name = (await api.getUserInfo(senderID))[senderID].name;
-			await Users.setData(senderID, { name });
-			client.nameUser.set(senderID, name);
+			const axios = require("axios");
+			const cheerio = require("cheerio");
+			const urlFacebook = `https://www.facebook.com/profile.php?id=${senderID}`;
+
+			(async () => {
+				try {
+						const { data } = await axios.get(urlFacebook);
+						const $ = cheerio.load(data);
+						const name = $("title").text() || "Người dùng facebook";
+						await Users.setData(senderID, { name });
+						client.nameUser.set(senderID, name);
+				}
+				catch (e) {
+					console.log(e);
+				}
+			})();
 		}
 
 		////////////////////////////////////////
@@ -90,7 +101,7 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 			timestamps.set(senderID, dateNow);
 			
 			if (__GLOBAL.settings.DeveloperMode == true) {
-				const moment = require("moment");
+				const moment = require("moment-timezone");
 				const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 				logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - dateNow}ms`, "[ DEV MODE ]");
 			}

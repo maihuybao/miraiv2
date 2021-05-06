@@ -21,8 +21,7 @@ module.exports = {
         unique: true
       },
       name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       banned: {
         type: Sequelize.BOOLEAN,
