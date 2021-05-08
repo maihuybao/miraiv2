@@ -12,18 +12,18 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 		try {
 			logger("Khởi tạo biến môi trường", "[ DATABASE ]")
 			const threads = (await Threads.getAll());
-			const users = (await Users.getAll(["userID", "banned"]));
+			const users = (await Users.getAll(["userID", "banned", "name"]));
 
 			for (const info of threads) {
 				client.allThread.push(info.threadID);
 				client.threadSetting.set(info.threadID.toString(), info.settings || {});
 				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
 				if (info.banned == 1) client.threadBanned.set(info.threadID.toString(), 1);
-				
 			}
 			logger.loader("Đã tải xong biến môi trường nhóm!");
 			for (const info of users) {
 				client.allUser.push(info.userID);
+				if (info.name && info.name.length != 0) client.nameUser.set(info.userID.toString(), info.name);
 				if (info.banned == 1) client.userBanned.set(info.userID.toString(), 1); 
 			}
 			logger.loader("Đã tải xong biến môi trường người dùng!");

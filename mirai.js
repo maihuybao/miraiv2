@@ -20,6 +20,7 @@ const client = new Object({
 	handleReply: new Array(),
 	handleReaction: new Array(),
 	userBanned: new Map(),
+	nameUser: new Map(),
 	threadBanned: new Map(),
 	threadSetting: new Map(),
 	commandBanned: new Map(),
@@ -77,7 +78,7 @@ writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 
 
 axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
 	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
-	var local = JSON.parse(readFileSync('./package.json')).version;
+	const local = JSON.parse(readFileSync('./package.json')).version;
 	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
 	else logger('Bạn đang sử dụng bản mới nhất!', "[ CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
@@ -215,7 +216,7 @@ unlinkSync(client.dirConfig + ".temp");
 
 logger.loader(`=== ${Date.now() - timeStart}ms ===`);
 
-async function onBot({ models }) {
+function onBot({ models }) {
 	try {
 		var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"] || "appstate.json"));
 		var appState = require(appStateFile);
@@ -242,14 +243,9 @@ async function onBot({ models }) {
 		//need recode thiz thing
 		const listenHanlde = api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
-			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) { //& !client.event.has(event.messageID)) {
+			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) {
 				handleListen(event);
 				(__GLOBAL.settings.DeveloperMode == true) ? console.log(event) : "";
-				/*client.event.set(event.messageID, event);
-				handleListen(client.event.get(event.messageID));
-				(__GLOBAL.settings.DeveloperMode == true) ? console.log(client.event.get(event.messageID)) : "";
-				client.event.delete(event.messageID);
-				*/
 			} else "";
 		});
 	});	
