@@ -13,12 +13,12 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = function({ api, event, args, __GLOBAL }) {
+module.exports.run = function({ api, event, args, global }) {
 	var fs = require("fs-extra");
 	var request = require("request");
 	var { threadID, messageID } = event
 	if (!args[0]) return api.sendMessage("Không tìm thấy tag bạn nhập", threadID, messageID);
-	return request(`https://api.tenor.com/v1/random?key=${__GLOBAL.gif.TENOR}&q=${args[0]}&limit=1`, (err, response, body) => {
+	return request(`https://api.tenor.com/v1/random?key=${global.gif.TENOR}&q=${args[0]}&limit=1`, (err, response, body) => {
 		if (err) throw err;
 		var string = JSON.parse(body);
 		var stringURL = string.results[0].media[0].tinygif.url;

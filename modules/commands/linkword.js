@@ -23,25 +23,25 @@ module.exports.config = {
         }
     ]
 };
-module.exports.event = async function({ api, event, args, client, __GLOBAL }) {
-    if (!__GLOBAL.linkword) __GLOBAL.linkword = new Map();
+module.exports.event = async function({ api, event, global }) {
+    if (!global.linkword) global.linkword = new Map();
     const axios = require("axios");
     let { body: content, threadID, messageID } = event;
-    if (__GLOBAL.linkword.has(threadID)) {
+    if (global.linkword.has(threadID)) {
         if (content && content.split(" ").length == 2) {
             var data = (await axios.get("http://simsimi.miraiproject.tk/api/linkword?ask=" + encodeURIComponent(content))).data;
             return api.sendMessage(data.text, threadID, messageID);
         }
     }
 }
-module.exports.run = function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = function({ api, event, global }) {
     let { threadID, messageID } = event;
-    if (!__GLOBAL.linkword) __GLOBAL.linkword = new Map();
-    if (!__GLOBAL.linkword.has(threadID)) {
-        __GLOBAL.linkword.set(threadID);
+    if (!global.linkword) global.linkword = new Map();
+    if (!global.linkword.has(threadID)) {
+        global.linkword.set(threadID);
         api.sendMessage("Đã bật linkword", threadID, messageID);
     } else {
-        __GLOBAL.linkword.delete(threadID);
+        global.linkword.delete(threadID);
         api.sendMessage("Đã tắt linkword", threadID, messageID);
     }
 }

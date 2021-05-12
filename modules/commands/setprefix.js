@@ -28,21 +28,21 @@ module.exports.handleReaction = async function({ api, event, client, Threads, ha
 	const { threadID, messageID } = event;
 	var data = (await Threads.getData(threadID)).settings;
 	data["PREFIX"] = handleReaction.PREFIX;
-	await Threads.setData( threadID, { settings: data } );
+	await Threads.setData(threadID, { settings: data } );
 	await client.threadSetting.set(parseInt(threadID), data);
 	return api.sendMessage(`Đã chuyển đổi prefix của nhóm thành: ${handleReaction.PREFIX}`, threadID, messageID);
 }
 
-module.exports.run = async ({ api, event, args, client, Threads, __GLOBAL }) => {
+module.exports.run = async ({ api, event, args, client, Threads, global }) => {
 	if (typeof args[0] == "undefined") return api.sendMessage("Phần prefix cần đặt không được để trống", event.threadID, event.messageID);
 	let prefix = args[0].trim();
 	if (!prefix) return api.sendMessage("Phần prefix cần đặt không được để trống", event.threadID, event.messageID);
 	if (prefix == "default") {
 		var data = (await Threads.getData(event.threadID)).settings;
-		data["PREFIX"] = __GLOBAL.settings.PREFIX;
+		data["PREFIX"] = global.config.PREFIX;
 		await Threads.setData( event.threadID, { settings: data } );
 		await client.threadSetting.set(parseInt(event.threadID), data);
-		return api.sendMessage(`Đã reset prefix về mặc định ${__GLOBAL.settings.PREFIX}`, event.threadID, event.messageID);
+		return api.sendMessage(`Đã reset prefix về mặc định ${global.config.PREFIX}`, event.threadID, event.messageID);
 	} else return api.sendMessage("Bạn có chắc bạn muốn đổi prefix của nhóm thành: " + prefix, event.threadID, (error, info) => {
 		client.handleReaction.push({
 			name: "setprefix",

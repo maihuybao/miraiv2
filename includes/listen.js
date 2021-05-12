@@ -1,4 +1,4 @@
-module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
+module.exports = function({ api, client, global, models, timeStart }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
 				Currencies = require("./controllers/currencies")({ models });
@@ -15,7 +15,7 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 			const users = (await Users.getAll(["userID", "banned", "name"]));
 
 			for (const info of threads) {
-				client.allThread.push(info.threadID);
+				client.allThread.push(info.threadID.toString());
 				client.threadSetting.set(info.threadID.toString(), info.settings || {});
 				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
 				if (info.banned == 1) client.threadBanned.set(info.threadID.toString(), 1);
@@ -34,20 +34,20 @@ module.exports = function({ api, client, __GLOBAL, models, timeStart }) {
 		}
 	})();
 
-	logger(`${api.getCurrentUserID()} - [ ${__GLOBAL.settings.PREFIX} ] • ${(!__GLOBAL.settings.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : __GLOBAL.settings.BOTNAME}`, "[ UID ]");
+	logger(`${api.getCurrentUserID()} - [ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? "This bot was made by CatalizCS and SpermLord" : global.config.BOTNAME}`, "[ UID ]");
 	
 	///////////////////////////////////////////////
 	//========= Require all handle need =========//
 	//////////////////////////////////////////////
 
-	require("./handle/handleSchedule")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const utils = require("../utils/funcs.js")({ api, __GLOBAL, client });
-	const handleCommand = require("./handle/handleCommand")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
-	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils });
-	const handleReply = require("./handle/handleReply")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleReaction = require("./handle/handleReaction")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleEvent = require("./handle/handleEvent")({ api, __GLOBAL, client, models, Users, Threads, Currencies });
-	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ __GLOBAL, api, Threads, Users, Currencies, models, client });
+	require("./handle/handleSchedule")({ api, global, client, models, Users, Threads, Currencies });
+	const utils = require("../utils/funcs.js")({ api, global, client });
+	const handleCommand = require("./handle/handleCommand")({ api, global, client, models, Users, Threads, Currencies, utils });
+	const handleCommandEvent = require("./handle/handleCommandEvent")({ api, global, client, models, Users, Threads, Currencies, utils });
+	const handleReply = require("./handle/handleReply")({ api, global, client, models, Users, Threads, Currencies });
+	const handleReaction = require("./handle/handleReaction")({ api, global, client, models, Users, Threads, Currencies });
+	const handleEvent = require("./handle/handleEvent")({ api, global, client, models, Users, Threads, Currencies });
+	const handleCreateDatabase = require("./handle/handleCreateDatabase")({ global, api, Threads, Users, Currencies, models, client });
 
 	logger.loader(`====== ${Date.now() - timeStart}ms ======`);
 

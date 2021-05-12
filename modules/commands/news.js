@@ -10,7 +10,7 @@ module.exports.config = {
     dependencies: ["cheerio", "axios"]
 };
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args }) {
     const axios = require("axios");
     const https = require("https");
     const cheerio = require("cheerio");

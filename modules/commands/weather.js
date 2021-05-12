@@ -21,12 +21,12 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async ({ api, event, args, __GLOBAL, utils }) => {
+module.exports.run = async ({ api, event, args, global, utils }) => {
 	const request = require("request");
 	const moment = require("moment-timezone");
 	var city = args.join(" ");
 	if (city.length == 0) return utils.throwError("weather", event.threadID, event.messageID);
-	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + __GLOBAL.weather.OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
+	return request(encodeURI("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + global.weather.OPEN_WEATHER + "&units=metric&lang=vi"), (err, response, body) => {
 		if (err) throw err;
 		var weatherData = JSON.parse(body);
 		if (weatherData.cod !== 200) return api.sendMessage(`Địa điểm ${city} không tồn tại!`, event.threadID, event.messageID);

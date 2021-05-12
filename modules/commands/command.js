@@ -18,7 +18,7 @@ module.exports.config = {
 	]
 };
 
-const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
+const load = async ({ name, event, api, client, global, loadAll }) => {
 	const logger = require(process.cwd() + "/utils/log.js"),
 			{ join } = require("path"),
 			{ execSync } = require("child_process"),
@@ -55,10 +55,10 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 		if (command.config.envConfig) {
 			try {
 				for (const [key, value] of Object.entries(command.config.envConfig)) {
-					if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
+					if (typeof global[command.config.name] == "undefined") global[command.config.name] = new Object();
 					if (typeof configValue[command.config.name] == "undefined") configValue[command.config.name] = new Object();
-					if (typeof configValue[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = configValue[command.config.name][key]
-					else __GLOBAL[command.config.name][key] = value || "";
+					if (typeof configValue[command.config.name][key] !== "undefined") global[command.config.name][key] = configValue[command.config.name][key]
+					else global[command.config.name][key] = value || "";
 					if (typeof configValue[command.config.name][key] == "undefined") configValue[command.config.name][key] = value || "";
 				}
 				logger.loader(`Loaded config module ${command.config.name}`)
@@ -68,7 +68,7 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 			}
 		}
 		if (command.onLoad) try {
-			command.onLoad({ __GLOBAL, client, configValue });
+			command.onLoad({ global, client, configValue });
 		}
 		catch (error) {
 			logger.loader(`Không thể chạy setup module: ${command} với lỗi: ${error.message}`, "error");
@@ -79,9 +79,9 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 			client.commandRegister.set("event", registerCommand);
 		}
 		client.commands.set(command.config.name, command);
-		if (__GLOBAL.settings["commandDisabled"].includes(`${name}.js`) || configValue["commandDisabled"].includes(`${name}.js`)) {
+		if (global.config["commandDisabled"].includes(`${name}.js`) || configValue["commandDisabled"].includes(`${name}.js`)) {
 			configValue["commandDisabled"].splice(configValue["commandDisabled"].indexOf(`${name}.js`), 1);
-			__GLOBAL.settings["commandDisabled"].splice(__GLOBAL.settings["commandDisabled"].indexOf(`${name}.js`), 1);
+			global.config["commandDisabled"].splice(global.config["commandDisabled"].indexOf(`${name}.js`), 1);
 		}
 		writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));
 		logger.loader(`Loaded module ${command.config.name}`);
@@ -95,22 +95,22 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 	}
 }
 
-const unload = async ({ name, event, api, client, __GLOBAL }) => {
+const unload = async ({ name, event, api, client, global }) => {
 	const { writeFileSync } = require("fs-extra");
 	delete require.cache[require.resolve(client.dirConfig)];
 	var configValue = require(client.dirConfig);
 	client.commands.delete(name);
 	configValue["commandDisabled"].push(`${name}.js`);
-	__GLOBAL.settings["commandDisabled"].push(`${name}.js`);
+	global.config["commandDisabled"].push(`${name}.js`);
 	writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4));
 	return api.sendMessage(`Đã unload lệnh: ${name}`, event.threadID, event.messageID);
 }
 
-const reloadConfig = ({ __GLOBAL, event, api, client }) => {
+const reloadConfig = ({ global, event, api, client }) => {
 	delete require.cache[require.resolve(client.dirConfig)];
 	const config = require(client.dirConfig);
 	try {
-		for (let [name, value] of Object.entries(config)) __GLOBAL.settings[name] = value;
+		for (let [name, value] of Object.entries(config)) global.config[name] = value;
 		return api.sendMessage("Config Reloaded!", event.threadID, event.messageID);
 	}
 	catch (error) {
@@ -118,7 +118,7 @@ const reloadConfig = ({ __GLOBAL, event, api, client }) => {
 	}
 }
 
-module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
+module.exports.run = async ({ event, api, global, client, args, utils }) => {
 	const { readdirSync } = require("fs-extra");
 	const content = args.slice(1, args.length);
 	switch (args[0]) {
@@ -137,7 +137,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 			const commands = content;
 			if (commands.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
 			for (const name of commands) {
-				load({ name, event, api, client, __GLOBAL });
+				load({ name, event, api, client, global });
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
 			}
 		}
@@ -146,7 +146,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 			const commandFiles = readdirSync(__dirname).filter((file) => file.endsWith(".js") && !file.includes('example')).map((nameModule) => nameModule.replace(/.js/gi, ""));;
 			client.commands.clear();
 			for (const name of commandFiles) {
-				load({ name, event, api, client, __GLOBAL, loadAll: true });
+				load({ name, event, api, client, global, loadAll: true });
 				await new Promise(resolve => setTimeout(resolve, 100));
 			}
 			api.sendMessage("loadAll success", event.threadID, event.messageID);
@@ -157,7 +157,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 			if (commands.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
 			var count = 0;
 			for (const name of commands) {
-				unload({ name, event, api, client, __GLOBAL });
+				unload({ name, event, api, client, global });
 				count++
 				console.log(count);
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
@@ -166,7 +166,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		break;
 		case "unloadAll": {
 			client.commands.clear();
-			load({ name: "command", event, api, client, __GLOBAL, loadAll: true });
+			load({ name: "command", event, api, client, global, loadAll: true });
 			api.sendMessage("unloadAll success", event.threadID, event.messageID);
 		}
 		break;

@@ -14,9 +14,9 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
-    let cooldown = __GLOBAL.daily.cooldownTime;
-    let coinReward = __GLOBAL.daily.rewardCoin;
+module.exports.run = async ({ event, api, Currencies, global }) => {
+    let cooldown = global.daily.cooldownTime;
+    let coinReward = global.daily.rewardCoin;
     let data = (await Currencies.getData(event.senderID)).dailyTime;
     if (typeof data !== "undefined" && cooldown - (Date.now() - data) > 0) {
         var time = cooldown - (Date.now() - data),

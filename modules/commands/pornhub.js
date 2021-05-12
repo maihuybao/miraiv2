@@ -39,7 +39,7 @@ module.exports.wrapText = (ctx, text, maxWidth) => {
 	});
 } 
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args }) {
 	let { senderID, threadID, messageID } = event;
 	const { loadImage, createCanvas } = require("canvas");
 	const fs = require("fs-extra");

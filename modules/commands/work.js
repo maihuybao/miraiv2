@@ -12,9 +12,9 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
+module.exports.run = async ({ event, api, Currencies, global }) => {
     const { threadID, messageID } = event;
-    const cooldown = __GLOBAL.work.cooldownTime;
+    const cooldown = global.work.cooldownTime;
     const data = (await Currencies.getData(event.senderID)).workTime;
     if (typeof data !== "undefined" && cooldown - (Date.now() - data) > 0) {
         var time = cooldown - (Date.now() - data),

@@ -18,7 +18,7 @@ function byte2mb(bytes) {
 }
 
 module.exports.run = async function ({ api, event }) {
-	const { cpu, cpuTemperature, currentLoad, memLayout, diskLayout, mem, osInfo } = require("systeminformation"),
+	const { cpu, cpuTemperature, currentLoad, memLayout, diskLayout, mem, osInfo } = require("systeminformation");
 	const timeStart = Date.now();
 
 	try {

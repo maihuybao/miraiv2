@@ -13,9 +13,9 @@ module.exports.config = {
     }
 };
 
-module.exports.run = function({ api, event, args, __GLOBAL, utils }) {
+module.exports.run = function({ api, event, args, global, utils }) {
     const Caesar = require('caesar-salad').Caesar;
     var content = args.join(" ");
-    if (event.type == "message_reply") (content.indexOf('encode') == 0) ? api.sendMessage(Caesar.Cipher(__GLOBAL["caesar"].caeserPassword).crypt(event.messageReply.body), event.threadID, event.messageID) : (content.indexOf('decode') == 0) ? api.sendMessage(Caesar.Decipher(__GLOBAL["caesar"].caeserPassword).crypt(event.messageReply.body), event.threadID, event.messageID) : utils.throwError("caesar", event.threadID, event.messageID)
-    else (content.indexOf('encode') == 0) ? api.sendMessage(Caesar.Cipher(__GLOBAL["caesar"].caeserPassword).crypt(`${args.slice(1, args.length)}`), event.threadID, event.messageID) : (content.indexOf('decode') == 0) ? api.sendMessage(Caesar.Decipher(__GLOBAL["caesar"]).crypt(`${args.slice(1, args.length)}`), event.threadID, event.messageID) : utils.throwError("caesar", event.threadID, event.messageID);
+    if (event.type == "message_reply") (content.indexOf('encode') == 0) ? api.sendMessage(Caesar.Cipher(global["caesar"].caeserPassword).crypt(event.messageReply.body), event.threadID, event.messageID) : (content.indexOf('decode') == 0) ? api.sendMessage(Caesar.Decipher(global["caesar"].caeserPassword).crypt(event.messageReply.body), event.threadID, event.messageID) : utils.throwError("caesar", event.threadID, event.messageID)
+    else (content.indexOf('encode') == 0) ? api.sendMessage(Caesar.Cipher(global["caesar"].caeserPassword).crypt(`${args.slice(1, args.length)}`), event.threadID, event.messageID) : (content.indexOf('decode') == 0) ? api.sendMessage(Caesar.Decipher(global["caesar"]).crypt(`${args.slice(1, args.length)}`), event.threadID, event.messageID) : utils.throwError("caesar", event.threadID, event.messageID);
 }

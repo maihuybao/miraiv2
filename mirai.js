@@ -33,8 +33,8 @@ const client = new Object({
 	dirMain: process.cwd(),
 	timeLoadModule: ""
 }),
-__GLOBAL = new Object({
-	settings: new Array()
+global = new Object({
+	config: new Array()
 });
 
 //////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ catch {
 
 try {
 	for (const [name, value] of Object.entries(configValue)) {
-		__GLOBAL.settings[name] = value;
+		global.config[name] = value;
 	}
 	logger.loader("Config Loaded!");
 }
@@ -87,7 +87,7 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 //========= Import command to GLOBAL =========//
 ////////////////////////////////////////////////
 
-const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !__GLOBAL.settings["commandDisabled"].includes(file));
+const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !global.config["commandDisabled"].includes(file));
 for (file of commandFiles) {
 	const timeStartLoad = Date.now();
 	try {
@@ -115,10 +115,10 @@ for (file of commandFiles) {
         if (command.config.envConfig) {
             try {
                 for (const [key, value] of Object.entries(command.config.envConfig)) {
-                    if (typeof __GLOBAL[command.config.name] == "undefined") __GLOBAL[command.config.name] = new Object();
+                    if (typeof global[command.config.name] == "undefined") global[command.config.name] = new Object();
                     if (typeof configValue[command.config.name] == "undefined") configValue[command.config.name] = new Object();
-                    if (typeof configValue[command.config.name][key] !== "undefined") __GLOBAL[command.config.name][key] = configValue[command.config.name][key]
-                    else __GLOBAL[command.config.name][key] = value || "";
+                    if (typeof configValue[command.config.name][key] !== "undefined") global[command.config.name][key] = configValue[command.config.name][key]
+                    else global[command.config.name][key] = value || "";
                     if (typeof configValue[command.config.name][key] == "undefined") configValue[command.config.name][key] = value || "";
                 }
                 logger.loader(`Loaded config module ${command.config.name}`)
@@ -130,7 +130,7 @@ for (file of commandFiles) {
 
 		if (command.onLoad) {
 			try {
-				command.onLoad({ __GLOBAL, client, configValue });
+				command.onLoad({ global, client, configValue });
 			
 			}
 			catch (error) {
@@ -156,7 +156,7 @@ for (file of commandFiles) {
 //========= Import event to GLOBAL =========//
 //////////////////////////////////////////////
 
-const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !__GLOBAL.settings["eventDisabled"].includes(file));
+const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !global.config["eventDisabled"].includes(file));
 for (file of eventFiles) {
 	const timeStartLoad = Date.now();
 	try {
@@ -183,10 +183,10 @@ for (file of eventFiles) {
         if (event.config.envConfig) {
             try {
                 for (const [key, value] of Object.entries(event.config.envConfig)) {
-                    if (typeof __GLOBAL[event.config.name] == "undefined") __GLOBAL[event.config.name] = new Object();
+                    if (typeof global[event.config.name] == "undefined") global[event.config.name] = new Object();
                     if (typeof configValue[event.config.name] == "undefined") configValue[event.config.name] = new Object();
-                    if (typeof configValue[event.config.name][key] !== "undefined") __GLOBAL[event.config.name][key] = configValue[event.config.name][key]
-                    else __GLOBAL[event.config.name][key] = value || "";
+                    if (typeof configValue[event.config.name][key] !== "undefined") global[event.config.name][key] = configValue[event.config.name][key]
+                    else global[event.config.name][key] = value || "";
                     if (typeof configValue[event.config.name][key] == "undefined") configValue[event.config.name][key] = value || "";
                 }
                 logger.loader(`Loaded config event module ${event.config.name}`)
@@ -195,7 +195,7 @@ for (file of eventFiles) {
             }
         }
 		if (event.onLoad) try {
-			event.onLoad({ __GLOBAL, client, configValue });
+			event.onLoad({ global, client, configValue });
 		}
 		catch (error) {
 			logger.loader(`Không thể chạy setup module: ${event.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
@@ -210,7 +210,7 @@ for (file of eventFiles) {
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
-if (__GLOBAL.settings.DeveloperMode == true && client.timeLoadModule.length != 0) logger.loader(client.timeLoadModule, "warn");
+if (global.config.DeveloperMode == true && client.timeLoadModule.length != 0) logger.loader(client.timeLoadModule, "warn");
 writeFileSync(client.dirConfig, JSON.stringify(configValue, null, 4), 'utf8');
 unlinkSync(client.dirConfig + ".temp");
 
@@ -218,7 +218,7 @@ logger.loader(`=== ${Date.now() - timeStart}ms ===`);
 
 function onBot({ models }) {
 	try {
-		var appStateFile = resolve(join(client.dirMain, __GLOBAL.settings["APPSTATEPATH"] || "appstate.json"));
+		var appStateFile = resolve(join(client.dirMain, global.config["APPSTATEPATH"] || "appstate.json"));
 		var appState = require(appStateFile);
 	}
 	catch (e) {
@@ -228,26 +228,35 @@ function onBot({ models }) {
 	login({ appState }, (error, api) => {
 		if (error) return logger(JSON.stringify(error), "error");
 
-		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
-
-		const handleListen = require("./includes/listen")({ api, models, client, __GLOBAL, timeStart });
-		
 		api.setOptions({
 			forceLogin: true,
 			listenEvents: true,
 			logLevel: "silent",
-			selfListen: __GLOBAL.settings.selfListen || false,
+			selfListen: global.config.selfListen || false,
 			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36"
 		});
+
+		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
+
+		const handleListen = require("./includes/listen")({ api, models, client, global, timeStart });
 		
-		//need recode thiz thing
-		const listenHanlde = api.listenMqtt((error, event) => {
+		const handleListener = function (error, event) {
+			if (client.restartListener == true) return;
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
 			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) {
 				handleListen(event);
-				(__GLOBAL.settings.DeveloperMode == true) ? console.log(event) : "";
+				(global.config.DeveloperMode == true) ? console.log(event) : "";
 			} else "";
+		}
+
+		api.listenMqtt(handleListener);
+
+		setInterval(() =>{
+			client.restartListener =  true;
+			setTimeout(() => api.listenMqtt(handleListener), 10000);
+			client.restartListener = false;
 		});
+
 	});	
 }
 

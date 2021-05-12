@@ -17,7 +17,7 @@ module.exports.config = {
         }
     ]
 };
-module.exports.event = function({ api, event, client, __GLOBAL }) {
+module.exports.event = function({ api, event, client }) {
     if (typeof client.sortword == "undefined") return;
     if (client.sortword.some(e => e.user == event.senderID)) {
         var data = client.sortword.find(e => e.user == event.senderID);
@@ -33,7 +33,7 @@ module.exports.event = function({ api, event, client, __GLOBAL }) {
         }
     }
 }
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args, clientd }) {
     if (!client.sortword) client.sortword = new Array();
     var axios = require("axios");
     var level, time;

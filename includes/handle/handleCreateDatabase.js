@@ -1,16 +1,19 @@
-module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client }) {
+module.exports = function({ global, Users, Threads, Currencies, client }) {
 	const logger = require("../../utils/log.js");
 	return async function({ event }) {
+
 		try {
-			if (__GLOBAL.settings.autoCreateDB == false || client.inProcess == true) return
-			const { senderID, threadID } = event;
+			if (global.config.autoCreateDB == false || client.inProcess == true) return
+			var { senderID, threadID } = event;
+			senderID = senderID.toString();
+			threadID = threadID.toString();
 			var settings = {};
 
-			if (!client.allThread.includes(parseInt(threadID)) && event.isGroup == true) {
+			if (!client.allThread.includes(threadID) && event.isGroup == true) {
 				try {	
 					client.inProcess = true;
 					await Threads.createData(threadID, { settings });
-					client.allThread.push(parseInt(threadID));
+					client.allThread.push(threadID);
 					logger(`New Thread: ${threadID}`, "[ DATABASE ]")
 					client.inProcess = false;
 				}
@@ -20,7 +23,7 @@ module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client })
 				}
 			}
 
-			if (!client.allUser.includes(parseInt(senderID))) {
+			if (!client.allUser.includes(senderID)) {
 				try {
 					client.inProcess = true;
 					await Users.createData(senderID, { name: "" });

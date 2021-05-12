@@ -18,7 +18,7 @@ module.exports.config = {
 	]
 };
 
-const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
+const load = async ({ name, event, api, client, global, loadAll }) => {
 	const logger = require(process.cwd() + "/utils/log.js"),
 			{ join } = require("path"),
 			{ execSync } = require("child_process"),
@@ -54,10 +54,10 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 		if (events.config.envConfig) {
 			try {
 				for (const [key, value] of Object.entries(events.config.envConfig)) {
-					if (typeof __GLOBAL[events.config.name] == "undefined") __GLOBAL[events.config.name] = new Object();
+					if (typeof global[events.config.name] == "undefined") global[events.config.name] = new Object();
 					if (typeof configValue[events.config.name] == "undefined") configValue[events.config.name] = new Object();
-					if (typeof configValue[events.config.name][key] !== "undefined") __GLOBAL[events.config.name][key] = configValue[events.config.name][key]
-					else __GLOBAL[events.config.name][key] = value || "";
+					if (typeof configValue[events.config.name][key] !== "undefined") global[events.config.name][key] = configValue[events.config.name][key]
+					else global[events.config.name][key] = value || "";
 					if (typeof configValue[events.config.name][key] == "undefined") configValue[events.config.name][key] = value || "";
 				}
 				logger.loader(`Loaded config module ${events.config.name}`)
@@ -67,7 +67,7 @@ const load = async ({ name, event, api, client, __GLOBAL, loadAll }) => {
 			}
 		}
 		if (events.onLoad) try {
-			events.onLoad({ __GLOBAL, client, configValue });
+			events.onLoad({ global, client, configValue });
 		}
 		catch (error) {
 			logger.loader(`Không thể chạy setup module: ${events} với lỗi: ${error.name} - ${error.message}`, "error");
@@ -90,11 +90,11 @@ const unload = async ({ name, event, api, client }) => {
 	return api.sendMessage(`Đã unload event: ${name}`, event.threadID, event.messageID);
 }
 
-const reloadConfig = ({ __GLOBAL, event, api, client }) => {
+const reloadConfig = ({ global, event, api, client }) => {
 	delete require.cache[require.resolve(client.dirConfig)];
 	const config = require(client.dirConfig);
 	try {
-		for (let [name, value] of Object.entries(config)) __GLOBAL.settings[name] = value;
+		for (let [name, value] of Object.entries(config)) global.config[name] = value;
 		return api.sendMessage("Config Reloaded!", event.threadID, event.messageID);
 	}
 	catch (error) {
@@ -102,7 +102,7 @@ const reloadConfig = ({ __GLOBAL, event, api, client }) => {
 	}
 }
 
-module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
+module.exports.run = async ({ event, api, global, client, args, utils }) => {
 	const { readdirSync } = require("fs-extra");
 	const content = args.slice(1, args.length);
 
@@ -121,7 +121,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		case "load": {
 			if (content.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
 			for (const name of content) {
-				load({ name, event, api, client, __GLOBAL });
+				load({ name, event, api, client, global });
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
 			}
 		}
@@ -130,7 +130,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 			const eventFiles = readdirSync(__dirname + `/../events/`).filter((file) => file.endsWith(".js") && !file.includes('example')).map((nameModule) => nameModule.replace(/.js/gi, ""));;
 			client.events.clear();
 			for (const name of eventFiles) {
-				load({ name, event, api, client, __GLOBAL, loadAll: true });
+				load({ name, event, api, client, global, loadAll: true });
 				await new Promise(resolve => setTimeout(resolve, 100));
 			}
 			api.sendMessage("loadAll success", event.threadID, event.messageID);
@@ -139,7 +139,7 @@ module.exports.run = async ({ event, api, __GLOBAL, client, args, utils }) => {
 		case "unload": {
 			if (content.length == 0) return api.sendMessage("không được để trống", event.threadID, event.messageID);
 			for (const name of content) {
-				unload({ name, event, api, client, __GLOBAL });
+				unload({ name, event, api, client, global });
 				await new Promise(resolve => setTimeout(resolve, 1 * 1000));
 
 			}

@@ -37,12 +37,12 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
 	return api.unsendMessage(handleReply.messageID);
 }
 
-module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
+module.exports.run = async function({ api, event, args, global, client }) {
 	const ytdl = require("ytdl-core");
 	const YouTubeAPI = require("simple-youtube-api");
 	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
 	
-	const youtube = new YouTubeAPI(__GLOBAL["sing"].YOUTUBE_API);
+	const youtube = new YouTubeAPI(global["sing"].YOUTUBE_API);
 	
 	if (args.length == 0 || !args) return api.sendMessage('Phần tìm kiếm không được để trống!', event.threadID, event.messageID);
 	const keywordSearch = args.join(" ");

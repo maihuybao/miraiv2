@@ -9,9 +9,9 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
+module.exports.run = async function({ api, event, Threads, global }) {
     const logger = require("../../utils/log");
-    if (__GLOBAL[this.config.name].enable != true) return;
+    if (global[this.config.name].enable != true) return;
     var formReport =  "=== Bot Notification ===" +
                         "\n\n» Thread mang ID: " + event.threadID +
                         "\n» Hành động: {task}" +
@@ -43,7 +43,7 @@ module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
     formReport = formReport
     .replace(/\{task}/g, task);
 
-    return api.sendMessage(formReport, __GLOBAL.settings.ADMINBOT.split(" ")[0], (error, info) => {
+    return api.sendMessage(formReport, global.config.ADMINBOT.split(" ")[0], (error, info) => {
         if (error) return logger(formReport, "[ Logging Event ]");
     });
 }
