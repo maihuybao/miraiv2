@@ -4,12 +4,10 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 
 		try {
 			if (global.config.autoCreateDB == false || client.inProcess == true) return
-			var { senderID, threadID } = event;
-			senderID = senderID.toString();
-			threadID = threadID.toString();
+			const { senderID, threadID } = event;
 			var settings = {};
 
-			if (!client.allThread.includes(threadID) && event.isGroup == true) {
+			if (!client.allThread.includes(parseInt(threadID)) && event.isGroup == true) {
 				try {	
 					client.inProcess = true;
 					await Threads.createData(threadID, { settings });
@@ -23,7 +21,11 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 				}
 			}
 
-			if (!client.allUser.includes(senderID)) {
+			//////////////////////////////////////
+			//========= Check userInfo =========//
+			//////////////////////////////////////
+
+			if (!client.allUser.includes(parseInt(senderID))) {
 				try {
 					client.inProcess = true;
 					await Users.createData(senderID, { name: "" });
@@ -36,6 +38,17 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 				catch {
 					client.inProcess = false;
 					logger("Không thể ghi người dùng có ID " + senderID + " vào database!", "[ DATABASE ]");
+				}
+			}
+
+			if (!client.nameUser.has(senderID) || client.nameUser.get(senderID)) {
+				try{
+					const name = await Users.getNameUser(senderID);
+					await Users.setData(senderID, { name });
+					client.nameUser.set(senderID, name);
+				}
+				catch (e) {
+					logger("Không thể lấy thông tin của người dùng", "error");
 				}
 			}
 			return;

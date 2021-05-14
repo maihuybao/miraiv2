@@ -83,50 +83,52 @@ axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.js
 	else logger('Bạn đang sử dụng bản mới nhất!', "[ CHECK UPDATE ]");
 }).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
+const commandFiles = readdirSync(client.dirMain + "/modules/commands").filter((file) => file.endsWith(".js") && !file.includes('example') && !global.config["commandDisabled"].includes(file));
+
 ////////////////////////////////////////////////
 //========= Import command to GLOBAL =========//
 ////////////////////////////////////////////////
 
-const commandFiles = readdirSync(join(__dirname, "/modules/commands")).filter((file) => file.endsWith(".js") && !file.includes('example') && !global.config["commandDisabled"].includes(file));
 for (file of commandFiles) {
 	const timeStartLoad = Date.now();
 	try {
-		var command = require(join(__dirname, "/modules/commands", `${file}`));
+		var command = require(client.dirMain + "/modules/commands/" + file);
 	}
 	catch(e) {
 		logger.loader(`Không thể load module: ${file} với lỗi: ${e.name} - ${e.message}`, "error")
 	}
 	
 	try {
-		if (!command.config || !command.run || !command.config.commandCategory) throw new Error(`Module không đúng định dạng!`);
-		if (client.commands.has(command.config.name || "")) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
+		if (!command["config"] || !command["run"] || !command["config"]["commandCategory"]) throw new Error(`Module không đúng định dạng!`);
+		if (client.commands.has(command["config"]["name"] || "")) throw new Error(`Tên module bị trùng với một module mang cùng tên khác!`);
 		if (command.config.dependencies) {
 			try {
-				for (const i of command.config.dependencies) require.resolve(i);
+				for (const i of command["config"]["dependencies"]) require.resolve(i);
 			}
 			catch (e) {
-				logger.loader(`Không tìm thấy gói phụ trợ cho module ${command.config.name}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "warm");
-				execSync('npm install -s --prefer-offline --no-audit ' + command.config.dependencies.join(" "));
-				delete require.cache[require.resolve(`./modules/commands/${file}`)];
-				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command.config.name}`);
+				logger.loader(`Không tìm thấy gói phụ trợ cho module ${command["config"]["name"]}, tiến hành cài đặt: ${command.config.dependencies.join(", ")}!`, "warm");
+				execSync('npm install -s --prefer-offline --no-audit --package-lock false ' + command.config.dependencies.join(" "));
+				delete require.cache[require.resolve(client.dirMain + "/modules/commands/" + file)];
+				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho module ${command["config"]["name"]}`);
 			}
 		}
 		
-        if (command.config.envConfig) {
-            try {
-                for (const [key, value] of Object.entries(command.config.envConfig)) {
-                    if (typeof global[command.config.name] == "undefined") global[command.config.name] = new Object();
-                    if (typeof configValue[command.config.name] == "undefined") configValue[command.config.name] = new Object();
-                    if (typeof configValue[command.config.name][key] !== "undefined") global[command.config.name][key] = configValue[command.config.name][key]
-                    else global[command.config.name][key] = value || "";
-                    if (typeof configValue[command.config.name][key] == "undefined") configValue[command.config.name][key] = value || "";
-                }
-                logger.loader(`Loaded config module ${command.config.name}`)
-            } catch (error) {
-                console.log(error);
-                logger.loader(`Không thể tải config module ${command.config.name}`, "error");
-            }
-        }
+		if (command.config.envConfig) {
+			try {
+				const nameModule = command["config"]["name"];
+				for (const [key, value] of Object.entries(command.config.envConfig)) {
+					if (typeof global[nameModule] == "undefined") global[nameModule] = new Object();
+					if (typeof configValue[nameModule] == "undefined") configValue[nameModule] = new Object();
+					if (typeof configValue[nameModule][key] !== "undefined") global[nameModule][key] = configValue[nameModule][key]
+					else global[nameModule][key] = value || "";
+					if (typeof configValue[nameModule][key] == "undefined") configValue[nameModule][key] = value || "";
+				}
+				logger.loader(`Loaded config module ${nameModule}`)
+			} catch (error) {
+				console.log(error);
+				logger.loader(`Không thể tải config module ${command["config"]["name"]}`, "error");
+			}
+		}
 
 		if (command.onLoad) {
 			try {
@@ -134,79 +136,86 @@ for (file of commandFiles) {
 			
 			}
 			catch (error) {
-				logger.loader(`Không thể onLoad module: ${command.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
+				logger.loader(`Không thể onLoad module: ${command["config"]["name"]} với lỗi: ${error.name} - ${error.message}`, "error");
 			}
 		}
 
 		if (command.event) {
 			var registerCommand = client.commandRegister.get("event") || [];
-			registerCommand.push(command.config.name);
+			registerCommand.push(command["config"]["name"]);
 			client.commandRegister.set("event", registerCommand);
 		}
-		client.commands.set(command.config.name, command);
-		logger.loader(`Loaded command ${command.config.name}!`);
+		client.commands.set(command["config"]["name"], command);
+		logger.loader(`Loaded command ${command["config"]["name"]}!`);
 	}
 	catch (error) {
 		logger.loader(`Không thể load module command ${file} với lỗi: ${error.message}`, "error");
 	}
-	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${command.config.name} - ${Date.now() - timeStartLoad}ms\n` : "";
+	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${command["config"]["name"]} - ${Date.now() - timeStartLoad}ms\n` : "";
 }
+
+const eventFiles = readdirSync(client.dirMain + "/modules/events").filter((file) => file.endsWith(".js") && !global.config["eventDisabled"].includes(file));
 
 //////////////////////////////////////////////
 //========= Import event to GLOBAL =========//
 //////////////////////////////////////////////
 
-const eventFiles = readdirSync(join(__dirname, "/modules/events")).filter((file) => file.endsWith(".js") && !global.config["eventDisabled"].includes(file));
 for (file of eventFiles) {
 	const timeStartLoad = Date.now();
 	try {
-		var event = require(join(__dirname, "/modules/events", `${file}`));
+		var event = require(client.dirMain + "/modules/events/" + file);
 	}
 	catch(e) {
-		logger.loader(`Không thể load module: ${file} với lỗi: ${e.name} - ${e.message}`, "error")
+		logger.loader(`Không thể load module: ${file} với lỗi: ${e.name} - ${e.message}`, "error");
 	}
 
 	try {
-		if (!event.config || !event.run) throw new Error(`Module không đúng định dạng!`);
-		if (client.events.has(event.config.name) || "") throw new Error('Tên module bị trùng với một module mang cùng tên khác!');
+		if (!event["config"] || !event["run"]) throw new Error(`Module không đúng định dạng!`);
+		if (client.events.has(event["config"]["name"]) || "") throw new Error('Tên module bị trùng với một module mang cùng tên khác!');
 		if (event.config.dependencies) {
 			try {
-				for (const i of event.config.dependencies) require.resolve(i);
+				for (const i of event["config"]["dependencies"]) require.resolve(i);
 			}
 			catch (e) {
-				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event.config.name}, tiến hành cài đặt: ${event.config.dependencies.join(", ")}!`, "warm");
-				execSync('npm install -s --prefer-offline --no-audit ' + event.config.dependencies.join(" "));
-				delete require.cache[require.resolve(`./modules/events/${file}`)];
-				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event.config.name}`);
+				logger.loader(`Không tìm thấy gói phụ trợ cho module ${event["config"]["name"]}, tiến hành cài đặt: ${event["config"]["dependencies"].join(", ")}!`, "warm");
+				execSync('npm install -s --prefer-offline --no-audit --package-lock false ' + event.config.dependencies.join(" "));
+				delete require.cache[require.resolve(client.dirMain + "/modules/events/" + file)];
+				logger.loader(`Đã cài đặt thành công toàn bộ gói phụ trợ cho event module ${event["config"]["name"]}`);
 			}
 		}
-        if (event.config.envConfig) {
-            try {
-                for (const [key, value] of Object.entries(event.config.envConfig)) {
-                    if (typeof global[event.config.name] == "undefined") global[event.config.name] = new Object();
-                    if (typeof configValue[event.config.name] == "undefined") configValue[event.config.name] = new Object();
-                    if (typeof configValue[event.config.name][key] !== "undefined") global[event.config.name][key] = configValue[event.config.name][key]
-                    else global[event.config.name][key] = value || "";
-                    if (typeof configValue[event.config.name][key] == "undefined") configValue[event.config.name][key] = value || "";
-                }
-                logger.loader(`Loaded config event module ${event.config.name}`)
-            } catch (error) {
-                logger.loader(`Không thể tải config event module ${event.config.name}`, "error");
-            }
-        }
-		if (event.onLoad) try {
-			event.onLoad({ global, client, configValue });
+		if (event.config.envConfig) {
+			try {
+				const nameModule = event["config"]["name"];
+				for (const [key, value] of Object.entries(event["config"]["envConfig"])) {
+					if (typeof global[nameModule] == "undefined") global[nameModule] = new Object();
+					if (typeof configValue[nameModule] == "undefined") configValue[nameModule] = new Object();
+					if (typeof configValue[nameModule][key] !== "undefined") global[nameModule][key] = configValue[nameModule][key]
+					else global[nameModule][key] = value || "";
+					if (typeof configValue[nameModule][key] == "undefined") configValue[nameModule][key] = value || "";
+				}
+				logger.loader(`Loaded config event module ${nameModule}`)
+			} catch (error) {
+				logger.loader(`Không thể tải config event module ${event["config"]["name"]}`, "error");
+			}
 		}
-		catch (error) {
-			logger.loader(`Không thể chạy setup module: ${event.config.name} với lỗi: ${error.name} - ${error.message}`, "error");
+
+		if (event.onLoad) {
+			try {
+				event.onLoad({ global, client, configValue });
+			
+			}
+			catch (error) {
+				logger.loader(`Không thể onLoad module: ${event["config"]["name"]} với lỗi: ${error.name} - ${error.message}`, "error");
+			}
 		}
-		client.events.set(event.config.name, event);
-		logger.loader(`Loaded event ${event.config.name}!`);
+
+		client.events.set(event["config"]["name"], event);
+		logger.loader(`Loaded event ${event["config"]["name"]}!`);
 	}
 	catch (error) {
 		logger.loader(`Không thể load module event ${file} với lỗi: ${error.message}`, "error");
 	}
-	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${event.config.name} - ${Date.now() - timeStartLoad}ms\n` : "";
+	(Date.now() - timeStartLoad > 5) ? client.timeLoadModule += `${event["config"]["name"]} - ${Date.now() - timeStartLoad}ms\n` : "";
 }
 
 logger.loader(`Load thành công: ${client.commands.size} module commands | ${client.events.size} module events`);
@@ -216,14 +225,15 @@ unlinkSync(client.dirConfig + ".temp");
 
 logger.loader(`=== ${Date.now() - timeStart}ms ===`);
 
+try {
+	var appStateFile = resolve(join(client.dirMain, global.config["APPSTATEPATH"] || "appstate.json"));
+	var appState = require(appStateFile);
+}
+catch (e) {
+	return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
+}
+
 function onBot({ models }) {
-	try {
-		var appStateFile = resolve(join(client.dirMain, global.config["APPSTATEPATH"] || "appstate.json"));
-		var appState = require(appStateFile);
-	}
-	catch (e) {
-		return logger("Đã xảy ra lỗi trong khi lấy appstate đăng nhập, lỗi: " + e, "error");
-	}
 
 	login({ appState }, (error, api) => {
 		if (error) return logger(JSON.stringify(error), "error");
@@ -239,24 +249,16 @@ function onBot({ models }) {
 		writeFileSync(appStateFile, JSON.stringify(api.getAppState(), null, "\t"));
 
 		const handleListen = require("./includes/listen")({ api, models, client, global, timeStart });
-		
-		const handleListener = function (error, event) {
-			if (client.restartListener == true) return;
+
+		const handleListener = api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error")
 			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) {
-				handleListen(event);
 				(global.config.DeveloperMode == true) ? console.log(event) : "";
+				handleListen(event);
 			} else "";
-		}
-
-		api.listenMqtt(handleListener);
-
-		setInterval(() =>{
-			client.restartListener =  true;
-			setTimeout(() => api.listenMqtt(handleListener), 10000);
-			client.restartListener = false;
 		});
 
+		setInterval(() => handleListen({ type: "ping", time: 1, reader: 1, threadID: 1 }, 1200000));
 	});	
 }
 

@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "system",
 	usages: "rank",
 	cooldowns: 20,
-	dependencies: ["fs-extra","axios","path","canvas","jimp", "request", "node-superfetch"]
+	dependencies: ["fs-extra","axios","path","canvas","jimp", "node-superfetch"]
 };
 
 module.exports.makeRankCard = async (data) => {    

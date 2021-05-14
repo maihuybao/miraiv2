@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: "random-img",
 	usages: "anime tag",
     cooldowns: 5,
-	dependencies: ['request', 'fs-extra'],
+	dependencies: ['node-superfetchs', 'fs-extra'],
     info: [
 		{
 			key: "tag => Để trống",
@@ -26,10 +26,13 @@ module.exports.config = {
 
 module.exports.onLoad = () => {
     const { existsSync, createWriteStream } = require("fs-extra");
-    const request = require("request");
+    const request = require('node-superfetch');
 
-    if (!existsSync(__dirname + "/cache/anime.json")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
-    .pipe(createWriteStream(__dirname + "/cache/anime.json"));
+    const exist = existsSync(__dirname + "/cache/anime.json");
+    const writeData = createWriteStream(__dirname + "/cache/anime.json");
+    if (!exist) return request.get("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
+    .pipe(writeData);
+    else return;
 }
 
 module.exports.run = ({ event, api, args }) => {

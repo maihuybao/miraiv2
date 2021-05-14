@@ -1,16 +1,15 @@
 module.exports = function({ api, global, client, models, Users, Threads, Currencies }) {
 	const logger = require("../../utils/log.js");
-	return async function({ event }) {
+	return function({ event }) {
 		const timeStart = Date.now();
-		var { senderID, threadID } = event;
-		senderID = senderID.toString();
-		threadID = threadID.toString();
-		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || global.config.allowInbox == false && senderID == threadID) return;
+		const { senderID, threadID } = event;
+	
+		if (client.userBanned.has(parseInt(senderID)) || client.threadBanned.has(parseInt(threadID)) || global.config.allowInbox == false && senderID == threadID) return;
 		for (const [key, value] of client.events.entries()) {
 			if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
 				const eventRun = client.events.get(key);
 				try {
-					await eventRun.run({ api, event, global, client, models, Users, Threads, Currencies });
+					eventRun.run({ api, event, global, client, models, Users, Threads, Currencies });
 					if (global.config.DeveloperMode == true) {
 						const moment = require("moment");
 						const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");

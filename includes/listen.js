@@ -15,16 +15,16 @@ module.exports = function({ api, client, global, models, timeStart }) {
 			const users = (await Users.getAll(["userID", "banned", "name"]));
 
 			for (const info of threads) {
-				client.allThread.push(info.threadID.toString());
-				client.threadSetting.set(info.threadID.toString(), info.settings || {});
-				client.threadInfo.set(info.threadID.toString(), info.threadInfo || {});
-				if (info.banned == 1) client.threadBanned.set(info.threadID.toString(), 1);
+				client.allThread.push(info.threadID);
+				client.threadSetting.set(info.threadID, info.settings || {});
+				client.threadInfo.set(info.threadID, info.threadInfo || {});
+				if (info.banned == 1) client.threadBanned.set(info.threadID, 1);
 			}
 			logger.loader("Đã tải xong biến môi trường nhóm!");
 			for (const info of users) {
 				client.allUser.push(info.userID);
-				if (info.name && info.name.length != 0) client.nameUser.set(info.userID.toString(), info.name);
-				if (info.banned == 1) client.userBanned.set(info.userID.toString(), 1); 
+				if (info.name && info.name.length != 0) client.nameUser.set(info.userID, info.name);
+				if (info.banned == 1) client.userBanned.set(info.userID, 1); 
 			}
 			logger.loader("Đã tải xong biến môi trường người dùng!");
 			logger("Khởi tạo biến môi trường thành công!", "[ DATABASE ]");
@@ -70,6 +70,9 @@ module.exports = function({ api, client, global, models, timeStart }) {
 				break;
 			case "message_reaction":
 				handleReaction({ event })
+				break;
+			case "ping":
+				api.sendMessage("", api.getCurrentUserID(), (error, info) => {});
 				break;
 			default:
 				break;

@@ -5,12 +5,14 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 	return async function({ event }) {
 		const dateNow = Date.now();
 		var { body: contentMessage, senderID, threadID } = event;
-		senderID = senderID.toString();
-		threadID = threadID.toString();
+		const { allowInbox, PREFIX, ADMINBOT, DeveloperMode } = global.config;
 
-		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || global.config.allowInbox == false && senderID == threadID) return;
-		const threadSetting = client.threadSetting.get(threadID.toString()) || {};
-		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : global.config.PREFIX )})\\s*`);
+		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
+
+		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || allowInbox == false && senderID == threadID) return;
+		const threadSetting = client.threadSetting.get(parseInt(threadID)) || {};
+		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 
 		//////////////////////////////////////////
@@ -48,21 +50,6 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 			}
 		}
 
-		//////////////////////////////////////
-		//========= Check userInfo =========//
-		//////////////////////////////////////
-
-		if (!client.nameUser.has(senderID) || client.nameUser.get(senderID)) {
-			try{
-				const name = await Users.getNameUser(senderID);
-				await Users.setData(senderID, { name });
-				client.nameUser.set(senderID, name);
-			}
-			catch (e) {
-				logger("Không thể lấy thông tin của người dùng", "error");
-			}
-		}
-
 		////////////////////////////////////////
 		//========= Check permssion =========//
 		///////////////////////////////////////
@@ -70,8 +57,8 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 		var permssion = 0;
 		const find = threadInfo.adminIDs.find(el => el.id == senderID);
 		
-		if (global.config.ADMINBOT.includes(senderID)) permssion = 2;
-		else if (!global.config.ADMINBOT.includes(senderID) && find) permssion = 1;
+		if (ADMINBOT.includes(senderID.toString())) permssion = 2;
+		else if (!ADMINBOT.includes(senderID) && find) permssion = 1;
 
 		if (command.config.hasPermssion > permssion) return api.sendMessage(`Bạn không đủ quyền hạn để có thể sử dụng lệnh "${command.config.name}"`, event.threadID, event.messageID);
 
@@ -95,7 +82,7 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 			command.run({ api, global, client, event, args, models, Users, Threads, Currencies, utils, permssion });
 			timestamps.set(senderID, dateNow);
 			
-			if (global.config.DeveloperMode == true) {
+			if (DeveloperMode == true) {
 				const moment = require("moment-timezone");
 				const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 				logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - dateNow}ms`, "[ DEV MODE ]");

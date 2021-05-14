@@ -10,7 +10,7 @@ module.exports = function ({ models, api }) {
 	async function getNameUser(id) {
 		const axios = require("axios");
 		const cheerio = require("cheerio");
-		const urlFacebook = `https://www.facebook.com/profile.php?id=${senderID}`;
+		const urlFacebook = `https://www.facebook.com/profile.php?id=${id}`;
 
 		try {
 			const { data } = await axios.get(urlFacebook);
@@ -19,7 +19,8 @@ module.exports = function ({ models, api }) {
 			return name;
 		}
 		catch (e) {
-			return e;
+			logger(e, "error");
+			return "Người dùng facebook";
 		}
 	}
 
@@ -47,7 +48,7 @@ module.exports = function ({ models, api }) {
 		}
 		catch(e) {
 			logger(e, "error");
-			return "Người dùng facebook";
+			
 		}
 	}
 
