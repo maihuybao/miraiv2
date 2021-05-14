@@ -7,17 +7,17 @@ module.exports.config = {
 	commandCategory: "random-img",
 	usages: "roleplay",
 	cooldowns: 1,
-	dependencies: ['node-superfetch', 'fs-extra']
+	dependencies: ['request', 'fs-extra']
 };
 
 module.exports.onLoad = () => {
     const { existsSync, createWriteStream } = require("fs-extra");
-    const request = require('node-superfetch');
+    const request = require('request');
 
     const exist = existsSync(__dirname + "/cache/anime.json");
     const writeData = createWriteStream(__dirname + "/cache/anime.json");
-    if (!exist) return request.get("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json")
-    .pipe(writeData);
+    if (!exist) return request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json").pipe(writeData);
+    else return;
 }
 
 module.exports.event = ({ event, api, client }) => {

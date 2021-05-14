@@ -7,17 +7,17 @@ module.exports.config = {
 	commandCategory: "other",
 	usages: "screenshot site",
 	cooldowns: 5,
-	dependencies: ["node-superfetch'","fs-extra"]
+	dependencies: ["request","fs-extra"]
 };
 
 module.exports.onLoad = () => {
     const { existsSync, createWriteStream } = require("fs-extra");
-    const request = require('node-superfetch');
+    const request = require('request');
 
-    const exist = existsSync(__dirname + "/cache/pornList.txt");
-    const writeData = createWriteStream(__dirname + "/cache/pornList.txt");
-    if (!exist) return request.get("https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt")
-    .pipe(writeData);
+    const exist = existsSync(__dirname + "/cache/anime.json");
+    const writeData = createWriteStream(__dirname + "/cache/anime.json");
+    if (!exist) return request("https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt").pipe(writeData);
+    else return;
 }
 
 module.exports.run = ({ event, api, args, client }) => {
