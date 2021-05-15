@@ -32,7 +32,7 @@ module.exports.onLoad = () => {
     const writeData = createWriteStream(__dirname + "/cache/anime.json");
     if (!exist) return request("https://raw.githubusercontent.com/catalizcs/storage-data/master/anime/anime.json").pipe(writeData);
     else return;
-}
+};
 
 module.exports.run = ({ event, api, args }) => {
     const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require("fs-extra");
@@ -52,5 +52,5 @@ module.exports.run = ({ event, api, args }) => {
         request(URL)
         .pipe(createWriteStream(__dirname + `/cache/anime.${ext}`))
         .on("close", () => api.sendMessage({ attachment: createReadStream(__dirname + `/cache/anime.${ext}`) }, event.threadID, () => unlinkSync(__dirname + `/cache/anime.${ext}`), event.messageID));
-    })
-}
+    });
+};

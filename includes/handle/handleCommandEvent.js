@@ -14,5 +14,5 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 				logger(error + " at event command: " + commandModule.config.name , "error");
 			}
 		}
-	}
-}
+	};
+};

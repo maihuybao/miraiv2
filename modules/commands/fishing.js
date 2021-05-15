@@ -6,13 +6,11 @@ module.exports.config = {
 	usages: "fishing [sell/shop/upgrade/info/inventory/status/register]",
     commandCategory: "game-sp",
 	cooldowns: 0,
-	dependencies: ["fs-extra","chalk","figlet","axios"]
+	dependencies: ["fs-extra","axios"]
 };
 
 module.exports.onLoad = async () => {
     const fs = require("fs-extra");
-    const chalk = require("chalk");
-    const figlet = require("figlet");
 	const axios = require("axios");
 
 	const dirMaterial = __dirname + `/cache/fishy/`;

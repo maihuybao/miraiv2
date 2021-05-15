@@ -19,8 +19,8 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 				catch (error) {
 					logger(JSON.stringify(error) + " at event: " + eventRun.config.name , "error");
 				}
-			};
+			}
 		}
 		return;
-	}
-}
+	};
+};

@@ -93,5 +93,5 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 			logger(error + " tại lệnh: " + command.config.name, "error");
 			return api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
-	}
-}
+	};
+};

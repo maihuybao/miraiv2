@@ -69,5 +69,5 @@ module.exports = function ({ models, api }) {
 		setData,
 		delData,
 		createData
-	}
-}
+	};
+};

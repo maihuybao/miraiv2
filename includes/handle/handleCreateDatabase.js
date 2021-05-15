@@ -3,7 +3,7 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 	return async function({ event }) {
 
 		try {
-			if (global.config.autoCreateDB == false || client.inProcess == true) return
+			if (global.config.autoCreateDB == false || client.inProcess == true) return;
 			const { senderID, threadID } = event;
 			var settings = {};
 
@@ -12,7 +12,7 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 					client.inProcess = true;
 					await Threads.createData(threadID, { settings });
 					client.allThread.push(parseInt(threadID));
-					logger(`New Thread: ${threadID}`, "[ DATABASE ]")
+					logger(`New Thread: ${threadID}`, "[ DATABASE ]");
 					client.inProcess = false;
 				}
 				catch {
@@ -29,10 +29,10 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 				try {
 					client.inProcess = true;
 					await Users.createData(senderID, { name: "" });
-					logger(`New User: ${senderID}`, "[ DATABASE ]")
+					logger(`New User: ${senderID}`, "[ DATABASE ]");
 					await Currencies.createData(senderID);
 					client.allUser.push(parseInt(senderID));
-					logger(`New Currency: ${senderID}`, "[ DATABASE ]")
+					logger(`New Currency: ${senderID}`, "[ DATABASE ]");
 					client.inProcess = false;
 				}
 				catch {
@@ -56,5 +56,5 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 		catch(e) {
 			console.log(e);
 		}
-	}
-}
+	};
+};

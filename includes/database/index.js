@@ -3,8 +3,8 @@ const { existsSync, readFileSync } = require("fs-extra");
 const { join, resolve } = require("path");
 var argv = require('minimist')(process.argv.slice(2));
 var dirConfig;
-var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
-if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][indexConfig]);
+var indexConfig = argv._.findIndex(function (element) { return element.indexOf(".json") !== -1 }) || 0;
+if (argv._.length != 0) dirConfig = join(process.cwd(), argv._[indexConfig]);
 else dirConfig = join(process.cwd(), "config.json");
 var config;
 try {
@@ -50,6 +50,6 @@ module.exports.sequelize = new Sequelize({
 	sync: {
 		force: false
 	},
-})
+});
 
 module.exports.Sequelize = Sequelize;

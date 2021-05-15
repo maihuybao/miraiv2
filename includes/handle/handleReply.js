@@ -16,5 +16,5 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
 				return api.sendMessage("Đã có lỗi xảy ra khi đang thực thi trả lời câu hỏi của bạn!", event.threadID, event.messageID);
 			}
 		}
-	}
-}
+	};
+};

@@ -1,3 +1,5 @@
+/*jshint esversion: 10*/
+
 module.exports = function({ api, client, global, models, timeStart }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
@@ -8,9 +10,9 @@ module.exports = function({ api, client, global, models, timeStart }) {
 	//========= Push all variable from database to environment =========//
 	//////////////////////////////////////////////////////////////////////
 	
-	(async() => {
+	(async function() {
 		try {
-			logger("Khởi tạo biến môi trường", "[ DATABASE ]")
+			logger("Khởi tạo biến môi trường", "[ DATABASE ]");
 			const threads = (await Threads.getAll());
 			const users = (await Users.getAll(["userID", "banned", "name"]));
 
@@ -60,16 +62,16 @@ module.exports = function({ api, client, global, models, timeStart }) {
 			case "message":
 			case "message_reply":
 			case "message_unsend":
-				handleCommand({ event })
-				handleReply({ event })
-				handleCommandEvent({ event })
-				handleCreateDatabase({ event })
+				handleCommand({ event });
+				handleReply({ event });
+				handleCommandEvent({ event });
+				handleCreateDatabase({ event });
 				break;
 			case "event":
-				handleEvent({ event })
+				handleEvent({ event });
 				break;
 			case "message_reaction":
-				handleReaction({ event })
+				handleReaction({ event });
 				break;
 			case "ping":
 				api.sendMessage("", api.getCurrentUserID(), (error, info) => {});
@@ -77,7 +79,7 @@ module.exports = function({ api, client, global, models, timeStart }) {
 			default:
 				break;
 		}
-	}
-}
+	};
+};
 
 //THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯

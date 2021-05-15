@@ -12,16 +12,16 @@ module.exports = function({ api, global, client, models, Users, Threads, Currenc
                 const command = client.commands.get(scheduleItem.commandName);
                 try {
                     command.schedule({ event: scheduleItem.event, api, global, client, models, Users, Threads, Currencies, scheduleItem });
-                    spliced = dataJob.filter(n => n.event.messageID !== scheduleItem.event.messageID);
+                    spliced = dataJob.filter(function (item) { return item.event.messageID !== item.event.messageID });
                     client.schedule = spliced;
                 }
                 catch (e) {
                     logger(e + " tại schedule: " + command.config.name, "error");
-                    spliced = dataJob.filter(n => n.event.messageID !== item.event.messageID);
+                    spliced = dataJob.filter(function (item) { return item.event.messageID !== item.event.messageID });
                     client.schedule = spliced;
                 }
-            } else "";
+            }
         }
     }, 1000);
     return;
-}
+};
