@@ -241,7 +241,7 @@ function onBot({ models }) {
 		api.setOptions({
 			forceLogin: true,
 			listenEvents: true,
-			logLevel: "silent",
+			logLevel: "error",
 			selfListen: global.config.selfListen || false,
 			userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36"
 		});
@@ -258,7 +258,7 @@ function onBot({ models }) {
 			} else "";
 		});
 
-		setInterval(() => handleListen({ type: "ping", time: 1, reader: 1, threadID: 1 }, 1200000));
+		setInterval(() => handleListen({ type: "ping", time: 1, reader: 1, threadID: 1 }), 1200000);
 	});	
 }
 

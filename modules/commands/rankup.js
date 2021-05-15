@@ -20,6 +20,7 @@ module.exports.event = async function({ api, event, Currencies, Users, client })
 	const threadData = client.threadSetting.get(threadID.toString()) || {};
 
 	if (typeof threadData["rankup"] != "undefined" && threadData["rankup"] == false) return;
+	if (client.inProcess == true) return;
 
 	var exp = parseInt((await Currencies.getData(senderID)).exp);
 	exp = exp += 1;

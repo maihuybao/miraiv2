@@ -27,6 +27,11 @@ module.exports = function ({ models, api }) {
 	async function getAll(...data) {
 		var where, attributes;
 		for (let i of data) {
+
+
+
+
+		
 			if (typeof i != 'object') throw 'Phải là 1 Array hoặc Object hoặc cả 2.';
 			if (Array.isArray(i)) attributes = i;
 			else where = i;

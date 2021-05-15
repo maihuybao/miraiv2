@@ -11,7 +11,7 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 				try {	
 					client.inProcess = true;
 					await Threads.createData(threadID, { settings });
-					client.allThread.push(threadID);
+					client.allThread.push(parseInt(threadID));
 					logger(`New Thread: ${threadID}`, "[ DATABASE ]")
 					client.inProcess = false;
 				}
@@ -41,7 +41,7 @@ module.exports = function({ global, Users, Threads, Currencies, client }) {
 				}
 			}
 
-			if (!client.nameUser.has(senderID) || client.nameUser.get(senderID)) {
+			if (!client.nameUser.has(parseInt(senderID)) || client.nameUser.get(senderID)) {
 				try{
 					const name = await Users.getNameUser(senderID);
 					await Users.setData(senderID, { name });

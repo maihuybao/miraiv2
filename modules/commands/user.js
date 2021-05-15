@@ -37,14 +37,14 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 			await Users.setData(handleReaction.target, { banned: 1 });
 			let dataUser = client.userBanned.get(handleReaction.target) || {};
 			dataUser["banned"] = 1;
-			client.userBanned.set(handleReaction.target.toString(), dataUser);
+			client.userBanned.set(parseInt(handleReaction.target), dataUser);
 			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		case "unban": {
 			var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
 			await Users.setData(handleReaction.target, { banned: 0 });
-			client.userBanned.delete(handleReaction.target.toString());
+			client.userBanned.delete(parseInt(handleReaction.target));
 			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}

@@ -123,31 +123,16 @@ module.exports.getInfo = async (uid, Currencies) => {
 
 module.exports.onLoad = async () => {
 	const fs = require("fs-extra");
-	const axios = require("axios");
+	const request = require("request");
 	let dirMaterial = __dirname + `/cache/rank/`;
 	
 	if (!fs.existsSync(dirMaterial)) fs.mkdirSync(dirMaterial, { recursive: true });
 	if (!fs.existsSync(dirMaterial + "fonts")) fs.mkdirSync(dirMaterial + "fonts", { recursive: true });
 	if (!fs.existsSync(dirMaterial + "rank_card")) fs.mkdirSync(dirMaterial + "rank_card", { recursive: true });
 	
-	if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) (await axios({
-			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf",
-			method: 'GET',
-			responseType: 'stream'
-		})).data.pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
-	
-	if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) (await axios({
-			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf",
-			method: 'GET',
-			responseType: 'stream'
-		})).data.pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
-
-	if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) (await axios({
-			url: "https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png",
-			method: 'GET',
-			responseType: 'stream'
-		})).data.pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));
-	return;
+    if (!fs.existsSync(dirMaterial + "fonts/regular-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/regular-font.ttf"));
+	if (!fs.existsSync(dirMaterial + "fonts/bold-font.ttf")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf").pipe(fs.createWriteStream(dirMaterial + "fonts/bold-font.ttf"));
+	if (!fs.existsSync(dirMaterial + "rank_card/rankcard.png")) request("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png").pipe(fs.createWriteStream(dirMaterial + "rank_card/rankcard.png"));
 }
 
 module.exports.run = async ({ event, api, args, Currencies, Users }) => {
