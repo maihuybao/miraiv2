@@ -39,8 +39,10 @@ module.exports.run = async ({ api, event, global, args, permssion, utils, client
         const listAdmin = global.config.ADMINBOT;
         var msg = [];
         for (const id of listAdmin) {
-            const name = (await Users.getData(id)).name || "Người dùng facebook";
-            msg.push(`- ${name} - https://fb.me/${id}`);
+            if (parseInt(id)) {
+                const name = await Users.getNameUser(id);
+                msg.push(`- ${name} - https://fb.me/${id}`);
+            }
         }
 
         return api.sendMessage(`[Admin] Danh sách toàn bộ admin bot: \n${msg.join("\n")}`, event.threadID, event.messageID);

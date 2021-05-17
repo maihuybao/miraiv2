@@ -15,7 +15,8 @@ module.exports = function ({ models, api }) {
 		try {
 			const { data } = await axios.get(urlFacebook);
 			const $ = cheerio.load(data);
-			const name = $("title").text() || "Người dùng facebook";
+			var name = $('meta[property="og:title"]').attr('content') || "Người dùng facebook";
+			if (name.toLocaleLowerCase().includes("facebook")) name = (await this.getInfo(id)).name; 
 			return name;
 		}
 		catch (e) {

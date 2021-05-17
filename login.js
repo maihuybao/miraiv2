@@ -43,7 +43,7 @@ login({ email, password }, option, (err, api) => {
 		}
 		return;
 	}
-	var json = JSON.stringify(api.getAppState());
+	const json = JSON.stringify(api.getAppState());
 	fs.writeFileSync(`./${config.APPSTATEPATH}`, json);
 	console.log("Đã ghi xong appstate!");
 	process.exit(0);

@@ -1,5 +1,3 @@
-/*jshint esversion: 10*/
-
 //////////////////////////////////////////////////////
 //========= Require all variable need use =========//
 /////////////////////////////////////////////////////
@@ -135,7 +133,6 @@ for (const file of commandFiles) {
 		if (command.onLoad) {
 			try {
 				command.onLoad({ global, client, configValue });
-			
 			}
 			catch (error) {
 				logger.loader(`Không thể onLoad module: ${nameModule} với lỗi: ${error.name} - ${error.message}`, "error");
@@ -204,7 +201,6 @@ for (const file of eventFiles) {
 		if (event.onLoad) {
 			try {
 				event.onLoad({ global, client, configValue });
-			
 			}
 			catch (error) {
 				logger.loader(`Không thể onLoad module: ${nameModule} với lỗi: ${error.name} - ${error.message}`, "error");
@@ -253,13 +249,12 @@ function onBot({ models }) {
 
 		api.listenMqtt((error, event) => {
 			if (error) return logger(`handleListener đã xảy ra lỗi: ${JSON.stringify(error)}`, "error");
-			if (!(["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) {
-				(global.config.DeveloperMode == true) ? console.log(event) : "";
-				return handleListen(event);
-			} else "";
+			if ((["presence","typ","read_receipt"].some(typeFilter => typeFilter == event.type))) return;
+			(global.config.DeveloperMode == true) ? console.log(event) : "";
+			return handleListen(event);
 		});
 
-		setInterval(function () { return handleListen({ type: "ping", time: 1, reader: 1, threadID: 1 }) }, 1200000);
+		setInterval(function () { return handleListen({ type: "ping", time: 1, reader: 1, threadID: 1 }) }, 60000);
 		return;
 	});	
 }

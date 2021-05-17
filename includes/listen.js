@@ -1,5 +1,3 @@
-/*jshint esversion: 10*/
-
 module.exports = function({ api, client, global, models, timeStart }) {
 	const Users = require("./controllers/users")({ models, api }),
 				Threads = require("./controllers/threads")({ models, api }),
