@@ -17,7 +17,7 @@ module.exports.event = async function({ api, event, Currencies, Users, client })
 	const {threadID, senderID } = event;
 	const { createReadStream, existsSync, mkdirSync } = require("fs-extra");
 
-	const threadData = client.threadSetting.get(threadID.toString()) || {};
+	const threadData = client.threadSetting.get(threadID) || {};
 
 	if (typeof threadData["rankup"] != "undefined" && threadData["rankup"] == false) return;
 	if (client.inProcess == true) return;
