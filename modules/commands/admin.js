@@ -2,114 +2,97 @@ module.exports.config = {
 	name: "admin",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Quản lý admin bot",
-	commandCategory: "system",
-	usages: "admin [list/add/remove] [args]",
+	commandCategory: "config",
+	usages: "[list/add/remove] [userID]",
     cooldowns: 5,
-    info: [
-		{
-			key: 'list',
-			prompt: 'Xem toàn bộ danh sách admin',
-			type: 'String'
-		},
-        {
-			key: 'add',
-			prompt: 'Thêm admin vào danh sách admin, có thể sử dụng tag, reply',
-			type: 'String',
-			example: '10000000'
-		},
-        {
-			key: 'remove',
-			prompt: 'Xóa admin khỏi danh sách admin, có thể sử dụng tag, reply',
-			type: 'String',
-			example: '10000000'
-		}
-	],
+    dependencies: {
+        "fs-extra": ""
+    }
 };
 
-module.exports.run = async ({ api, event, __GLOBAL, args, permssion, utils, client, Users }) => {
+module.exports.run = async function ({ api, event, args, Users, permssion }) {
     const content = args.slice(1, args.length);
-    const option = args[0];
-    const { writeFileSync } = require("fs-extra");
-    delete require.cache[require.resolve(client.dirConfig)];
-    var config = require(client.dirConfig);
+    const { threadID, messageID, mentions } = event;
+    const { configPath } = global.client;
+    const { ADMINBOT } = global.config;
+    const { userName } = global.data;
+    const { writeFileSync } = global.nodemodule["fs-extra"];
 
-    if (option == "list") {
-        const listAdmin = __GLOBAL.settings.ADMINBOT;
-        var msg = [];
-        for (const id of listAdmin) {
-            const name = (await Users.getData(id)).name || "Người dùng facebook";
-            msg.push(`- ${name} - https://fb.me/${id}`);
-        }
+    delete require.cache[require.resolve(configPath)];
+    var config = require(configPath);
 
-        return api.sendMessage(`[Admin] Danh sách toàn bộ admin bot: \n${msg.join("\n")}`, event.threadID, event.messageID);
-    }
+    switch (args[0]) {
+        case "list":
+        case "all":
+        case "-a": {
+            const listAdmin = ADMINBOT || config.ADMINBOT || [];
+            var msg = [];
 
-
-    else if (option == "add" && permssion == 2) {
-        if (event.type == "message_reply") {
-            __GLOBAL.settings.ADMINBOT.push(event.messageReply.senderID);
-            config.ADMINBOT.push(event.messageReply.senderID);
-            const name = (await Users.getData(event.messageReply.senderID)).name || "Người dùng facebook";
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã thêm người dùng vào admin bot:\n+ [ ${event.messageReply.senderID} ] » ${name}`, event.threadID, event.messageID);
-        }
-        else if (Object.keys(event.mentions).length !== 0) {
-            var listAdd = [];
-            const mention = Object.keys(event.mentions);
-            for (const id of mention) {
-                __GLOBAL.settings.ADMINBOT.push(id);
-                config.ADMINBOT.push(id);
-                listAdd.push(`+ [ ${id} ] » ${event.mentions[id]}`);
+            for (const idAdmin of listAdmin) {
+                if (parseInt(idAdmin)) {
+                    const name = userName.get(idAdmin) || await Users.getNameUser(idAdmin);
+                    msg.push(`- ${name}(https://facebook.com/${idAdmin})`);
+                }
             }
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã thêm người dùng vào admin bot:\n${listAdd.join("\n").replace(/\@/g, "")}`, event.threadID, event.messageID);
-        }
-        else if (content.length != 0 && !isNaN(content)) {
-            __GLOBAL.settings.ADMINBOT.push(content);
-            config.ADMINBOT.push(content);
-            const name = (await Users.getData(content)).name || "Người dùng facebook";
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã thêm người dùng vào admin bot:\n+ [ ${content} ] » ${name}`, event.threadID, event.messageID);
-        }
-        else return utils.throwError(this.config.name, event.threadID, event.messageID);
-    }
 
-    else if (option == "remove" && permssion == 2) {
-        if (event.type == "message_reply") {
-            const index = config.ADMINBOT.findIndex(item => item == event.messageReply.senderID);
-            if (index == -1) return api.sendMessage(`[Admin] Người dùng mang id ${event.messageReply.senderID} không tồn tại trong admin bot!`, event.threadID, event.messageID);
-            __GLOBAL.settings.ADMINBOT.splice(index, 1);
-            config.ADMINBOT.splice(index, 1);
-            const name = (await Users.getData(event.messageReply.senderID)).name || "Người dùng facebook";
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã xóa người dùng khỏi admin bot:\n- [ ${event.messageReply.senderID} ] » ${name}`, event.threadID, event.messageID);
+            return api.sendMessage(`[Admin] Danh sách toàn bộ người điều hành bot: \n\n${msg.join("\n")}`, threadID, messageID);
         }
-        else if (event.mentions.length != 0) {
-            var listAdd = [];
-            const mention = Object.keys(event.mentions);
-            for (const id of mention) {
-                const index = config.ADMINBOT.findIndex(item => item == id);
-                if (index == -1) return api.sendMessage(`[Admin] Người dùng mang id ${id} không tồn tại trong admin bot!`, event.threadID, event.messageID);
-                __GLOBAL.settings.ADMINBOT.splice(index, 1);
+
+        case "add": {
+            if (permssion != 2) return api.sendMessage("[Admin] Bạn không đủ quyền hạn để có thể sử dụng chức năng 'add'", threadID, messageID);
+            if (mentions.length != 0) {
+                const mention = Object.keys(mentions);
+                var listAdd = [];
+
+                for (const id of mention) {
+                    ADMINBOT.push(id);
+                    config.ADMINBOT.push(id);
+                    listAdd.push(`[ ${id} ] » ${event.mentions[id]}`);
+                };
+
+                writeFileSync(configPath, JSON.stringify(config, null, 4), 'utf8');
+                return api.sendMessage(`[Admin] Đã thêm ${mention.length} người dùng trở thành người điều hành bot:\n\n${listAdd.join("\n").replace(/\@/g, "")}`, threadID, messageID);
+            }
+            else if (content.length != 0 && !isNaN(content[0])) {
+                ADMINBOT.push(content);
+                config.ADMINBOT.push(content);
+                const name = userName.get(content) || await Users.getNameUser(content);
+                writeFileSync(configPath, JSON.stringify(config, null, 4), 'utf8');
+                return api.sendMessage(`[Admin] Đã thêm người dùng trở thành người điều hành bot:\n\n[ ${content} ] » ${name}`, threadID, messageID);
+            }
+            else return throwError(this.config.name, threadID, messageID);
+        }
+
+        case "remove":
+        case "rm":
+        case "delete": {
+            if (permssion != 2) return api.sendMessage("[Admin] Bạn không đủ quyền hạn để có thể sử dụng chức năng 'delete'", threadID, messageID);
+            if (mentions.length != 0) {
+                const mention = Object.keys(mentions);
+                var listAdd = [];
+
+                for (const id of mention) {
+                    const index = config.ADMINBOT.findIndex(item => item == id);
+                    ADMINBOT.splice(index, 1);
+                    config.ADMINBOT.splice(index, 1);
+                    listAdd.push(`[ ${id} ] » ${event.mentions[id]}`);
+                };
+
+                writeFileSync(configPath, JSON.stringify(config, null, 4), 'utf8');
+                return api.sendMessage(`[Admin] Đã gỡ bỏ ${mention.length} người điều hành bot:\n\n${listAdd.join("\n").replace(/\@/g, "")}`, threadID, messageID);
+            }
+            else if (content.length != 0 && !isNaN(content[0])) {
+                const index = config.ADMINBOT.findIndex(item => item == content);
+                ADMINBOT.splice(index, 1);
                 config.ADMINBOT.splice(index, 1);
-                listAdd.push(`- [ ${id} ] » ${event.mentions[id]}`);
+                const name = userName.get(content) || await Users.getNameUser(content);
+                writeFileSync(configPath, JSON.stringify(config, null, 4), 'utf8');
+                return api.sendMessage(`[Admin] Đã gỡ bỏ người điều hành bot:\n\n[ ${content} ] » ${name}`, threadID, messageID);
             }
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã xóa người dùng khỏi admin bot:\n${listAdd.join("\n").replace(/\@/g, "")}`, event.threadID, event.messageID);
+            else global.client.utils.throwError(this.config.name, threadID, messageID);
         }
-        else if (!isNaN(content)) {
-            const index = config.ADMINBOT.findIndex(item => item == event.messageReply.senderID);
-            if (index == -1) return api.sendMessage(`[Admin] Người dùng mang id ${content} không tồn tại trong admin bot!`, event.threadID, event.messageID);
-            __GLOBAL.settings.ADMINBOT.splice(index, 1);
-            config.ADMINBOT.splice(index, 1);
-            const name = (await Users.getData(content)).name || "Người dùng facebook";
-            writeFileSync(client.dirConfig , JSON.stringify(config, null, 4), 'utf8');
-            return api.sendMessage(`[Admin] Đã xóa người dùng khỏi admin bot:\n- [ ${content} ] » ${name}`, event.threadID, event.messageID);
-        }
-        else return utils.throwError(this.config.name, event.threadID, event.messageID);
-    }
-
-    else return utils.throwError(this.config.name, event.threadID, event.messageID);
+    };
+    return;
 }

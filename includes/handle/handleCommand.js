@@ -1,13 +1,23 @@
-module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies, utils }) {
+module.exports = function({ api, models, Users, Threads, Currencies }) {
 	const stringSimilarity = require('string-similarity');
 	const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const logger = require("../../utils/log.js");
+
 	return async function({ event }) {
 		const dateNow = Date.now();
-		const { body: contentMessage, senderID, threadID } = event;
-		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID) || __GLOBAL.settings.allowInbox == false && senderID == threadID) return;
-		var threadSetting = client.threadSetting.get(threadID) || {};
-		var prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : __GLOBAL.settings.PREFIX )})\\s*`);
+
+		const { allowInbox, PREFIX, ADMINBOT, DeveloperMode } = global.config;
+		const { userBanned, threadBanned, threadInfo, threadData } = global.data;
+		const { commands, cooldowns } = global.client;
+
+		var { body: contentMessage, senderID, threadID } = event;
+
+		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
+
+		if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == false && senderID == threadID) return;
+		const threadSetting = threadData.get(parseInt(threadID)) || {};
+		const prefixRegex = new RegExp(`^(<@!?${senderID}>|${escapeRegex((threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : PREFIX )})\\s*`);
 		if (!prefixRegex.test(contentMessage)) return;
 
 		//////////////////////////////////////////
@@ -15,46 +25,33 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		//////////////////////////////////////////
 
 		const [matchedPrefix] = contentMessage.match(prefixRegex);
-		const args = contentMessage.slice(matchedPrefix.length).trim().split(/ +/);
+		const args = contentMessage.slice(matchedPrefix.length).trim().split(/\s+/);
 		const commandName = args.shift().toLowerCase();
-		const commandBanned = client.commandBanned.get(senderID) || [];
-		if (commandBanned.includes(commandName)) return;
-		var command = client.commands.get(commandName);
+		var command = commands.get(commandName);
 		if (!command) {
 			var allCommandName = [];
-			const commandValues = client.commands.values();
-			for (const cmd of commandValues) allCommandName.push(cmd.config.name);
+			const commandValues = commands.keys();
+			for (const cmd of commandValues) allCommandName.push(cmd);
 			const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
-			if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target);
+			if (checker.bestMatch.rating >= 0.5) command = commands.get(checker.bestMatch.target);
 			else return api.sendMessage(`Lệnh bạn sử dụng không tồn tại, có phải là lệnh "${checker.bestMatch.target}" hay không?`, threadID);
 		}
-
+		
 		////////////////////////////////////////
 		//========= Check threadInfo =========//
 		////////////////////////////////////////
 		
-		var threadInfo = (client.threadInfo.get(threadID) || await Threads.getInfo(threadID));
+		var thread = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
 		if(Object.keys(threadInfo).length == 0) {
 			try {
-				threadInfo = await api.getThreadInfo(event.threadID);
-				await Threads.setData(threadID, { name: threadInfo.name, threadInfo });
-				client.threadInfo.set(threadID.toString(), threadInfo);
+				const threadinfo = await api.getThreadInfo(threadID);
+				await Threads.setData(threadID, { threadInfo: threadinfo });
+				threadInfo.set(threadID, threadInfo);
+				thread = threadinfo;
 			}
-			catch {
-				logger("Không thể lấy thông tin của nhóm!", "error");
+			catch (e) {
+				logger("Không thể lấy thông tin của nhóm!" + JSON.stringify(e), "error");
 			}
-		}
-
-		//////////////////////////////////////
-		//========= Check userInfo =========//
-		//////////////////////////////////////
-
-
-		console.log(client.nameUser.has(senderID));
-		if (!client.nameUser.has(senderID)) {
-			const name = (await api.getUserInfo(senderID))[senderID].name;
-			await Users.setData(senderID, { name });
-			client.nameUser.set(senderID, name);
 		}
 
 		////////////////////////////////////////
@@ -62,19 +59,19 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		///////////////////////////////////////
 
 		var permssion = 0;
-		const find = threadInfo.adminIDs.find(el => el.id == senderID);
+		const find = thread.adminIDs.find(el => el.id.toString() == senderID.toString());
 		
-		if (__GLOBAL.settings.ADMINBOT.includes(senderID)) permssion = 2;
-		else if (!__GLOBAL.settings.ADMINBOT.includes(senderID) && find) permssion = 1;
+		if (ADMINBOT.includes(senderID.toString())) permssion = 2;
+		else if (!ADMINBOT.includes(senderID.toString()) && find) permssion = 1;
 
-		if (command.config.hasPermssion > permssion) return api.sendMessage(`Bạn không đủ quyền hạn để có thể sử dụng lệnh "${command.config.name}"`, event.threadID, event.messageID);
+		if (command.config.hasPermssion > permssion) return api.sendMessage(`Bạn không đủ quyền hạn để có thể sử dụng lệnh "${command.config.name}"`, threadID, messageID);
 
 		//////////////////////////////////////
 		//========= Check cooldown =========//
 		//////////////////////////////////////
 
-		if (!client.cooldowns.has(command.config.name)) client.cooldowns.set(command.config.name, new Map());
-		const timestamps = client.cooldowns.get(command.config.name);
+		if (!cooldowns.has(command.config.name)) cooldowns.set(command.config.name, new Map());
+		const timestamps = cooldowns.get(command.config.name);
 		const cooldownAmount = (command.config.cooldowns || 1) * 1000;
 		if (timestamps.has(senderID)) {
 			const expirationTime = timestamps.get(senderID) + cooldownAmount;
@@ -86,11 +83,11 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		///////////////////////////////////
 
 		try {
-			command.run({ api, __GLOBAL, client, event, args, models, Users, Threads, Currencies, utils, permssion });
+			command.run({ api, event, args, models, Users, Threads, Currencies, permssion });
 			timestamps.set(senderID, dateNow);
 			
-			if (__GLOBAL.settings.DeveloperMode == true) {
-				const moment = require("moment");
+			if (DeveloperMode == true) {
+				const moment = require("moment-timezone");
 				const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 				logger(`[ ${time} ] Command Executed: ${commandName} | User: ${senderID} | Arguments: ${args.join(" ")} | Group: ${threadID} | Process Time: ${(Date.now()) - dateNow}ms`, "[ DEV MODE ]");
 			}
@@ -98,7 +95,8 @@ module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Curre
 		}
 		catch (error) {
 			logger(error + " tại lệnh: " + command.config.name, "error");
+			console.log(error.stack);
 			return api.sendMessage("Đã có lỗi xảy ra khi thực khi lệnh đó. Lỗi: " + error, threadID);
 		}
-	}
-}
+	};
+};

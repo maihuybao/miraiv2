@@ -2,12 +2,11 @@ module.exports.config = {
 	name: "kick",
 	version: "1.0.0", 
 	hasPermssion: 1,
-	credits: "Thọ",
+	credits: "Mirai Team",
 	description: "Xoá người bạn cần xoá khỏi nhóm bằng cách tag",
 	commandCategory: "other", 
-	usages: "kick [tag]", 
+	usages: "[tag]", 
 	cooldowns: 0,
-	dependencies: [] 
 };
 
 module.exports.run = function({ api, event }) {

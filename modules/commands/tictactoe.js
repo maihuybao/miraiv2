@@ -2,11 +2,11 @@ module.exports.config = {
 	name: "ttt",
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "CatalizCS",
-	description: "Just ttt",
+	credits: "Mirai Team",
+	description: "Play tictactoe with AI",
 	commandCategory: "game-sp",
-	usages: "",
-	cooldowns: 5
+	cooldowns: 5,
+	usages: "[random/x/o]"
 };
 
 var AIMove;
@@ -142,10 +142,10 @@ function AIStart(data) {
 }
 
 
-module.exports.event = ({ event, api, client }) => {
+module.exports.handleEvent = ({ event, api }) => {
 	let {body, threadID, messageID,senderID} = event;
-	if (!client.tictactoe) client.tictactoe = new Map();
-	let data = client.tictactoe.get(threadID);
+	if (!global.moduleData.tictactoe) global.moduleData.tictactoe = new Map();
+	let data = global.moduleData.tictactoe.get(threadID);
 	if (!data || data.gameOn == false) return;
 	if (body == "show") return api.sendMessage(`${displayBoard(data)}`, threadID, messageID);
 	if (!data.player == senderID) return;
@@ -165,55 +165,55 @@ module.exports.event = ({ event, api, client }) => {
 				if(checkAIWon(data)) api.sendMessage("AI has won!", threadID, messageID);
 				else if(checkPlayerWon(data)) api.sendMessage("Player has won!", threadID, messageID);
 				else api.sendMessage("It's a draw!", threadID, messageID);
-			client.tictactoe.delete(threadID);
+				global.moduleData.tictactoe.delete(threadID);
 			}
 		}
 	}
 }
 
-module.exports.run = ({ event, api, args, client }) => {
-	if (!client.tictactoe) client.tictactoe = new Map();
+module.exports.run = ({ event, api, args }) => {
+	if (!global.moduleData.tictactoe) global.moduleData.tictactoe = new Map();
 	let {threadID, messageID, senderID} = event;
-	let data = client.tictactoe.get(threadID) || { "gameOn": false, "player": "" };
+	let data = global.moduleData.tictactoe.get(threadID) || { "gameOn": false, "player": "" };
 	let newData;
 	if (!data.gameOn) {
 	   switch (args[0]) {
 		   case "random": 
 				if(Math.random() > 0.5) {
-				  newData = startBoard({isX: true, client, data, threadID});
+				  newData = startBoard({isX: true, data, threadID});
 				  api.sendMessage("you go first, X", threadID, messageID);
 				  api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
 				}
 				else {
-					newData = startBoard({isX: false, client, data, threadID});
+					newData = startBoard({isX: false, data, threadID});
 					AIStart(newData);
 					api.sendMessage("AI go first, O", threadID, messageID);
 				}
 			break;
 			case "x":
-				newData = startBoard({isX: true, client, data, threadID});
+				newData = startBoard({isX: true, data, threadID});
 				api.sendMessage("you go first, X", threadID, messageID);
 				api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
 			break;
 			case "o":
-				newData = startBoard({isX: false, client, data, threadID});
+				newData = startBoard({isX: false, data, threadID});
 				AIStart(newData);
 				api.sendMessage("AI go first, O", threadID, messageID);
 			break;
 			default:
 				if(Math.random() > 0.5) {
-					newData = startBoard({isX: true, client, data, threadID});
+					newData = startBoard({isX: true, data, threadID});
 					api.sendMessage("you go first, X", threadID, messageID);
 					api.sendMessage(`${displayBoard(newData)}`, threadID, messageID);
 				  }
 				  else {
-					  newData = startBoard({isX: false, client, data, threadID});
+					  newData = startBoard({isX: false, data, threadID});
 					  AIStart(newData);
 					  api.sendMessage("AI go first, O", threadID, messageID);
 				  }
 			  break;
 	   }
 	   newData.player = senderID;
-	   client.tictactoe.set(threadID, newData);
+	   global.moduleData.tictactoe.set(threadID, newData);
 	}
 }

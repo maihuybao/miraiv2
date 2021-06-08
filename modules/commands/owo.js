@@ -2,10 +2,9 @@ module.exports.config = {
 	name: "owo",
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Just owo",
 	commandCategory: "other",
-	usages: "",
 	cooldowns: 5
 };
 

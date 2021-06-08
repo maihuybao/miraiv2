@@ -2,10 +2,9 @@ module.exports.config = {
 	name: "penis",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "( ͡° ͜ʖ ͡°)",
 	commandCategory: "random-text",
-	usages: "penis",
 	cooldowns: 1
 };
 

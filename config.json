@@ -1,74 +1,22 @@
 {
-    "DeveloperMode": false,
+    "DeveloperMode": true,
     "autoCreateDB": true,
     "allowInbox": false,
-    "selfListen": false,
+    "selfListen": true,
     "commandDisabled": [],
     "eventDisabled": [],
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",
-    "BOTNAME": "BerBot",
-    "PREFIX": "gei.",
+    "BOTNAME": "",
+    "PREFIX": "!",
     "ADMINBOT": [
-        "100048944291189",
-        "ID2",
-        [
-            "100023693990349"
-        ]
+        "ID1"
     ],
     "DATABASE": {
         "sqlite": {
             "storage": "data.sqlite"
         }
     },
-    "APPSTATEPATH": "appstate.json",
-    "caesar": {
-        "caeserPassword": "266303"
-    },
-    "checktt": {
-        "maxColumn": 10
-    },
-    "cung": {
-        "cooldownTime": 43200000,
-        "rewardCoin": 200
-    },
-    "daily": {
-        "cooldownTime": 43200000,
-        "rewardCoin": 200
-    },
-    "gif": {
-        "TENOR": "73YIAOY3ACT1"
-    },
-    "math": {
-        "WOLFRAM": "T8J8YV-H265UQ762K"
-    },
-    "rankup": {
-        "unsendMessageAfter": 5
-    },
-    "rname": {
-        "APIKEY": "mi451266190"
-    },
-    "safety-check": {
-        "APIKEY": "AIzaSyAyPQHnnLU2S6Fqy2x6eZIyFOQGe6Xwiek"
-    },
-    "sauce": {
-        "SAUCENAO_API": "61e802b1478f8e85198f28ed6ac2de6efe5d0a41"
-    },
-    "shortlink": {
-        "bitlyAPI": ""
-    },
-    "sing": {
-        "YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
-        "SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub"
-    },
-    "weather": {
-        "OPEN_WEATHER": "081c82065cfee62cb7988ddf90914bdd"
-    },
-    "work": {
-        "cooldownTime": 1200000
-    },
-    "log": {
-        "enable": true
-    }
+    "APPSTATEPATH": "fbstate.json"
 }

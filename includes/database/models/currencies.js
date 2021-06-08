@@ -1,28 +1,26 @@
-'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class Currencies extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  };
+module.exports = function({ sequelize, Sequelize }) {
+	let Currencies = sequelize.define('Currencies', {
+		num: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true
+		},
+		userID: {
+			type: Sequelize.BIGINT,
+			unique: true
+		},
+		money: {
+			type: Sequelize.BIGINT,
+			defaultValue: 0
+		},
+        exp: {
+            type: Sequelize.BIGINT,
+            defaultValue: 0
+        },
+		data: {
+			type: Sequelize.JSON
+		}
+	});
 
-  Currencies.init({
-    userID: DataTypes.BIGINT,
-    money: DataTypes.BIGINT,
-    exp: DataTypes.BIGINT,
-    dailyTime: DataTypes.BIGINT,
-    workTime: DataTypes.BIGINT,
-    fishy: DataTypes.JSON
-  },
-  {
-    sequelize,
-    modelName: 'Currencies',
-  });
-  return Currencies;
-};
+	return Currencies;
+}

@@ -2,26 +2,20 @@ module.exports.config = {
 	name: "trans",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "SpermLord",
+	credits: "Mirai Team",
 	description: "Dịch văn bản",
 	commandCategory: "media",
-	usages: "trans [Text]",
+	usages: "[en/ko/ja/vi] [Text]",
 	cooldowns: 5,
-	dependencies: ["request"],
-	info: [
-		{
-			key: "Text",
-			prompt: "Văn bản cần dịch, có thể reply tin",
-			type: 'Văn bản',
-			example: 'Hello Em'
-		}
-	]
+	dependencies: {
+		"request":  ""
+	}
 };
 
-module.exports.run = async ({ api, event, args, __GLOBAL }) => {
-	const request = require("request");
+module.exports.run = async ({ api, event, args, global }) => {
+	const request = global.nodemodule["request"];
 	var content = args.join(" ");
-	if (content.length == 0 && event.type != "message_reply") return api.sendMessage(`Bạn chưa nhập thông tin, vui lòng đọc ${__GLOBAL.settings.PREFIX}help để biết thêm chi tiết!`, event.threadID,event.messageID);
+	if (content.length == 0 && event.type != "message_reply") return global.client.utils.throwError(this.config.name, event.threadID,event.messageID);
 	var translateThis = content.slice(0, content.indexOf(" ->"));
 	var lang = content.substring(content.indexOf(" -> ") + 4);
 	if (event.type == "message_reply") {

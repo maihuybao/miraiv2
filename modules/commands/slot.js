@@ -2,10 +2,10 @@ module.exports.config = {
     name: "slot",
     version: "1.0.0",
     hasPermssion: 0,
-    credits: "CatalizCS",
+    credits: "Mirai Team",
     description: "Đánh bạc bằng hình thức hoa quả",
     commandCategory: "game-sp",
-    usages: "slot số coin đặt cược",
+    usages: "[số coin cần đặt]",
     cooldowns: 5,
 };
 

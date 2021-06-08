@@ -2,18 +2,22 @@ module.exports.config = {
     name: "news",
     version: "1.0.0",
     hasPermssion: 0,
-    credits: "MewMew",
+    credits: "Mirai Team",
     description: "Tin tức trên vnexpress.net",
     commandCategory: "news",
-    usages: "news [từ khóa]",
+    usages: "[từ khóa]",
     cooldowns: 5,
-    dependencies: ["cheerio", "axios"]
+    dependencies: {
+        "axios": "",
+        "cheerio": "",
+        "https": ""
+    }
 };
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
-    const axios = require("axios");
-    const https = require("https");
-    const cheerio = require("cheerio");
+module.exports.run = async function({ api, event, args }) {
+    const axios = global.nodemodule["axios"];
+    const https = global.nodemodule["https"];
+    const cheerio = global.nodemodule["cheerio"];
     var out = (msg) => api.sendMessage(msg, event.threadID, event.messageID);
     var url = "https://timkiem.vnexpress.net/?q=";
     var q = args.join(" ");

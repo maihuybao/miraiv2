@@ -5,22 +5,23 @@ module.exports.config = {
 	credits: "CatalizCS",
 	description: "Phát video thông qua link YouTube hoặc từ khoá tìm kiếm",
 	commandCategory: "media",
-	usages: "video [Text]",
+	usages: "[Text]",
 	cooldowns: 10,
-	dependencies: ["ytdl-core","simple-youtube-api"],
-	info: [
-		{
-			key: 'Text',
-			prompt: 'Nhập link YouTube hoặc là từ khoá tìm kiếm.',
-			type: 'Văn Bản',
-			example: 'rap chậm thôi'
-		}
-	]
+	usages: "[link or content need search]",
+	cooldowns: 10,
+	dependencies: {
+		"ytdl-core": "",
+		"simple-youtube-api": "",
+		"fs-extra": ""
+	},
+	envConfig: {
+		"YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo"
+	}
 };
 
 module.exports.handleReply = async function({ api, event, handleReply }) {
-	const ytdl = require("ytdl-core");
-	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
+	const ytdl = global.nodemodule["ytdl-core"];
+	const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
 	api.sendMessage("Đang xử lý request của bạn!", event.threadID,event.messageID);
 	try {
 		ytdl(handleReply.link[event.body - 1])
@@ -37,12 +38,12 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
 	return api.unsendMessage(handleReply.messageID);
 }
 
-module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
-	const ytdl = require("ytdl-core");
-	const YouTubeAPI = require("simple-youtube-api");
-	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
+module.exports.run = async function({ api, event, args }) {
+	const ytdl = global.nodemodule["ytdl-core"];
+	const YouTubeAPI = global.nodemodule["simple-youtube-api"];
+	const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
 	
-	const youtube = new YouTubeAPI(__GLOBAL["sing"].YOUTUBE_API);
+	const youtube = new YouTubeAPI(global.configModule[this.config.name].YOUTUBE_API);
 	
 	if (args.length == 0 || !args) return api.sendMessage('Phần tìm kiếm không được để trống!', event.threadID, event.messageID);
 	const keywordSearch = args.join(" ");
@@ -75,7 +76,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 				link.push(value.id);
 				msg += (`${num+=1}. ${value.title}\n`);
 			}
-			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
+			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => global.client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
 		}
 		catch (error) {
 			api.sendMessage("Không thể xử lý request do dã phát sinh lỗi: " + error.message, event.threadID, event.messageID);

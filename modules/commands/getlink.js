@@ -2,7 +2,7 @@ module.exports.config = {
 	name: "getlink",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Lấy url download từ video, audio được gửi từ nhóm",
 	commandCategory: "other",
 	usages: "getLink",

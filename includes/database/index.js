@@ -1,28 +1,14 @@
 const Sequelize = require("sequelize");
-const { existsSync, readFileSync } = require("fs-extra");
-const { join, resolve } = require("path");
-var argv = require('minimist')(process.argv.slice(2));
-var dirConfig;
-var indexConfig = argv["_"].findIndex(element => element.indexOf(".json") !== -1) || 0;
-if (argv["_"].length != 0) dirConfig = join(process.cwd(), argv["_"][indexConfig]);
-else dirConfig = join(process.cwd(), "config.json");
-var config;
-try {
-	config = require(dirConfig);
-}
-catch {
-	if (existsSync(dirConfig.replace(/\.json/g,"") + ".temp")) {
-		config = readFileSync(dirConfig.replace(/\.json/g,"") + ".temp");
-		config = JSON.parse(config);
-	}
-	else return;
-}
+const { resolve } = require("path");
+const { DATABASE } = global.config;
 
-const dialect = "sqlite";
+var dialect = Object.keys(DATABASE), storage;
+dialect = dialect[0]; 
+storage = resolve(__dirname, `../${DATABASE[dialect].storage}`);
 
 module.exports.sequelize = new Sequelize({
 	dialect,
-	storage: resolve(__dirname, `../${config.DATABASE[dialect].storage}`),
+	storage,
 	pool: {
 		max: 20,
 		min: 0,
@@ -49,7 +35,7 @@ module.exports.sequelize = new Sequelize({
 	},
 	sync: {
 		force: false
-	},
-})
+	}
+});
 
 module.exports.Sequelize = Sequelize;

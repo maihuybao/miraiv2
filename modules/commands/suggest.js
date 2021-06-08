@@ -2,30 +2,11 @@ module.exports.config = {
 	name: "suggest",
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "SpermLord",
+	credits: "Mirai Team",
 	description: "Yêu cầu công việc/đóng góp ý kiến",
 	commandCategory: "other",
-	usages: "suggest option input",
-	cooldowns: 5,
-	info: [
-		{
-			key: 'option => add',
-			prompt: 'Thêm công việc/đóng góp',
-			type: 'string',
-			example: 'make bot better'
-		},
-		{
-			key: 'option => list',
-			prompt: 'Xem toàn bộ danh sách công việc/đóng góp',
-			type: 'string'
-		},
-		{
-			key: 'option => delete',
-			prompt: 'Xóa công việc/đóng góp chỉ định dựa vào số dòng, chỉ admin có thể sử dụng',
-			type: 'number',
-			example: "1"
-		}
-	]
+	usages: "[add/list/remove] [your input]",
+	cooldowns: 5
 };
 
 module.exports.onLoad = function () {

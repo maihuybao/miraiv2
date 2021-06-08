@@ -2,25 +2,11 @@ module.exports.config = {
 	name: "reminder",
 	version: "0.0.1-beta",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Nhắc nhở bạn về việc gì đấy trong khoảng thời gian cố định",
 	commandCategory: "timer",
-	usages: "reminder [Time] [Text] ",
-	cooldowns: 5,
-	info: [
-		{
-			key: 'Time',
-			prompt: 'Là thời gian bạn đặt để nhắc lại sau khoảng nào đó, theo đơn vị giây(s)',
-			type: 'Number',
-			example: '300'
-		},
-		{
-			key: 'Text',
-			prompt: 'Là phần nội dung nhắn lại sau khoảng thời gian',
-			type: 'Văn bản',
-			example: 'Đi ngủ'
-		}
-	]
+	usages: "[Time] [Text] ",
+	cooldowns: 5
 };
 
 module.exports.run = async function({ api, event, args, Users }) {

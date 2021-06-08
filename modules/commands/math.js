@@ -2,12 +2,15 @@ module.exports.config = {
 	name: "math",
 	version: "1.0.1",
 	hasPermssion: 0,
-	credits: "MewMew",
+	credits: "Mirai Team",
 	description: "Làm toán",
 	commandCategory: "study",
 	usages: "math 1 + 2",
 	cooldowns: 5,
-	dependencies: ["axios"],
+	dependencies: {
+		"axios": "",
+		"fs-extra": ""
+	},
 	info: [
 		{
 			key: 'none',
@@ -44,12 +47,12 @@ module.exports.config = {
 		"WOLFRAM": "T8J8YV-H265UQ762K"
 	}
 };
-module.exports.run = async function ({ api, event, args, __GLOBAL }) {
-	var axios = require("axios");
-	var fs = require("fs-extra");
+module.exports.run = async function ({ api, event, args }) {
+	var axios = global.nodemodule["axios"];
+	var fs = global.nodemodule["fs-extra"];
 	var { threadID, messageID } = event;
 	var out = (msg) => api.sendMessage(msg, threadID, messageID);
-	var text = [], key = __GLOBAL.math.WOLFRAM;
+	var text = [], key = global.configModule.math.WOLFRAM;
 	var content = (event.type == 'message_reply') ? event.messageReply.body : args.join(" ");
 	if (!content) return out("Vui lòng nhập phép tính");
 	else if (content.indexOf("-p") == 0) {

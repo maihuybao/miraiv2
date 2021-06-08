@@ -1,44 +1,64 @@
-module.exports = function({ __GLOBAL, api, Users, Threads, Currencies, client }) {
+module.exports = function({ Users, Threads, Currencies }) {
 	const logger = require("../../utils/log.js");
+
 	return async function({ event }) {
+
+		const { allUserID, allCurrenciesID, allThreadID, userName } = global.data;
+		const { autoCreateDB } = global.config;
+
+		if (autoCreateDB == false) return;
+
+		var { senderID, threadID } = event;
+
+		senderID = parseInt(senderID);
+		threadID = parseInt(threadID);
+
 		try {
-			if (__GLOBAL.settings.autoCreateDB == false || client.inProcess == true) return
-			const { senderID, threadID } = event;
-			var settings = {};
 
-			if (!client.allThread.includes(parseInt(threadID)) && event.isGroup == true) {
-				try {	
-					client.inProcess = true;
-					await Threads.createData(threadID, { settings });
-					client.allThread.push(parseInt(threadID));
-					logger(`New Thread: ${threadID}`, "[ DATABASE ]")
-					client.inProcess = false;
-				}
-				catch {
-					client.inProcess = false;
-					logger("Không thể ghi nhóm có ID " + threadID + " vào database!", "[ DATABASE ]");
-				}
+			///////////////////////////////////////////////
+			//========= Check and create thread =========//
+			///////////////////////////////////////////////
+
+			if (!allThreadID.includes(threadID) && event.isGroup == true) {
+				await Threads.createData(threadID, { data: {} });
+				allThreadID.push(threadID);
+				logger(`New Thread: ${threadID}`, "[ DATABASE ]");				
 			}
 
-			if (!client.allUser.includes(parseInt(senderID))) {
-				try {
-					client.inProcess = true;
-					await Users.createData(senderID, {});
-					logger(`New User: ${senderID}`, "[ DATABASE ]")
-					await Currencies.createData(senderID);
-					client.allUser.push(parseInt(senderID));
-					logger(`New Currency: ${senderID}`, "[ DATABASE ]")
-					client.inProcess = false;
-				}
-				catch {
-					client.inProcess = false;
-					logger("Không thể ghi người dùng có ID " + senderID + " vào database!", "[ DATABASE ]");
-				}
+			//////////////////////////////////////
+			//========= Check userInfo =========//
+			//////////////////////////////////////
+
+			if (!allUserID.includes(senderID)) {
+				await Users.createData(senderID, { name: "" });
+				allUserID.push(parseInt(senderID));
+				logger(`New User: ${senderID}`, "[ DATABASE ]");
 			}
+
+			////////////////////////////////////////
+			//========= Check Currencies =========//
+			////////////////////////////////////////
+
+			if (!allCurrenciesID.includes(senderID)) {
+				await Currencies.createData(senderID);
+				allCurrenciesID.push(parseInt(senderID));
+				logger(`New Currency: ${senderID}`, "[ DATABASE ]");
+			}
+			
+			//////////////////////////////////////
+			//========= Check nameUser =========//
+			//////////////////////////////////////
+
+			if (!userName.has(senderID) || (userName.get(senderID) == "Người dùng facebook")) {				
+				const name = await Users.getNameUser(senderID);
+				await Users.setData(senderID, { name });
+				userName.set(senderID, name);
+			}
+
 			return;
 		}
 		catch(e) {
-			console.log(e);
+			return console.log(e);
 		}
-	}
-}
+	};
+};

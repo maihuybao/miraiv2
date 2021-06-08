@@ -2,24 +2,33 @@ module.exports.config = {
 	name: "leave",
 	eventType: ["log:unsubscribe"],
 	version: "1.0.0",
-	credits: "SpermLord",
-	description: "Listen events"
+	credits: "Mirai Team",
+	description: "Thông báo bot hoặc người rời khỏi nhóm",
+	dependencies: {
+		"fs-extra": "",
+		"path": ""
+	}
 };
 
-module.exports.run = async function({ api, event, Users, Threads, client }) {
-	let msg, formPush
-	const { createReadStream, existsSync, mkdirSync } = require("fs-extra");
+module.exports.run = async function({ api, event, Users, Threads }) {
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
-	let settings = client.threadSetting.get(event.threadID) || {};//(await Threads.getData(event.threadID)).settings;
-	let name = (await Users.getData(event.logMessageData.leftParticipantFbId)).name || (await api.getUserInfo(event.logMessageData.leftParticipantFbId))[event.logMessageData.leftParticipantFbId].name
-	let type = (event.author == event.logMessageData.leftParticipantFbId) ? "tự rời" : "bị quản trị viên đá";
-	(typeof settings.customLeave == "undefined") ? msg = "{name} Đã {type} khỏi nhóm" : msg = settings.customLeave;
-	msg = msg
-	.replace(/\{name}/g, name)
-	.replace(/\{type}/g, type);
-	let dirGif = __dirname + `/cache/leaveGif/`;
-	if (existsSync(dirGif)) mkdirSync(dirGif, { recursive: true })
-	if (existsSync(dirGif + `${event.threadID}.gif`)) formPush = { body: msg, attachment: createReadStream(dirGif + `${event.threadID}.gif`) }
+	const { createReadStream, existsSync, mkdirSync } = global.nodemodule["fs-extra"];
+	const { join } =  global.nodemodule["path"];
+	const { threadID } = event;
+	const data = global.data.threadData.get(parseInt(threadID)) || (await Threads.getData(threadID)).data;
+	const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
+	const type = (event.author == event.logMessageData.leftParticipantFbId) ? "tự rời" : "bị quản trị viên đá";
+	const path = join(__dirname, "cache", "leaveGif");
+	const gifPath = join(path, `${threadID}.gìf`);
+	var msg, formPush
+
+	if (existsSync(path)) mkdirSync(path, { recursive: true });
+
+	(typeof data.customLeave == "undefined") ? msg = "{name} Đã {type} khỏi nhóm" : msg = data.customLeave;
+	msg = msg.replace(/\{name}/g, name).replace(/\{type}/g, type);
+
+	if (existsSync(gifPath)) formPush = { body: msg, attachment: createReadStream(gifPath) }
 	else formPush = { body: msg }
-	return api.sendMessage(formPush, event.threadID);
+	
+	return api.sendMessage(formPush, threadID);
 }

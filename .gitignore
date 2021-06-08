@@ -7,9 +7,11 @@ package-lock.json
 *.mp4
 *.png
 *.gif
-node_modules/
 logs/
+node_modules/
 includes/data.sqlite
 fbstate.json
 modules/commands/cache/*
 modules/events/cache/*
+config.json
+testing-mirai.js

@@ -2,17 +2,18 @@ module.exports.config = {
 	name: "covid",
 	version: "1.0.2",
 	hasPermssion: 0,
-	credits: "SpermLord",
+	credits: "Mirai Team",
 	description: "Lấy thông tin về tình hình dịch bệnh COVID-19",
 	commandCategory: "other",
-	usages: "covid",
 	cooldowns: 5,
-	dependencies: ["axios"]
+	dependencies: {
+		"axios": ""
+	}
 };
 
 module.exports.run = async function({ api, event }) {
-	const axios = require('axios');
-	let data = (await axios.get('https://www.spermlord.ml/covid')).data;
+	const axios = global.nodemodule["axios"];
+	let data = (await axios.get('https://www.spermlord.ga/covid')).data;
 	api.sendMessage(		
 		'====== Thế Giới ======\n' +
 		`😷 Nhiễm: ${data.thegioi.nhiem}\n` +

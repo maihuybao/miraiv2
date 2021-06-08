@@ -87,5 +87,5 @@ module.exports = function ({ models }) {
 		createData,
 		increaseMoney,
 		decreaseMoney
-	}
-}
+	};
+};

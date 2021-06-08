@@ -5,49 +5,36 @@ module.exports.config = {
 	credits: "Name need credit", // Công nhận module sở hữu là ai
 	description: "say bla bla ở đây", // Thông tin chi tiết về lệnh
 	commandCategory: "group", // Thuộc vào nhóm nào: system, other, game-sp, game-mp, random-img, edit-img, media, economy, ...
-	usages: "name Text1 Text2", // Cách sử dụng lệnh
+	usages: "[option] [text]", // Cách sử dụng lệnh
 	cooldowns: 5, // Thời gian một người có thể lặp lại lệnh
-	dependencies: ["name package"], //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
-	// Info là phần chi tiết thêm của cách sử dụng lệnh
-	// Key: Từ khoá thuộc trong usages
-	// prompt: Chi tiết dữ liệu đầu vào của key
-	// type: Định dạng dữ liệu đầu vào của key
-	// example: Ví dụ ¯\_(ツ)_/¯ 
-	info: [
-		{
-			key: 'Text1',
-			prompt: '',
-			type: 'Văn Bản',
-			example: 'help'
-		},
-		{
-			key: 'Text2',
-			prompt: '',
-			type: 'Số liệu',
-			example: '1, 2, 3'
-		}
-	],
+	dependencies: {
+		"packageName": "version"
+	}, //Liệt kê các package module ở ngoài tại đây để khi load lệnh nó sẽ tự động cài!
 	envConfig: {
 		//Đây là nơi bạn sẽ setup toàn bộ env của module, chẳng hạn APIKEY, ...
 	}
 };
 
-module.exports.onLoad = function ({ __GLOBAL, client, configValue }) {
-		//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
-}
-
-module.exports.handleReaction = function({ api, event, args, client, __GLOBAL }) {
+module.exports.onLoad = function ({ configValue }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
 
-module.exports.handleReply = function({ api, event, args, client, __GLOBAL }) {
+module.exports.handleReaction = function({ api, event, models, Users, Threads, Currencies, handleReaction, models }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
 
-module.exports.event = function({ api, event, client, __GLOBAL }) {
+module.exports.handleReply = function({ api, event, models, Users, Threads, Currencies, handleReply, models }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }
 
-module.exports.run = function({ api, event, args, client, __GLOBAL, permssion }) {
+module.exports.handleEvent = function({ event, api, models, Users, Threads, Currencies }) {
+	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
+module.exports.handleSedule = function({ event, api, models, Users, Threads, Currencies, scheduleItem }) {
+	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
+}
+
+module.exports.run = function({ api, event, args, models, Users, Threads, Currencies, permssion }) {
 	//Làm cái gì ở đây tuỳ thuộc vào bạn ¯\_(ツ)_/¯ 
 }

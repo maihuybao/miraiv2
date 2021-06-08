@@ -2,20 +2,17 @@ module.exports.config = {
 	name: "sing",
 	version: "1.0.5",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Phát nhạc thông qua link YouTube, SoundCloud hoặc từ khoá tìm kiếm",
 	commandCategory: "media",
-	usages: "sing [Text]",
+	usages: "[link or content need search]",
 	cooldowns: 10,
-	dependencies: ["ytdl-core","simple-youtube-api","soundcloud-downloader"],
-	info: [
-		{
-			key: 'Text',
-			prompt: 'Nhập link YouTube, SoundCloud hoặc là từ khoá tìm kiếm.',
-			type: 'Văn Bản',
-			example: 'rap chậm thôi'
-		}
-	],
+	dependencies: {
+		"ytdl-core": "",
+		"simple-youtube-api": "",
+		"soundcloud-downloader": "",
+		"fs-extra": ""
+	},
 	envConfig: {
 		"YOUTUBE_API": "AIzaSyB6pTkV2PM7yLVayhnjDSIM0cE_MbEtuvo",
 		"SOUNDCLOUD_API": "M4TSyS6eV0AcMynXkA3qQASGcOFQTWub"
@@ -23,9 +20,8 @@ module.exports.config = {
 };
 
 module.exports.handleReply = async function({ api, event, handleReply }) {
-	const ytdl = require("ytdl-core");
-	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
-	api.sendMessage("Đang xử lý request của bạn!", event.threadID,event.messageID);
+	const ytdl = global.nodemodule["ytdl-core"];
+	const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
 	try {
 		ytdl(handleReply.link[event.body - 1])
 			.pipe(createWriteStream(__dirname + `/cache/${handleReply.link[event.body - 1]}.m4a`))
@@ -41,13 +37,13 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
 	return api.unsendMessage(handleReply.messageID);
 }
 
-module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
-	const ytdl = require("ytdl-core");
-	const YouTubeAPI = require("simple-youtube-api");
-	const scdl = require("soundcloud-downloader").default;
-	const { createReadStream, createWriteStream, unlinkSync, statSync } = require("fs-extra");
+module.exports.run = async function({ api, event, args }) {
+	const ytdl = global.nodemodule["ytdl-core"];
+	const YouTubeAPI = global.nodemodule["simple-youtube-api"];
+	const scdl = global.nodemodule["soundcloud-downloader"].default;
+	const { createReadStream, createWriteStream, unlinkSync, statSync } = global.nodemodule["fs-extra"];
 	
-	const youtube = new YouTubeAPI(__GLOBAL["sing"].YOUTUBE_API);
+	const youtube = new YouTubeAPI(global.configModule[this.config.name].YOUTUBE_API);
 	
 	if (args.length == 0 || !args) return api.sendMessage('Phần tìm kiếm không được để trống!', event.threadID, event.messageID);
 	const keywordSearch = args.join(" ");
@@ -76,7 +72,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 	else if (scRegex.test(args[0])) {
 		let body;
 		try {
-			var songInfo = await scdl.getInfo(args[0], __GLOBAL.sing.SOUNDCLOUD_API);
+			var songInfo = await scdl.getInfo(args[0], global.configModule[this.config.name].SOUNDCLOUD_API);
 			var timePlay = Math.ceil(songInfo.duration / 1000);
 			body = `Tiêu đề: ${songInfo.title} | ${(timePlay - (timePlay %= 60)) / 60 + (9 < timePlay ? ':' : ':0') + timePlay}]`;
 		}
@@ -85,10 +81,10 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 			api.sendMessage("Không thể xử lý request do dã phát sinh lỗi: " + error.message, event.threadID, event.messageID);
 		}
 		try {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, __GLOBAL.settings.SOUNDCLOUD_API ? __GLOBAL.settings.SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
+			await scdl.downloadFormat(args[0], scdl.FORMATS.OPUS, global.configModule[this.config.name].SOUNDCLOUD_API ? global.configModule[this.config.name].SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
 		}
 		catch (error) {
-			await scdl.downloadFormat(args[0], scdl.FORMATS.MP3, __GLOBAL.settings.SOUNDCLOUD_API ? __GLOBAL.settings.SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
+			await scdl.downloadFormat(args[0], scdl.FORMATS.MP3, global.configModule[this.config.name].SOUNDCLOUD_API ? global.configModule[this.config.name].SOUNDCLOUD_API : undefined).then(songs => songs.pipe(createWriteStream(__dirname + "/cache/music.mp3")).on("close", () => api.sendMessage({ body, attachment: createReadStream(__dirname + "/cache/music.mp3" )}, event.threadID, () => unlinkSync(__dirname + "/cache/music.mp3"), event.messageID)));
 		}
 	}
 	else {
@@ -100,7 +96,7 @@ module.exports.run = async function({ api, event, args, __GLOBAL, client }) {
 				link.push(value.id);
 				msg += (`${num+=1}. ${value.title}\n`);
 			}
-			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
+			return api.sendMessage(`🎼 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn: \n${msg}\nHãy reply(phản hồi) chọn một trong những tìm kiếm trên`, event.threadID,(error, info) => global.client.handleReply.push({ name: this.config.name, messageID: info.messageID, author: event.senderID, link }), event.messageID);
 		}
 		catch (error) {
 			api.sendMessage("Không thể xử lý request do dã phát sinh lỗi: " + error.message, event.threadID, event.messageID);

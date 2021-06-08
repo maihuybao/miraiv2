@@ -2,16 +2,18 @@ module.exports.config = {
     name: "nhentai",
     version: "1.0.1",
     hasPermssion: 0,
-    credits: "SpermLord",
+    credits: "Mirai Team",
     description: "Tìm kiếm thông tin truyện trên nhentai",
     commandCategory: "nsfw",
-    usages: "nhentai id",
+    usages: "[ID truyện]",
     cooldowns: 5,
-    dependencies: ["request"],
+    dependencies: {
+        "request": ""
+    },
 };
 
 module.exports.run = ({ api, event, args }) => {
-    const request = require("request");
+    const request = global.nodemodule["request"];
     if (!args[0] || typeof parseInt(args[0]) !== "number") return api.sendMessage(`Code lý tưởng dành cho người anh em là: ${Math.floor(Math.random() * 99999)}`, event.threadID, event.messageID);
     return request(`https://nhentai.net/api/gallery/${parseInt(args[0])}`, (error, response, body) => {
         try {

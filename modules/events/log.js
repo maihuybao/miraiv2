@@ -2,16 +2,16 @@ module.exports.config = {
 	name: "log",
 	eventType: ["log:unsubscribe","log:subscribe","log:thread-name"],
 	version: "1.0.0",
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Ghi lại thông báo các hoạt đông của bot!",
     envConfig: {
         enable: true
     }
 };
 
-module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
+module.exports.run = async function({ api, event, Threads }) {
     const logger = require("../../utils/log");
-    if (__GLOBAL[this.config.name].enable != true) return;
+    if (global.configModule[this.config.name].enable != 1) return;
     var formReport =  "=== Bot Notification ===" +
                         "\n\n» Thread mang ID: " + event.threadID +
                         "\n» Hành động: {task}" +
@@ -43,7 +43,7 @@ module.exports.run = async function({ api, event, Threads, __GLOBAL }) {
     formReport = formReport
     .replace(/\{task}/g, task);
 
-    return api.sendMessage(formReport, __GLOBAL.settings.ADMINBOT.split(" ")[0], (error, info) => {
+    return api.sendMessage(formReport, global.config.ADMINBOT[0], (error, info) => {
         if (error) return logger(formReport, "[ Logging Event ]");
     });
 }

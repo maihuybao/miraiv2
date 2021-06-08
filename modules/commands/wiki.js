@@ -2,30 +2,18 @@ module.exports.config = {
 	name: "wiki",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "SpermLord",
+	credits: "Mirai Team",
 	description: "Tìm mọi thông tin cần biêt thông qua Wikipedia",
 	commandCategory: "study",
-	usages: "wiki args input",
+	usages: "[en] [thông tin cần tìm kiếm]",
 	cooldowns: 1,
-	dependencies: ['wikijs'],
-    info: [
-		{
-			key: "args => Để trống",
-			prompt: "Tìm kiếm thông qua tiếng việt",
-            type: "string",
-            example: ""
-		},
-		{
-			key: "args => en",
-			prompt: "Tìm kiếm thông qua tiếng anh",
-            type: "string",
-            example: "en"
-		}
-	],
-};
+	dependencies: {
+        "wikijs": ""
+    }
+}
 
 module.exports.run = ({ event, args, api }) => {
-    const wiki = require("wikijs").default;
+    const wiki = (global.nodemodule["wikijs"]).default;
     let content = args.join(" ");
     let url = 'https://vi.wikipedia.org/w/api.php';
     if (args[0] == "en") {

@@ -2,47 +2,27 @@ module.exports.config = {
 	name: "thread",
 	version: "0.0.1",
 	hasPermssion: 2,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Cấm hoặc gỡ cấm nhóm",
 	commandCategory: "system",
-	usages: "thread args input",
-	cooldowns: 5,
-	info: [
-		{
-			key: 'args => ban',
-			prompt: 'Nhập input là ID thread cần ban',
-			type: 'Number',
-			example: '100000'
-		},
-		{
-			key: 'args => unban',
-			prompt: 'Nhập input là ID thread cần unban',
-			type: 'Number',
-			example: '100000'
-		},
-		{
-			key: 'args => search',
-			prompt: 'Nhập input là từ khoá cần tìm thread',
-			type: 'String',
-			example: 'khu'
-		}
-	]
+	usages: "[unban/ban/search] [ID or text]",
+	cooldowns: 5
 };
 
-module.exports.handleReaction = async ({ event, api, Threads, client, handleReaction }) => {
+module.exports.handleReaction = async ({ event, api, Threads, handleReaction }) => {
 	if (parseInt(event.userID) !== parseInt(handleReaction.author)) return;
 	switch (handleReaction.type) {
 		case "ban": {
 			await Threads.setData(handleReaction.target, { banned: 1 });
-			let dataThread = client.threadBanned.get(handleReaction.target.toString()) || {};
+			let dataThread = global.data.threadBanned.get(parseInt(handleReaction.target)) || {};
 			dataThread["banned"] = 1;
-			client.threadBanned.set(handleReaction.target, dataThread);
+			global.data.threadBanned.set(parseInt(handleReaction.target), dataThread);
 			api.sendMessage(`[${handleReaction.target}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		case "unban": {
 			await Threads.setData(handleReaction.target, { banned: 0 });
-			client.threadBanned.delete(handleReaction.target.toString());
+			global.data.threadBanned.delete(parseInt(handleReaction.target));
 			api.sendMessage(`[${handleReaction.target}] Đã unban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
@@ -51,7 +31,7 @@ module.exports.handleReaction = async ({ event, api, Threads, client, handleReac
 	}
 }
 
-module.exports.run = async ({ event, api, args, Threads, client }) => {
+module.exports.run = async ({ event, api, args, Threads }) => {
     let content = args.slice(1, args.length);
 	switch (args[0]) {
 		case "ban": {
@@ -63,7 +43,7 @@ module.exports.run = async ({ event, api, args, Threads, client }) => {
 				if (!dataThread) return api.sendMessage(`[${idThread}] thread không tồn tại trong database!`, event.threadID);
 				if (dataThread.banned) return api.sendMessage(`[${idThread}] Đã bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idThread}] Bạn muốn ban thread này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
-					client.handleReaction.push({
+					global.client.handleReaction.push({
 						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
@@ -83,7 +63,7 @@ module.exports.run = async ({ event, api, args, Threads, client }) => {
 				if (!dataThread) return api.sendMessage(`[${idThread}] thread không tồn tại trong database!`, event.threadID);
 				if (!dataThread.banned) return api.sendMessage(`[${idThread}] Không bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idThread}] Bạn muốn unban thread này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
-					client.handleReaction.push({
+					global.client.handleReaction.push({
 						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
@@ -110,7 +90,8 @@ module.exports.run = async ({ event, api, args, Threads, client }) => {
 			(matchThreads.length > 0) ? api.sendMessage(`Đây là kết quả phù hợp: \n${a}`, event.threadID) : api.sendMessage("Không tìm thấy kết quả dựa vào tìm kiếm của bạn!", event.threadID);
 			break;
 		}
-		default:
-			break;
+		default: {
+			return global.client.utils.throwError(this.config.name, event.threadID, event.messageID)
+		}
 	}
 }

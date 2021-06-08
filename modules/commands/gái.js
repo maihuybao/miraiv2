@@ -16,20 +16,8 @@ module.exports.config = {
 
 module.exports.run = function({api,event,args,client,__GLOBAL
 }) {
-  	var request = require("request");
-var options = {
-  'method': 'GET',
-  'url': 'https://api.berver.tech/gai',
-  'headers': {
-  }
-}
-request(options, function (error, response) {
-	if (error) throw new Error(error);
-  var a =JSON.parse(response.body).data;
-    var callback = () => api.sendMessage({
-      attachment: fs.createReadStream(__dirname + "/cache/1.png")
-    }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/1.png"));
-    return request(encodeURI(`${a}`)).pipe(fs.createWriteStream(__dirname + '/cache/1.png')).on('close', () => callback());
-    console.log(rq)
-  });
+
+
+return api.sendMessage({data:'Ảnh của bạn đây',attachment:(await axios({url: (await axios("https://api.vangbanlanhat.tk/image?type=gai")).data.data, method: "GET", responseType: "stream"})).data})
+
 }

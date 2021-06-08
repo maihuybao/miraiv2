@@ -2,19 +2,11 @@ module.exports.config = {
 	name: "unsend",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "SpermLord",
+	credits: "Mirai Team",
 	description: "Gỡ tin nhắn của bot",
 	commandCategory: "system",
 	usages: "unsend",
-	cooldowns: 0,
-	info: [
-		{
-			key: 'unsend',
-			prompt: 'Reply tin nhắn cần gỡ bỏ',
-			type: 'Văn Bản',
-			example: 'unsend'
-		}
-	]
+	cooldowns: 0
 };
 
 module.exports.run = function({ api, event }) {

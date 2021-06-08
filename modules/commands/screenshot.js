@@ -2,34 +2,41 @@ module.exports.config = {
 	name: "screenshot",
 	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Screenshot một trang web nào đó (NOT ALLOW NSFW PAGE)",
 	commandCategory: "other",
-	usages: "screenshot site",
+	usages: "[url site]",
 	cooldowns: 5,
-	dependencies: ["request","fs-extra"]
+	dependencies: {
+        "fs-extra": "",
+        "path": "",
+        "url": ""
+    }
 };
 
-module.exports.onLoad = () => {
-    const request = require("request");
-    const fs = require("fs-extra");
-    if (!fs.existsSync(__dirname + '/cache/pornList.txt')) request('https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt').pipe(fs.createWriteStream(__dirname + "/cache/pornList.txt"));
+module.exports.onLoad = async () => {
+    const { existsSync } = global.nodemodule["fs-extra"];
+    const { resolve } = global.nodemodule["path"];
+
+    const path = resolve(__dirname, "cache", "pornlist.txt");
+
+    if (!existsSync(path)) return await global.client.utils.downloadFile("https://raw.githubusercontent.com/blocklistproject/Lists/master/porn.txt", path);
+    else return;
 }
 
-module.exports.run = ({ event, api, args, client }) => {
-    const request = require("request");
-    const fs = require("fs-extra");
-    const url = require('url');
+module.exports.run = async ({ event, api, args, }) => {
+    const { readFileSync, createReadStream, unlinkSync } = global.nodemodule["fs-extra"];
+    const url = global.nodemodule["url"];
 
-    if (!client.pornList) client.pornList = fs.readFileSync(__dirname + "/cache/pornList.txt", "utf-8").split('\n').filter(site => site && !site.startsWith('#')).map(site => site.replace(/^(0.0.0.0 )/, ''));
-    let urlParsed = url.parse(args[0]);
+    if (!global.moduleData.pornList) global.moduleData.pornList = readFileSync(__dirname + "/cache/pornlist.txt", "utf-8").split('\n').filter(site => site && !site.startsWith('#')).map(site => site.replace(/^(0.0.0.0 )/, ''));
+    const urlParsed = url.parse(args[0]);
 
-    if (client.pornList.some(pornURL => urlParsed.host == pornURL)) return api.sendMessage("Trang web bạn nhập không an toàn!!(NSFW PAGE)", event.threadID, event.messageID);
+    if (global.moduleData.pornList.some(pornURL => urlParsed.host == pornURL)) return api.sendMessage("Trang web bạn nhập không an toàn!!(NSFW PAGE)", event.threadID, event.messageID);
 
     try {
-        return request(`https://image.thum.io/get/width/1920/crop/400/fullpage/noanimate/${args[0]}`)
-            .pipe(fs.createWriteStream(__dirname + `/cache/${event.senderID}-ss.png`))
-            .on("close", () => api.sendMessage({ attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}-ss.png`) }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}-ss.png`)));
+        const path = __dirname + `/cache/${event.threadID}-${event.senderID}s.png`;
+        await global.client.utils.downloadFile(`https://image.thum.io/get/width/1920/crop/400/fullpage/noanimate/${args[0]}`, path);
+        api.sendMessage({ attachment: createReadStream(path) }, event.threadID, () => unlinkSync(path));
     }
     catch {
         return api.sendMessage("Không tìm thấy url này, định dạng không đúng ?", event.threadID, event.messageID);

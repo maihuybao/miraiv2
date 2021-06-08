@@ -2,23 +2,15 @@ module.exports.config = {
 	name: "sendnoti",
 	version: "1.0.0",
 	hasPermssion: 2,
-	credits: "CatalizCS",
+	credits: "Mirai Team",
 	description: "Gửi tin nhắn tới các nhóm!",
 	commandCategory: "system",
-	usages: "sendnoti [Text]",
-	cooldowns: 5,
-	info: [
-		{
-			key: "Text",
-			prompt: "Đoạn văn bản bạn muốn gửi tới mọi người",
-			type: 'Văn bản',
-			example: 'Hello Em'
-		}
-	]
+	usages: "[Text]",
+	cooldowns: 5
 };
 
-module.exports.run = async ({ api, event, args, client }) => {
-	var allThread = client.allThread || [];
+module.exports.run = async ({ api, event, args }) => {
+	var allThread = global.data.allThreadID || [];
 	var count = 1,
 		cantSend = [];
 	for (const idThread of allThread) {
@@ -31,5 +23,5 @@ module.exports.run = async ({ api, event, args, client }) => {
 			await new Promise(resolve => setTimeout(resolve, 500));
 		}
 	}
-	return api.sendMessage(`Đã gửi tin nhắn đến ${count} nhóm!`, event.threadID, () => api.sendMessage(`[!] Không thể gửi thông báo tới ${cantSend.length} nhóm`, event.threadID, event.messageID), event.messageID);
+	return api.sendMessage(`Đã gửi tin nhắn đến ${count} nhóm!`, event.threadID, () => (cantSend.length > 0 ) ? api.sendMessage(`[!] Không thể gửi thông báo tới ${cantSend.length} nhóm`, event.threadID, event.messageID) : "", event.messageID);
 }

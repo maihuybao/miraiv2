@@ -1,30 +1,21 @@
-'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class Threads extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  };
+module.exports = function({ sequelize, Sequelize }) {
+	let Threads = sequelize.define('Threads', {
+		num: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true
+		},
+		threadID: {
+			type: Sequelize.BIGINT,
+			unique: true
+		},
+        threadInfo: {
+            type: Sequelize.JSON
+        },
+		data: {
+			type: Sequelize.JSON
+		}
+	});
 
-  Threads.init({
-    threadID: DataTypes.BIGINT,
-    name: DataTypes.STRING,
-    settings: DataTypes.JSON,
-    banned: DataTypes.BOOLEAN,
-    time2unban: DataTypes.STRING,
-    reasonban: DataTypes.STRING,
-    settings: DataTypes.JSON,
-    threadInfo: DataTypes.JSON
-  },
-  {
-    sequelize,
-    modelName: 'Threads',
-  });
-  return Threads;
-};
+	return Threads;
+}

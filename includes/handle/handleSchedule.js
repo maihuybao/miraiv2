@@ -1,27 +1,25 @@
-module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads, Currencies }) {
     const moment = require("moment-timezone");
     const logger = require("../../utils/log");
     
     setInterval(function () {
         const time = moment().utcOffset("+07:00").unix();
-        var dataJob = client.schedule || [],
+
+        const { handleSchedule, commands } = global.client;
+
+        var dataJob = handleSchedule,
             spliced;
 
-        for (const item of dataJob) {
-            if (item.timestamp < time || item.passed) {
-                const command = client.commands.get(item.commandName);
-                try {
-                    command.schedule({ event: item.event, api, __GLOBAL, client, models, Users, Threads, Currencies, schedule: item });
-                    spliced = dataJob.filter(n => n.event.messageID !== item.event.messageID);
-                    client.schedule = spliced;
-                }
-                catch (e) {
-                    logger(e + " tại schedule: " + command.config.name, "error");
-                    spliced = dataJob.filter(n => n.event.messageID !== item.event.messageID);
-                    client.schedule = spliced;
-                }
-            } else "";
+        for (const scheduleItem of dataJob) {
+            if (scheduleItem.timestamp < time || scheduleItem.passed) {
+                const command = commands.get(scheduleItem.commandName);
+                try { command.handleSchedule({ event: scheduleItem.event, api, models, Users, Threads, Currencies, scheduleItem }) }
+                catch (e) { logger(e + " tại schedule: " + command.config.name, "error") }
+                
+                spliced = dataJob.filter(function (item) { return item.event.messageID !== item.event.messageID });
+                handleSchedule = spliced;
+            }
         }
     }, 1000);
     return;
-}
+};

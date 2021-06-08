@@ -1,13 +1,10 @@
 {
 	"name": "miraiBot",
-	"version": "1.0.2",
+	"version": "1.2.0",
 	"description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord.",
 	"main": "mirai.js",
-	"engines": {
-		"node": "14.x"
-	},
 	"scripts": {
-		"start": "pm2 start pm2.config.js --no-daemon",
+		"start": "node index",
 		"login": "node login",
 		"test": "node --trace-warnings --use_strict --async-stack-traces mirai"
 	},
@@ -31,23 +28,25 @@
 	},
 	"homepage": "https://github.com/catalizcs/miraiv2#readme",
 	"dependencies": {
-		"axios": "^0.21.1",
+		"axios": "",
 		"body-parser": "",
-		"canvas": "^2.7.0",
+		"caesar-salad": "",
+		"canvas": "",
 		"chalk": "",
 		"child_process": "",
 		"fca-unofficial": "",
 		"figlet": "",
-		"fs-extra": "^9.1.0",
+		"fs-extra": "",
+		"jimp": "",
 		"minimist": "",
 		"moment": "",
 		"ms": "",
 		"npmlog": "",
-		"path": "^0.12.7",
-		"pm2": "^4.5.6",
+		"path": "",
 		"readline": "",
+		"request": "",
 		"semver": "",
-		"sequelize": "^6.5.0",
+		"sequelize": "",
 		"sqlite3": "",
 		"string-similarity": "",
 		"totp-generator": ""
