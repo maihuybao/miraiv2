@@ -37,7 +37,7 @@
 		"canvas": "",
 		"chalk": "",
 		"child_process": "",
-		"fca-unofficial": "",
+		"@maihuybao/fca-unofficial": "",
 		"figlet": "",
 		"fs-extra": "",
 		"minimist": "",
