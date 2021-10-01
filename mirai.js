@@ -6,7 +6,7 @@ const { readdirSync, readFileSync, writeFileSync, existsSync, copySync, unlinkSy
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
-const login = require("fca-unofficial");
+const login = require("@maihuybao/fca-unofficial");
 const timeStart = Date.now();
 const semver = require('semver');
 const axios = require("axios");
@@ -71,17 +71,6 @@ catch {
 }
 
 writeFileSync(client.dirConfig + ".temp", JSON.stringify(configValue, null, 4), 'utf8');
-
-////////////////////////////////////////////////
-//========= Check update from Github =========//
-///////////////////////////////////////////////
-
-axios.get('https://raw.githubusercontent.com/catalizcs/miraiv2/master/package.json').then((res) => {
-	logger("Đang kiểm tra cập nhật...", "[ CHECK UPDATE ]");
-	const local = JSON.parse(readFileSync('./package.json')).version;
-	if (semver.lt(local, res.data.version)) logger(`Đã có phiên bản ${res.data.version} để bạn có thể cập nhật!`, "[ CHECK UPDATE ]");
-	else logger('Bạn đang sử dụng bản mới nhất!', "[ CHECK UPDATE ]");
-}).catch(err => logger("Đã có lỗi xảy ra khi đang kiểm tra cập nhật cho bạn!", "[ CHECK UPDATE ]"));
 
 const commandFiles = readdirSync(client.dirMain + "/modules/commands").filter((file) => file.endsWith(".js") && !file.includes('example') && !global.config.commandDisabled.includes(file));
 
