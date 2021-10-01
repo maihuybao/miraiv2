@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Sunii",
 	description: "Tạo twitter Trum",
-	commandCategory: "General",
+	commandCategory: "edit-img",
 	usages: "fact [text]",
 	cooldowns: 10,
 	dependencies: ["canvas", "axios"]
@@ -39,7 +39,7 @@ function wrapText(ctx, text, maxWidth) {
 	});
 } 
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args }) {
 	let { senderID, threadID, messageID } = event;
 	const { loadImage, createCanvas, Canvas } = require("canvas");
 	const fs = require("fs-extra");

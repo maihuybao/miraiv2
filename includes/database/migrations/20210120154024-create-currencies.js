@@ -39,6 +39,9 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
         defaultValue: 0
+      },
+      fishy: {
+        type: Sequelize.JSON
       }
     });
   },

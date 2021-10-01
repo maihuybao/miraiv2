@@ -1,14 +1,15 @@
 {
 	"name": "miraiBot",
-	"version": "1.0.0",
-	"description": "A simply Facebook Messenger Bot like Discord.",
+	"version": "1.1.2",
+	"description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord.",
 	"main": "mirai.js",
 	"engines": {
-		"node": "12.18.2"
+		"node": "14.x"
 	},
 	"scripts": {
-		"start": "node --trace-warnings mirai",
-		"pm2": "pm2 start pm2_apps.json && pm2 monit"
+		"start": "pm2 start pm2.config.js --no-daemon",
+		"login": "node login",
+		"test": "node --trace-warnings --use_strict --async-stack-traces mirai"
 	},
 	"repository": {
 		"type": "git",
@@ -32,17 +33,21 @@
 	"dependencies": {
 		"axios": "",
 		"body-parser": "",
+		"caesar-salad": "",
 		"canvas": "",
 		"chalk": "",
 		"child_process": "",
-		"fca-unofficial": "",
+		"@maihuybao/fca-unofficial": "",
 		"figlet": "",
 		"fs-extra": "",
+		"minimist": "",
 		"moment": "",
 		"ms": "",
 		"npmlog": "",
+		"path": "",
 		"pm2": "",
 		"readline": "",
+		"request": "",
 		"semver": "",
 		"sequelize": "",
 		"sqlite3": "",

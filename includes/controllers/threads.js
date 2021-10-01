@@ -4,7 +4,12 @@ module.exports = function ({ models, api }) {
 	const Threads = models.use('Threads');
 
 	async function getInfo(threadID) {
-		return await api.getThreadInfo(threadID);
+		try {
+			return await api.getThreadInfo(threadID);
+		}
+		catch (e) {
+			logger(e, "error");
+		}
 	}
 
 	async function getAll(...data) {
@@ -18,7 +23,7 @@ module.exports = function ({ models, api }) {
 			return (await Threads.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return [];
 		}
 	}
@@ -36,7 +41,7 @@ module.exports = function ({ models, api }) {
 			return true;
 		}
 		catch (e) {
-			logger(e, 2);
+			logger(e, "error");
 			return false;
 		}
 	}
@@ -52,7 +57,7 @@ module.exports = function ({ models, api }) {
 			return true;
 		}
 		catch (e) {
-			logger(e, 2);
+			logger(e, "error");
 			return false;
 		}
 	}
@@ -64,5 +69,5 @@ module.exports = function ({ models, api }) {
 		setData,
 		delData,
 		createData
-	}
-}
+	};
+};

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Nhắc nhở bạn về việc gì đấy trong khoảng thời gian cố định",
-	commandCategory: "Timer",
+	commandCategory: "timer",
 	usages: "reminder [Time] [Text] ",
 	cooldowns: 5,
 	info: [

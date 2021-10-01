@@ -4,13 +4,13 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "MewMew",
 	description: "Comment trên pỏnhub ( ͡° ͜ʖ ͡°)",
-	commandCategory: "NSFW",
+	commandCategory: "edit-img",
 	usages: "phub [text]",
 	cooldowns: 10,
 	dependencies: ["canvas", "axios"]
 };
 
-function wrapText(ctx, text, maxWidth) {
+module.exports.wrapText = (ctx, text, maxWidth) => {
 	return new Promise(resolve => {
 		if (ctx.measureText(text).width < maxWidth) return resolve([text]);
 		if (ctx.measureText('W').width > maxWidth) return resolve(null);
@@ -39,7 +39,7 @@ function wrapText(ctx, text, maxWidth) {
 	});
 } 
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
+module.exports.run = async function({ api, event, args }) {
 	let { senderID, threadID, messageID } = event;
 	const { loadImage, createCanvas } = require("canvas");
 	const fs = require("fs-extra");
@@ -72,7 +72,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL }) {
 		fontSize--;
 		ctx.font = `400 ${fontSize}px Arial, sans-serif`;
 	}
-	const lines = await wrapText(ctx, text, 1160);
+	const lines = await this.wrapText(ctx, text, 1160);
 	ctx.fillText(lines.join('\n'), 30,430);
 	ctx.beginPath();
 	const imageBuffer = canvas.toBuffer();

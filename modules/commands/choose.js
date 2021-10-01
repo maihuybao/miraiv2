@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Nhờ bot chọn giúp một trong những thứ bạn cần làm ở bên dưới",
-	commandCategory: "General",
+	commandCategory: "other",
 	usages: "choose text1 | text2",
 	cooldowns: 5,
 	info: [

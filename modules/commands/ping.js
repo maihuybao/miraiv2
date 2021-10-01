@@ -1,10 +1,10 @@
 module.exports.config = {
 	name: "ping",
-	version: "0.0.1",
+	version: "0.0.2",
 	hasPermssion: 1,
 	credits: "SpermLord",
 	description: "tag toàn bộ thành viên",
-	commandCategory: "Group",
+	commandCategory: "system",
 	usages: "ping [Text]",
 	cooldowns: 70,
 	info: [
@@ -17,22 +17,23 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async function({ api, event, args }) {
-	let threadInfo = await api.getThreadInfo(event.threadID);
-	let all = threadInfo.participantIDs;
-	all.splice(all.indexOf(api.getCurrentUserID()), 1);
-	all.splice(all.indexOf(event.senderID), 1);
-	var body = args.join(" ") || '@everyone', mentions = [];
-	for (let i = 0; i < all.length; i++) {
-		if (i == body.length) body += body.charAt(body.length - 1);
+module.exports.run = async function({ api, event, args, Threads, client }) {
+	var listUserID = ((client.threadInfo.get(event.threadID)) || (await Threads.getInfo(event.threadID))).participantIDs;
+	const botID = api.getCurrentUserID();
+	listUserID = listUserID.filter(ID => ID != botID && ID != event.senderID);
+	var body = args.join(" ") || "@everyone",
+		mentions = [],
+		index = 0;
+	
+	for (idUser of listUserID) {
+		if (index == body.length) body += "  ";
 		mentions.push({
-			tag: body[i],
-			id: all[i],
-			fromIndex: i - 1
-		});
+			tag: body[index],
+			id: idUser,
+			fromIndex: -1
+		})
+		index += 1;
 	}
-	api.sendMessage({ body: `‎${body}`, mentions }, event.threadID, async (err, info) => {
-		await new Promise(resolve => setTimeout(resolve, 2 * 1000));
-		api.deleteMessage(info.messageID);
-	}, event.messageID);
+
+	return api.sendMessage({ body, mentions }, event.threadID);
 }

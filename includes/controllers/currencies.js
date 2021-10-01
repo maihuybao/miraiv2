@@ -14,7 +14,7 @@ module.exports = function ({ models }) {
 			return (await Currencies.findAll({ where, attributes })).map(e => e.get({ plain: true }));
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return [];
 		}
 	}
@@ -32,7 +32,7 @@ module.exports = function ({ models }) {
 			return true;
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return false;
 		}
 	}
@@ -48,7 +48,7 @@ module.exports = function ({ models }) {
 			return true;
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return false;
 		}
 	}
@@ -61,7 +61,7 @@ module.exports = function ({ models }) {
 			return true;
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return false;
 		}
 	}
@@ -74,7 +74,7 @@ module.exports = function ({ models }) {
 			return true;
 		}
 		catch (err) {
-			logger(err, 2);
+			logger(err, "error");
 			return false;
 		}
 	}
@@ -87,5 +87,5 @@ module.exports = function ({ models }) {
 		createData,
 		increaseMoney,
 		decreaseMoney
-	}
-}
+	};
+};

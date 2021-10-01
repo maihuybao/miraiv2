@@ -4,15 +4,27 @@ module.exports.config = {
 	hasPermssion: 2,
 	credits: "CatalizCS",
 	description: "Cấm hoặc gỡ cấm người dùng",
-	commandCategory: "System",
-	usages: "thread args",
+	commandCategory: "system",
+	usages: "user args input",
 	cooldowns: 5,
 	info: [
 		{
-			key: 'Tag',
-			prompt: 'Để trống hoặc tag một người nào đó, có thể tag nhiều người',
-			type: 'Văn Bản',
-			example: '@Mirai-chan'
+			key: 'args => ban',
+			prompt: 'Nhập input là ID người dùng cần ban',
+			type: 'Number',
+			example: '100000'
+		},
+		{
+			key: 'args => unban',
+			prompt: 'Nhập input là ID người dùng cần unban',
+			type: 'Number',
+			example: '100000'
+		},
+		{
+			key: 'args => search',
+			prompt: 'Nhập input là từ khoá cần tìm người dùng',
+			type: 'String',
+			example: 'khu'
 		}
 	]
 };
@@ -21,31 +33,19 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 	if (parseInt(event.userID) !== parseInt(handleReaction.author)) return;
 	switch (handleReaction.type) {
 		case "ban": {
-            var name;
-            try {
-                name = (await Users.getData(handleReaction.target)).name;
-            }
-            catch {
-                name = (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
-            }
-            await Users.setData(handleReaction.target, options = { banned: 1 });
-			let dataUser = client.userBanned.get(handleReaction.target.toString()) || {};
+			var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
+			await Users.setData(handleReaction.target, { banned: 1 });
+			let dataUser = client.userBanned.get(handleReaction.target) || {};
 			dataUser["banned"] = 1;
-			client.userBanned.set(handleReaction.target, dataUser);
-			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID);
+			client.userBanned.set(parseInt(handleReaction.target), dataUser);
+			api.sendMessage(`[${handleReaction.target} | ${name}] Đã ban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		case "unban": {
-            var name;
-            try {
-                name = (await Users.getData(handleReaction.target)).name;
-            }
-            catch {
-                name = (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
-            }
-			await Users.setData(handleReaction.target, options = { banned: 0 });
-			client.userBanned.delete(handleReaction.target);
-			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID);
+			var name = (await Users.getData(handleReaction.target)).name || (await api.getUserInfo(handleReaction.target))[handleReaction.target].name;
+			await Users.setData(handleReaction.target, { banned: 0 });
+			client.userBanned.delete(parseInt(handleReaction.target));
+			api.sendMessage(`[${handleReaction.target} | ${name}] Đã unban thành công!`, event.threadID, () => api.unsendMessage(handleReaction.messageID));
 			break;
 		}
 		default:
@@ -54,7 +54,7 @@ module.exports.handleReaction = async ({ event, api, Users, client, handleReacti
 }
 
 module.exports.run = async ({ event, api, args, Users, client }) => {
-    let content = args.slice(1, args.length);
+	let content = args.slice(1, args.length);
 	switch (args[0]) {
 		case "ban": {
 			if (content.length == 0) return api.sendMessage("Bạn cần phải nhập ID người dùng cần ban!", event.threadID);
@@ -66,7 +66,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 				if (dataUser.banned) return api.sendMessage(`[${idUser}] Người dùng đã bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idUser}] Bạn muốn ban người dùng này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "user",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "ban",
@@ -86,7 +86,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 				if (!dataUser.banned) return api.sendMessage(`[${idUser}] người dùng không bị ban từ trước`, event.threadID);
 				return api.sendMessage(`[${idUser}] Bạn muốn unban người dùng này ?\n\nHãy reaction vào tin nhắn này để ban!`, event.threadID, (error, info) => {
 					client.handleReaction.push({
-						name: "user",
+						name: this.config.name,
 						messageID: info.messageID,
 						author: event.senderID,
 						type: "unban",
@@ -98,7 +98,7 @@ module.exports.run = async ({ event, api, args, Users, client }) => {
 		}
 		case "search": {
 			let contentJoin = content.join(" ");
-			let getUsers =  (await Users.getAll(['userID', 'name'])).filter(item => !!item.name);
+			let getUsers = (await Users.getAll(['userID', 'name'])).filter(item => !!item.name);
 			let matchUsers = [], a = '', b = 0;
 			getUsers.forEach(i => {
 				if (i.name.toLowerCase().includes(contentJoin.toLowerCase())) {

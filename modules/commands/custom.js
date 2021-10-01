@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 1,
 	credits: "CatalizCS",
 	description: "Custom toàn bộ mọi thứ ở tại lệnh này :D",
-	commandCategory: "System",
+	commandCategory: "system",
     usages: "custom args input",
     dependencies: ["request", "fs-extra"],
 	cooldowns: 5,
@@ -146,7 +146,6 @@ module.exports.run = async ({ api, event, args, Threads, utils, client }) => {
             else if (!msg.match(/(http(s?):)([/|.|\w|\s|-])*\.(?:gif)/g)) return utils.throwError("custom", event.threadID, event.messageID);
             else return utils.throwError("custom", event.threadID, event.messageID);
         }
-        break;
         default:
             utils.throwError("custom", event.threadID, event.messageID);
         break;

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "SpermLord",
 	description: "Dịch văn bản",
-	commandCategory: "Media",
+	commandCategory: "media",
 	usages: "trans [Text]",
 	cooldowns: 5,
 	dependencies: ["request"],
@@ -18,10 +18,10 @@ module.exports.config = {
 	]
 };
 
-module.exports.run = async ({ api, event, args }) => {
+module.exports.run = async ({ api, event, args, global }) => {
 	const request = require("request");
 	var content = args.join(" ");
-	if (content.length == 0 && event.type != "message_reply") return api.sendMessage(`Bạn chưa nhập thông tin, vui lòng đọc ${__GLOBAL.settings.PREFIX}help để biết thêm chi tiết!`, event.threadID,event.messageID);
+	if (content.length == 0 && event.type != "message_reply") return api.sendMessage(`Bạn chưa nhập thông tin, vui lòng đọc ${global.config.PREFIX}help để biết thêm chi tiết!`, event.threadID,event.messageID);
 	var translateThis = content.slice(0, content.indexOf(" ->"));
 	var lang = content.substring(content.indexOf(" -> ") + 4);
 	if (event.type == "message_reply") {

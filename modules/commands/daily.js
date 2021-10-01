@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Nhận 200 coins mỗi ngày!",
-	commandCategory: "Economy",
+	commandCategory: "economy",
 	usages: "daily",
     cooldowns: 5,
     dependencies: ["parse-ms"],
@@ -14,14 +14,16 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
-    const ms = require("parse-ms");
-    let cooldown = __GLOBAL.daily.cooldownTime;
-    let coinReward = __GLOBAL.daily.rewardCoin;
+module.exports.run = async ({ event, api, Currencies, global }) => {
+    let cooldown = global.daily.cooldownTime;
+    let coinReward = global.daily.rewardCoin;
     let data = (await Currencies.getData(event.senderID)).dailyTime;
     if (typeof data !== "undefined" && cooldown - (Date.now() - data) > 0) {
-        let time = ms(cooldown - (Date.now() - data));
-		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${time.hours}:${time.minutes}:${time.seconds}!`, event.threadID);
+        var time = cooldown - (Date.now() - data),
+            minutes = Math.floor(time / 60000),
+            seconds = ((time % 60000) / 1000).toFixed(0);
+        
+		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${minutes} phút ${(seconds < 10 ? "0" : "")}${seconds} giây!`, event.threadID);
     }
     else return api.sendMessage(`Bạn đã nhận ${coinReward} coins, để có thể tiếp tục nhận, vui lòng quay lại sau 12 tiếng`, event.threadID, async () => {
         await Currencies.increaseMoney(event.senderID, coinReward);

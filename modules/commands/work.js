@@ -7,23 +7,24 @@ module.exports.config = {
 	commandCategory: "Economy",
 	usages: "work",
     cooldowns: 5,
-    dependencies: ["parse-ms"],
     envConfig: {
         cooldownTime: 1200000
     }
 };
 
-module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
-    const ms = require("parse-ms");
-    let { threadID, messageID } = event;
-    let cooldown = __GLOBAL.work.cooldownTime;
-    let data = (await Currencies.getData(event.senderID)).workTime;
+module.exports.run = async ({ event, api, Currencies, global }) => {
+    const { threadID, messageID } = event;
+    const cooldown = global.work.cooldownTime;
+    const data = (await Currencies.getData(event.senderID)).workTime;
     if (typeof data !== "undefined" && cooldown - (Date.now() - data) > 0) {
-        let time = ms(cooldown - (Date.now() - data));
-		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${time.hours}:${time.minutes}:${time.seconds}!`, event.threadID);
+        var time = cooldown - (Date.now() - data),
+            minutes = Math.floor(time / 60000),
+            seconds = ((time % 60000) / 1000).toFixed(0);
+        
+		return api.sendMessage(`Bạn đang trong thời gian chờ\nVui lòng thử lại sau: ${minutes} phút ${(seconds < 10 ? "0" : "")}${seconds} giây!`, event.threadID, event.messageID);
     }
     else {
-        let job = [
+        const job = [
             "đi bán vé số",
             "đi sửa xe",
             "làm nhân viên lập trình",
@@ -38,13 +39,13 @@ module.exports.run = async ({ event, api, Currencies, __GLOBAL }) => {
             "làm nội trợ",
             "đi vả mấy thằng sao đỏ, giun vàng",
             "đi bán hoa",
-            "tìm jav/hentai code cho Quang Sáng",
+            "tìm jav/hentai code cho Nghĩa",
             "đi chơi Yasuo trong rank và gánh team"
         ];
-        let amount = Math.floor(Math.random() * 600);
-        api.sendMessage(`Bạn ${job[Math.floor(Math.random() * job.length)]} và đã nhận được số tiền là: ${amount} coins`, threadID, () => {
-             Currencies.increaseMoney(event.senderID, parseInt(amount));
-             Currencies.setData(event.senderID, options = { workTime: Date.now() });
+        const amount = Math.floor(Math.random() * 600);
+        return api.sendMessage(`Bạn ${job[Math.floor(Math.random() * job.length)]} và đã nhận được số tiền là: ${amount} coins`, threadID, async () => {
+             await Currencies.increaseMoney(event.senderID, parseInt(amount));
+             await Currencies.setData(event.senderID, { workTime: Date.now() });
         }, messageID);
     }
        

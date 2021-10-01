@@ -37,6 +37,9 @@ module.exports = {
       reasonban: {
         type: Sequelize.STRING,
         defaultValue: null
+      },
+      threadInfo: {
+        type: Sequelize.JSON
       }
     });
   },

@@ -10,3 +10,6 @@ package-lock.json
 node_modules/
 logs/
 includes/data.sqlite
+fbstate.json
+modules/commands/cache/*
+modules/events/cache/*

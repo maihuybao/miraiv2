@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "Thọ",
 	description: "Mã hoá văn bản bằng mã QR",
-	commandCategory: "General",
+	commandCategory: "other",
 	usages: "qr [text]",
 	cooldowns: 5,
 	dependencies: ["request","qrcode"]

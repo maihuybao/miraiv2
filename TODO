@@ -1,0 +1,15 @@
+WHAT IM DO RIGHT NOW:
+- Remove handleAutoChangeName
+- Optimize handle, mirai.js
++ Fixed getUserInfo get lock
++ module admin
++ client.nameUser (map)
++ config ADMINBOT: string => array
++ move getUserInfo from handleCreateDatabase => handleCommand
+
+I'LL DO THIS STUFF LATER:
+
++ recode handle listen event
++ Add handleError
++ Add new logger
++ Badword(dí buồi làm nữa, tự đi mà làm)

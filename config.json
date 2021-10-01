@@ -1,12 +1,18 @@
 {
-    "DEVELOP_MODE": false,
+    "DeveloperMode": false,
     "autoCreateDB": true,
+    "allowInbox": true,
+    "selfListen": false,
+    "commandDisabled": [],
+    "eventDisabled": [],
     "EMAIL": "",
     "PASSWORD": "",
     "OTPKEY": "",
     "BOTNAME": "",
     "PREFIX": "!",
-    "ADMINBOT": "",
+    "ADMINBOT": [
+        "ID1"
+    ],
     "DATABASE": {
         "sqlite": {
             "storage": "data.sqlite"

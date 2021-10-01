@@ -1,28 +1,26 @@
-const logger = require("../../utils/log.js");
-
-module.exports = function({ api, __GLOBAL, client, models, Users, Threads, Currencies }) {
-	return async function({ event }) {
-		let timeStart = Date.now();
-		let { senderID, threadID } = event;
-		senderID = parseInt(senderID);
-		threadID = parseInt(threadID);
-		if (client.userBanned.has(senderID) || client.threadBanned.has(threadID)) return;
-		for (let [key, value] of client.events.entries()) {
+module.exports = function({ api, global, client, models, Users, Threads, Currencies }) {
+	const logger = require("../../utils/log.js");
+	return function({ event }) {
+		const timeStart = Date.now();
+		const { senderID, threadID } = event;
+	
+		if (client.userBanned.has(parseInt(senderID)) || client.threadBanned.has(parseInt(threadID)) || global.config.allowInbox == false && senderID == threadID) return;
+		for (const [key, value] of client.events.entries()) {
 			if (value.config.eventType.indexOf(event.logMessageType) !== -1) {
 				const eventRun = client.events.get(key);
 				try {
-					eventRun.run({ api,event, __GLOBAL, client, models, Users, Threads, Currencies });
-					if (__GLOBAL.settings.DEVELOP_MODE == true) {
+					eventRun.run({ api, event, global, client, models, Users, Threads, Currencies });
+					if (global.config.DeveloperMode == true) {
 						const moment = require("moment");
-						var time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
+						const time = moment.tz("Asia/Ho_Chi_minh").format("HH:MM:ss L");
 						logger(`[ ${time} ] Event Executed: ${eventRun.config.name} | Group: ${threadID} | Process Time: ${(Date.now()) - timeStart}ms`, "[ DEV MODE ]");
 					}
 				}
 				catch (error) {
-					logger(error + " at event: " + eventRun.config.name , 2);
+					logger(JSON.stringify(error) + " at event: " + eventRun.config.name , "error");
 				}
-				return;
-			};
+			}
 		}
-	}
-}
+		return;
+	};
+};

@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: "CatalizCS",
 	description: "Game bài cào dành cho nhóm",
-	commandCategory: "games",
+	commandCategory: "game-mp",
 	usages: "baicao [args]",
 	cooldowns: 1,
 	info: [
@@ -19,7 +19,7 @@ module.exports.config = {
 	]
 };
 
-module.exports.event = async ({ event, api, client }) => {
+module.exports.event = async ({ event, api, client, Users }) => {
 	let { senderID, threadID, body } = event;
 	if (!client.baicao) client.baicao = new Map();
 	if (!client.baicao.has(threadID)) return;
@@ -62,9 +62,10 @@ module.exports.event = async ({ event, api, client }) => {
 		if (values.chiabai != 1) return;
 		let player = values.player.find(item => item.id == senderID);
 		if (player.ready == true) return;
+		let name = Users.getData(player.id).name || (await api.getUserInfo(player.id))[player.id].name;
 		values.ready += 1;
 		player.ready = true;
-		api.sendMessage(`Người chơi: ${player.id} Đã sẵn sàng lật bài, còn lại: ${values.player.length - values.ready} người chơi chưa lật bài`, event.threadID);
+		api.sendMessage(`Người chơi: ${name} Đã sẵn sàng lật bài, còn lại: ${values.player.length - values.ready} người chơi chưa lật bài`, event.threadID);
 		if (values.player.length == values.ready) {
 			let player = values.player;
 			player.sort((a, b) => {
@@ -77,13 +78,7 @@ module.exports.event = async ({ event, api, client }) => {
 			let num = 0;
 			for (const info of player) {
 				num++
-				var name;
-				try {
-					name = Users.getData(info.id).name;	
-				}
-				catch {
-					name = (await api.getUserInfo(info.id))[info.id].name;
-				}
+				name = Users.getData(info.id).name || (await api.getUserInfo(info.id))[info.id].name;
 				ranking += `${num} • ${name} Với ${info.tong} nút\n`
 			}
 			client.baicao.delete(threadID);
@@ -113,7 +108,7 @@ module.exports.event = async ({ event, api, client }) => {
 
 module.exports.run = async ({ api, event, args, client, utils }) => {
 	if (!client.baicao) client.baicao = new Map();
-	let values = client.baicao.get(event.threadID);
+	let values = client.baicao.get(event.threadID) || {};
 	if (args[0] == "create") {
 		if (client.baicao.has(event.threadID)) return api.sendMessage("Hiện tại nhóm này đang có bàn bài cào đang được mở", event.threadID, event.messageID);
 		client.baicao.set(event.threadID, { "author": event.senderID, "start": 0, "chiabai": 0, "ready": 0, player: [ { "id": event.senderID, "card1": 0, "card2": 0, "card3": 0, "doibai": 2, "ready": false } ] });
@@ -128,7 +123,7 @@ module.exports.run = async ({ api, event, args, client, utils }) => {
 		return api.sendMessage("Bạn đã tham gia thành công!", event.threadID, event.messageID);
 	}
 	else if (args[0] == "list") {
-		if (!values) return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
+		if (typeof values.player == "undefined") return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
 		return api.sendMessage(
 			"=== Bàn Bài Cào ===" +
 			"\n Author Bàn: " + values.author +
@@ -136,7 +131,7 @@ module.exports.run = async ({ api, event, args, client, utils }) => {
 		, event.threadID, event.messageID);
 	}
 	else if (args[0] == "leave") {
-		if (!values) return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
+		if (typeof values.player == "undefined") return api.sendMessage("Hiện tại chưa có bàn bài cào nào, bạn có thể tạo bằng cách sử dụng baicao create", event.threadID, event.messageID);
 		if (!values.player.some(item => item.id == event.senderID)) return api.sendMessage("Bạn chưa tham gia vào bàn bài cào trong nhóm này!", event.threadID, event.messageID);
 		if (values.author == event.senderID) {
 			client.baicao.delete(event.threadID);
